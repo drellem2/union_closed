@@ -221,6 +221,31 @@ theorem IntClosedFam.traceFam_spec (X : IntClosedFam n) (T : Finset (Fin n))
   (traceMor_exists X T hT).choose_spec
 
 /--
+**The trivial intersection-closed family on `Fin n`**: support `∅` and family
+`{∅}`. This is the canonical singleton-family object of `C_n^∩`, used as the
+default summand in framework-completion places where a canonical choice of
+`IntClosedFam n` is needed (e.g., `BKBicomplex`'s L2a-residual baseline).
+-/
+def IntClosedFam.trivial (n : ℕ) : IntClosedFam n where
+  support       := ∅
+  family        := {∅}
+  subsetSupport := by intro A hA; rw [Finset.mem_singleton.mp hA]
+  intClosed     := by
+    intro A hA B hB
+    rw [Finset.mem_singleton.mp hA, Finset.mem_singleton.mp hB, Finset.inter_self]
+    exact Finset.mem_singleton.mpr rfl
+  fullSupport   := by
+    rw [Finset.sup_singleton, id]
+  topMem        := Finset.mem_singleton.mpr rfl
+  nonempty      := ⟨∅, Finset.mem_singleton.mpr rfl⟩
+
+@[simp] theorem IntClosedFam.trivial_support (n : ℕ) :
+    (IntClosedFam.trivial n).support = ∅ := rfl
+
+@[simp] theorem IntClosedFam.trivial_family (n : ℕ) :
+    (IntClosedFam.trivial n).family = {∅} := rfl
+
+/--
 The `SmallCategory` instance on `IntClosedFam n`.
 
 Objects are pointed intersection-closed families on subsets of `[n]`; morphisms
