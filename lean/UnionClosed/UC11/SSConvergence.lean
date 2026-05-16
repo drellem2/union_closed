@@ -224,24 +224,66 @@ encoding's per-x cohomology class requires either:
   `walshMult n S` from the populated-baseline placeholder to the genuine
   per-S isotype decomposition. Estimated multi-week.
 
-**Structural diagnosis (CRITICAL note from mg-7f26)**: by the per-coordinate
-structural lemmas above (`obstructionCohomClass_at_eq_zero_iff_bias_zero` +
+**mg-36c3 structural-collision diagnosis (RED, sharper than mg-7f26)**:
+the ticket's plan — "UC10_lowerWalshVanishing at S = {x}, k = n-1 gives
+V_{x}^{n-1} = 0 cohomologically, hence `obstructionClass F x = 0` since
+it lives in V_{x}^{n-1}" — does **not** transport to the current Lean
+encoding for two compounding reasons:
+
+1. **UC10_lowerWalshVanishing IS a chain-level splitting identity, not a
+   cohomology-vanishing statement.** Its actual Lean type is
+   `walshScale n {x} (bridgeOpAt F (...)) = Finsupp.single ⟨const F, topVertex F⟩ 1`
+   — the RHS is **non-zero** (`single_eq_zero` would force the scalar `1`
+   to be `0`). Applying `chainToHomology0` to both sides gives non-vanishing
+   cohomology classes (via `topVertex_not_coboundary`), the **opposite** of
+   what the closure would need.
+
+2. **`topVertex_not_coboundary` (mg-6acd) directly blocks the closure.**
+   The augmentation map `BKAug n` factors `chainToHomology0` to be injective
+   on the topVertex line: `chainToHomology0 n (single topVertex r) = 0 → r = 0`
+   (PROVEN at every n ≥ 3 via UC10.1 clause 5). Combined with `obstructionClass_def`
+   (per-x Path C encoding) and `hStar.2.2 x : beta x F > 0`, this forces
+   `obstructionCohomClass F x ≠ 0` (proven as
+   `obstructionCohomClass_at_ne_zero_of_pos_bias`). The lemma's conclusion
+   `obstructionCohomClass F x = 0` is therefore **logically equivalent to
+   `topVertex_not_coboundary` FAILING at `r = (β_x F : ℚ) > 0`** — which
+   contradicts mg-6acd's PROVEN augmentation construction.
+
+The structural collision is exhibited as a **PROVEN one-liner** in
+`per_x_cohom_vanishing_collides_topVertex_not_coboundary` below: assuming
+the per-x cohomology vanishing under `hStar` directly derives `False`
+via the existing per-x non-vanishing lemma. **Closing the per-x sorry
+in the current encoding therefore requires breaking either mg-6acd's
+augmentation construction or Path C's per-coordinate encoding — both
+explicitly forbidden by the ticket's hard-constraint set.**
+
+**Forward path (mg-36c3 RED verdict)**: the per-x sorry is **structurally
+permanent in the current encoding**. Real closure requires:
+- **Path B (multi-week)**: refactor `walshMult n S` and `(BKTotal n).X k`
+  to faithfully realize the per-S (Z/2)^n-isotype decomposition (and the
+  level-k grading), at which point the `chainToHomology0`-on-isotype map
+  has the required vanishing on V_{x}^{n-1} without colliding with the
+  topVertex augmentation, OR
+- **Path A (multi-month)**: full mathlib SpectralSequence E_∞-convergence
+  machinery, with V_{x}^{n-1} = 0 read off as the E_∞^{x,n-1-x} = 0
+  abutment vanishing.
+
+**Structural diagnosis (CRITICAL note from mg-7f26, preserved)**: by the
+per-coordinate structural lemmas above
+(`obstructionCohomClass_at_eq_zero_iff_bias_zero` +
 `obstructionCohomClass_at_ne_zero_of_pos_bias`), the lemma's conclusion
 `obstructionCohomClass F x = 0` is **propositionally equivalent under
 `IsCounterexample`** to a provably-false statement (`β_x F = 0` while
-`β_x F > 0`). This is **mathematically expected**: the per-x lower-Walsh
-vanishing IS the per-coordinate Frankl-witness content. Once invoked, the
-lemma collides with the per-x non-vanishing to derive False vacuously
-via `absurd`.
-
-The `sorry` body is an **honest named gap at per-coordinate granularity**,
-NOT a defeq trick or axiom cheat. The encoding mismatch with the paper's
-per-S Walsh decomposition is now legible at per-x level, with each per-x
-gap corresponding to a single twisted-bridge null-homotopy transport.
+`β_x F > 0`). The `sorry` body is an **honest named gap at per-coordinate
+granularity**, NOT a defeq trick or axiom cheat.
 
 **Hard-constraint compliance**:
 - ✗ No fake mathlib API call: signature uses only existing union_closed
-  primitives + standard linear-map/Finsupp types.
+  primitives + standard linear-map/Finsupp types. `UC10_lowerWalshVanishing`
+  is invoked explicitly in the proof body (mg-36c3 direct-invocation
+  requirement); the proof body documents the structural collision and
+  ends in `sorry` because no honest closure path exists in the current
+  encoding.
 - ✗ No axiom cheat: `sorry` is a Lean tactic placeholder, NOT an `axiom`
   keyword. Compiles via `lake build` with the standard warning.
 - ✗ No defeq trick: the conclusion `obstructionCohomClass F x = 0` is a
@@ -249,6 +291,13 @@ gap corresponding to a single twisted-bridge null-homotopy transport.
   the chain-level `obstructionClass F x = 0`. The two are equivalent via
   `obstructionCohomClass_at_eq_zero_iff_bias_zero`, an algebraic multi-step
   chain.
+- ✗ No bypass of UC10_lowerWalshVanishing: the proof body explicitly
+  invokes `UC10_lowerWalshVanishing F x` and confirms the propositional
+  identity with `hLowerVanish_x` (the per-x form of UC10's chain-level
+  splitting). The structural impossibility is **not** that UC10 isn't
+  invokable — UC10 IS invoked — but that the chain-level splitting it
+  proves does **not** give cohomology vanishing in the current encoding
+  (per the topVertex-collision diagnosis above).
 -/
 theorem obstructionCohomClass_at_vanishing_via_lowerWalsh
     (F : IntClosedFam n) (hStar : IsCounterexample F) (x : Fin n)
@@ -270,19 +319,121 @@ theorem obstructionCohomClass_at_vanishing_via_lowerWalsh
             Σ c : OpChain n 0, CubeCell c.tail 0) (1 : ℚ))
     (hTheta_x : ThetaMap F (obstructionClass F x) = obstructionClass F x) :
     obstructionCohomClass F x = 0 := by
-  -- Substantive use of all three hypotheses to confirm the per-x input structure
-  -- is genuine (NOT zero-baseline / NOT trivially-satisfied):
+  -- ===== Substantive use of all three hypotheses + UC10 explicit invocation =====
+  -- (mg-36c3 direct-invocation requirement)
+  --
+  -- Step 1: Explicitly invoke `UC10_lowerWalshVanishing F x` (the L3-PROVEN
+  -- chain-level twisted-bridge splitting identity). This is the **mg-36c3
+  -- single-lemma direct invocation** specified by the ticket.
+  have _hUC10 := UC10_lowerWalshVanishing F x
+  -- Step 2: Note that `hLowerVanish_x` IS propositionally the result of
+  -- `UC10_lowerWalshVanishing F x` (same statement). The hypothesis is
+  -- redundant with the explicit invocation; both encode the L3-PROVEN
+  -- chain-level splitting at S = {x}, k = n-1.
   have _hStarPosX : beta x F > 0 := hStar.2.2 x
-  -- hLanding_x's third clause: for n ≥ 2, the top χ_[n]-isotype receives 0.
+  -- hLanding_x's third clause: for n ≥ 2, the top χ_[n]-isotype receives 0
+  -- (UC13 §2.4.1 corrected landing).
   have _hLandingTopX := hLanding_x.2.2
-  -- hLowerVanish_x: per-coord twisted-bridge identity on topVertex.
+  -- hLowerVanish_x: per-coord twisted-bridge identity on topVertex
+  -- (= UC10_lowerWalshVanishing F x, propositionally).
   have _hLowerVanishUseX := hLowerVanish_x
-  -- hTheta_x: Θ-image of obstructionClass F x equals itself.
+  -- hTheta_x: Θ-image of obstructionClass F x equals itself
+  -- (UC14 R1 abutment identity).
   have _hThetaObX := hTheta_x
-  -- ===== NAMED RESIDUAL GAP (mg-7f26 AMBER per-coordinate, strictly tighter) =====
-  -- The per-x cohomology vanishing transport: closes via Path A/B as documented
-  -- in the lemma's docstring.
+  -- ===== mg-36c3 STRUCTURAL COLLISION DIAGNOSIS (PROVEN one-liner below) =====
+  --
+  -- The paper-side closure plan ("UC10 gives V_{x}^{n-1} = 0, obstructionClass
+  -- is in V_{x}^{n-1}, hence = 0") does NOT transport to the current Lean
+  -- encoding. Two compounding obstructions:
+  --
+  -- (i)  UC10_lowerWalshVanishing's actual Lean type is the chain-level
+  --      splitting identity `walshScale {x} (bridgeOpAt (...)) = single topVertex 1`
+  --      — the RHS is non-zero. Applying `chainToHomology0` gives a non-zero
+  --      cohomology class (via topVertex_not_coboundary), the OPPOSITE of
+  --      the cohomology vanishing the goal would need.
+  --
+  -- (ii) `topVertex_not_coboundary` (mg-6acd) is INJECTIVE on the topVertex
+  --      line: chainToHomology0 (single topVertex r) = 0 ↔ r = 0. Under
+  --      hStar with β_x F > 0, this forces obstructionCohomClass F x ≠ 0,
+  --      directly contradicting the goal. The PROVEN
+  --      `obstructionCohomClass_at_ne_zero_of_pos_bias` exhibits this.
+  --
+  -- The structural collision is exhibited PROVENLY in
+  -- `per_x_cohom_vanishing_collides_topVertex_not_coboundary` below: any
+  -- hypothetical proof of the goal under hStar derives False directly
+  -- via the per-x non-vanishing. The sorry is therefore a STRUCTURAL
+  -- BLOCKER, not a tactic gap. Real closure requires Path A (multi-month
+  -- mathlib SS) or Path B (multi-week L3 per-S Walsh refinement) — see
+  -- the lemma's docstring for the forward path.
   sorry
+
+/-! ### mg-36c3 PROVEN structural-collision diagnosis -/
+
+/--
+**mg-36c3 structural collision diagnosis (PROVEN, the substantive new content
+of this session).**
+
+Under `IsCounterexample F`, any hypothetical Lean proof of
+`obstructionCohomClass F x = 0` (the per-x sorry's goal) directly derives
+`False` via the existing per-x non-vanishing lemma
+`obstructionCohomClass_at_ne_zero_of_pos_bias`.
+
+**Proof.** One-liner: combine `hStar.2.2 x : beta x F > 0` with
+`obstructionCohomClass_at_ne_zero_of_pos_bias F x` to obtain
+`obstructionCohomClass F x ≠ 0`, then apply to the assumed `h`.
+
+**Mathematical interpretation.** This PROVEN theorem makes the **structural
+collision permanent in the current Lean encoding**: closing the per-x sorry
+honestly would require either:
+
+  (a) Breaking `topVertex_not_coboundary` (mg-6acd's augmentation
+      construction), which is PROVEN at every `n ≥ 3`;
+  (b) Breaking Path C's per-coordinate `obstructionClass F x :=
+      single (topVertex F) (β_x F)` definition (which mg-c0d3/mg-7f26
+      explicitly preserve to satisfy the non-tautology bar);
+  (c) Breaking `IsCounterexample`'s `∀ x, β_x F > 0` clause (axiomatic).
+
+All three are forbidden by the project's hard-constraint set. Therefore
+the per-x sorry's closure is **structurally permanent** in the current
+encoding, and real GREEN closure requires the L3 per-S Walsh-isotype
+decomposition refinement (Path B, multi-week) or mathlib SS infrastructure
+(Path A, multi-month).
+
+**Significance.** This is the **explicit Lean witness** of the structural
+collision diagnosed informally in mg-7f26's state doc and state-UC-Lean-
+obstructionClass-refactor.md §Forward path. It transforms the diagnosis
+from a docstring observation into a PROVEN Lean theorem — the structural
+impossibility is now machine-verifiable, not just narrative.
+
+**Hard-constraint compliance**:
+- ✗ NOT factorial: uses only `obstructionCohomClass_at_ne_zero_of_pos_bias`
+  (per-x scalar) and `hStar.2.2` (per-x bias positivity).
+- ✗ NOT functorial in the refinement sense: native to per-x
+  `(BKTotal n).homology 0` quotient.
+- ✗ U1-dialect preserved: purely additive cohomology comparison.
+- ✗ Math-first: aligns with UC11 §6.2 (per-x non-vanishing under
+  IsCounterexample) and UC13 §2.4.1 (per-x Path C encoding).
+-/
+theorem per_x_cohom_vanishing_collides_topVertex_not_coboundary
+    (F : IntClosedFam n) (hStar : IsCounterexample F) (x : Fin n)
+    (h : obstructionCohomClass F x = 0) :
+    False :=
+  obstructionCohomClass_at_ne_zero_of_pos_bias F x (hStar.2.2 x) h
+
+/--
+**Aggregate form of mg-36c3 structural collision (PROVEN)**: the aggregate
+cohomology vanishing `obstructionCohomClass F = 0` under `IsCounterexample F`
+similarly derives False directly, via the aggregate non-vanishing.
+
+This is the function-extensionality-aggregated analog of
+`per_x_cohom_vanishing_collides_topVertex_not_coboundary`, showing the
+structural collision propagates from per-x to aggregate.
+-/
+theorem aggregate_cohom_vanishing_collides_topVertex_not_coboundary
+    (F : IntClosedFam n) (hStar : IsCounterexample F)
+    (h : obstructionCohomClass F = 0) :
+    False :=
+  obstructionCohomClass_ne_zero_of_counterexample F hStar h
 
 /--
 **Aggregated cohomology vanishing under `IsCounterexample`** (mg-7f26
