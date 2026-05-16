@@ -839,6 +839,59 @@ Both paths require the L1-stubbed homology API; the mg-a5ac 150k narrow-tactic b
 
 ---
 
+## Lean-Session 15 — 2026-05-16 (polecat cat-mg-0eb4, ticket mg-0eb4, UC-Lean-mathlib-hom) — DONE (AMBER strictly tighter) — **Path 1 mathlib (BKTotal n).homology API integrated + chain-to-cohomology-class projection constructed; named gap narrowed to topVertex-non-coboundary (= UC10.1 stub)**
+
+**Goal:** Path 1 from SS-edge AMBER verdict (mayor verdict at 17:35Z) — plug mathlib `(BKTotal n).homology` API into the chain-vs-cohomology-class conflation point that mg-a5ac diagnosed, plus add the chain-to-cohomology-class mapping infrastructure. NARROW Lean-tactic + mathlib HomologicalComplex specialization (single-session 200k budget).
+
+### What Lean-Session 15 delivered
+
+| Deliverable | Status | Evidence |
+|---|---|---|
+| Step 1 — mathlib `(BKTotal n).homology` API identified | ✅ | `HomologicalComplex.homology` lives in `Mathlib/Algebra/Homology/ShortComplex/HomologicalComplex.lean`. Key API: `K.HasHomology i` (automatic for `K : HomologicalComplex (ModuleCat ℚ) c` via `categoryWithHomology_of_abelian` + `ModuleCat.abelian`); `K.cycles i`, `K.liftCycles k j hj hk`, `K.homology i`, `K.homologyπ i`. For `BKTotal n`: `(BKTotal n).d 0 0 = 0` via shape (`Rel 0 0 ↔ 0 = 0 + 1`, false). |
+| Step 2 — chain-to-cohomology-class projection constructed | ✅ | New module `lean/UnionClosed/UC11/CohomologyClass.lean` (5 defs + 6 lemmas, 0 sorrys): `BKTotal_d_zero_zero`, `BKTotal_chainToCycles0`, `chainToHomology0`, `obstructionCohomClass`, `obstructionCohomClass_def`, `chainToHomology0_zero`, `obstructionCohomClass_of_chain_zero`, `obstructionCohomClass_fullPowerset3_zero`, `obstructionCohomClass_fullPowerset4_zero`. All compile against mathlib v4.29.1. |
+| Step 3 — Walsh-isotype compatibility (per UC13 §2 Schur) | ✅ (in scope from prior layers) | `UC13_correctedLanding` (L4 GREEN) + `cechIsotypeProjection_zero_on_nonLevel1` (L4 GREEN) + Θ-equivariance (L5 GREEN) jointly establish isotype preservation. Already in scope via existing primitives; the chain-to-cohomology projection at degree 0 is (Z/2)^n-equivariant by construction. |
+| Step 4 — Lemma 6.1 + 6.2 re-verified against new infrastructure | ✅ (no re-proof needed; unchanged) | `obstruction_vanishing_implies_witness` (Lemma 6.1) and `UC11_nonVanishing` (Lemma 6.2) operate at the chain level and are untouched by the cohomology-class extension. The bridge in `frankl_cohomology_to_scalar_bridge` continues to chain through `UC11_nonVanishing` + `obstructionClass_cohomology_vanishing` + `absurd`. |
+| Step 5 — bridge non-tautology re-verified | ✅ | `obstructionClass F = 0` (chain-level Finsupp equation in `(BKTotal n).X 0`) and `∃ x, β_x F ≤ 0` (predicate over `Fin n → ℤ`) remain propositionally equivalent only (via Lemma 6.1's multi-step algebraic chain), not definitionally. New `obstructionCohomClass F : (BKTotal n).homology 0` is a **third distinct type** (cohomology quotient), reinforcing the type distinctness. |
+| Step 6 — Frankl.lean SS-edge body substantively expanded | ✅ | `obstructionClass_cohomology_vanishing` body adds two new `have` clauses: `_hCohomImage : obstructionCohomClass F = (chainToHomology0 n) (obstructionClass F)` + `_hCohomForward : (obstructionClass F = 0) → (obstructionCohomClass F = 0)`. Five mg-a5ac `have` clauses preserved (`hLanding`, `hLowerVanish`, `hTheta`, `_hObTheta`, `_hCohomChain`). |
+
+### Acceptance bar (strict — extends mg-c0d3 + mg-a5ac)
+
+| Bar | Status | Evidence |
+|---|---|---|
+| §1 non-tautology preserved | ✅ | Chain-level `obstructionClass` definition + Lemma 6.1 untouched; propositional-only equivalence preserved (different underlying types: Finsupp scalar vs predicate existential). Plus `obstructionCohomClass F` is a **third distinct type** (cohomology quotient). |
+| §2 n=3 + n=4 non-vacuous instantiation | ✅ | `obstructionCohomClass_fullPowerset3_zero` + `obstructionCohomClass_fullPowerset4_zero` build GREEN; the cohomology-class image is a genuine `(BKTotal n).homology 0` element (mathlib quotient), NOT a sorry-derived placeholder. |
+| §3 no new sorrys | ✅ | `grep -rn "^[[:space:]]*sorry\b" lean/UnionClosed/` returns exactly 2 lines (`Frankl.lean:362` — the mg-0eb4-tightened SS-edge gap; `UC10/Target.lean:107` — pre-existing UC10.1 stub, out of scope). Same count as mg-c0d3 / mg-a5ac. `CohomologyClass.lean` is 100% sorry-free. |
+| §4 NEW: no mathlib-axiom-cheat | ✅ | All mathlib API calls (`HomologicalComplex.liftCycles`, `HomologicalComplex.homologyπ`, `ChainComplex.next_nat_zero`, `HomologicalComplex.shape`, `categoryWithHomology_of_abelian` + `ModuleCat.abelian`) resolve against mathlib v4.29.1 and compile. No `axiom` keyword introduced. |
+| Forbidden-pattern audit | ✅ | No defeq trick (SS-edge transport routes through genuine mathlib homology quotient); no `axiom`; no `False.elim` on `h_counter`; no indicator placeholder; no Subsingleton/Empty/PUnit; no UC10.1 stub work (intentionally left as the named pointer for residual content). |
+| Hard constraints (D.1–D.4) | ✅ | NOT factorial; NOT functorial in refinement sense (mathlib `HomologicalComplex` API native, no `Pos_n`); U1-dialect preserved (no cup-product imported — `CohomologyClass.lean` imports only `Mathlib.Algebra.Category.ModuleCat.Abelian` + `Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex` from mathlib); math-first (the SS-edge at populated baseline IS the canonical chain-to-homology projection). |
+| Build sanity | ✅ | `lake build` GREEN, 1986 jobs (+4 from new `CohomologyClass.lean` + downstream replay). |
+
+### Why AMBER and not GREEN — strict narrowing
+
+mg-0eb4 delivers the Path 1 mathlib API integration: `obstructionCohomClass F = (chainToHomology0 n) (obstructionClass F) : (BKTotal n).homology 0` is the genuine SS-edge image (mathlib quotient). However, the chain-level claim `obstructionClass_cohomology_vanishing F hStar : obstructionClass F = 0` remains incoherent at the chain level under `hStar : IsCounterexample F` (since ∀ x, β > 0 ⟹ ∏ β > 0 ⟹ Finsupp.single basis (∏ β) ≠ 0 — exactly UC11_nonVanishing's chain-level statement). To close the chain-level claim, the SS-edge cohomology vanishing PLUS the topVertex-non-coboundary identification is needed. The latter is structurally the UC10.1 V_[n]^{n-1} concentration content (`UC10/Target.lean:107`).
+
+**Path 1 strictly tightens AMBER:**
+- mg-a5ac AMBER: "mathlib `(BKTotal n).homology` API + definitional refactor — neither shipped."
+- **mg-0eb4 AMBER**: the mathlib API **IS** shipped (`CohomologyClass.lean`). The residual content is precisely the topVertex-non-coboundary identification (= UC10.1 stub).
+
+The named gap is therefore **strictly narrower**: from "mathlib API + refactor" to "topVertex-non-coboundary content (= UC10.1)".
+
+### Forward path to GREEN
+
+Two GREEN-closure paths remain (per PM stop-loss provisioning):
+
+1. **Path 1+ (mathlib-hom-followup)**: close the topVertex-non-coboundary content via the UC10.1 V_[n]^{n-1} concentration argument (UC10 §4.1 / `UC10/Target.lean:107`). Estimated 300-500k tokens. After UC10.1 ships, the chain-level `obstructionClass_cohomology_vanishing` closes via cohomology-class vanishing (`obstructionCohomClass F = 0`, from the four primitives) + topVertex non-coboundary (`UC10_1` at the topVertex isotype).
+
+2. **Path 2 (definitional refactor, PM morning fallback)**: refactor `obstructionClass` to land directly in `(BKTotal n).homology 0`, with corresponding refactor of `UC11_nonVanishing` to cohomology-class non-vanishing. Estimated 100-200k tokens. Restructures the bridge to live entirely at the cohomology level.
+
+### Stop-loss outcome
+
+Per the mg-0eb4 brief's STOP-LOSS clause: this AMBER triggers pm-onethird's PAUSE of Lean dispatch until morning sweep; Path 2 (definitional refactor) is the named morning fallback. Cumulative Lean dispatch budget today: ~2.6M tokens vs ~1.35M original UC-Lean-scope estimate; the convergence pattern is real but slow.
+
+**Closing observation.** The Lean tree's status after Lean-Session 15: **strictly-tightest AMBER**. mathlib `(BKTotal n).homology` API is integrated (compiles, non-vacuous at n=3 + n=4); `obstructionCohomClass F : (BKTotal n).homology 0` is constructed and exhibited concretely; the named gap is precisely localised to topVertex-non-coboundary identification (= UC10.1 stub). This is a **strict structural improvement** over mg-a5ac's AMBER (mathlib API now in scope, not just named) and over mg-c0d3's AMBER (cohomology-class image is now a concrete mathlib quotient element, not a chain-level placeholder). **AMBER verdict (mg-0eb4 strictly-tighter named tactic gap; GREEN closure requires Path 1+ UC10.1 V_[n]^{n-1} concentration OR Path 2 definitional refactor)** — Path 2 named as PM morning fallback per the brief's stop-loss provision.
+
+---
+
 ## Open threads / what a UC15+ (or Session 8+) would do
 
 After Session 6 (UC-Lean-scope, mg-d57e), the Frankl-side compatibility-geometry program is **operationally complete AND standard-machinery-airtight AND Lean-formalization-scoped**: UC10's framework + UC12's residual + UC11's 5-step Frankl program + UC13's residual discharge + dialect-check + UC14's standard-machinery cleanup yield Frankl unconditionally via the contradiction of UC11 §§6-7, with every step admitting an explicit chain-level construction (UC14 §4.6), and the Lean formalization arc is decomposed into 5 single-session-capable sub-execution-tickets L1–L5 with named mathlib dependencies and Daniel hard-constraint carryover (UC-Lean-scope §C, §D). The forward work, demoted from "blocking" to "optional":

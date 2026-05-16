@@ -18,6 +18,7 @@ import UnionClosed.UC11.FObs
 import UnionClosed.UC11.Mismatch
 import UnionClosed.UC11.ObstructionClass
 import UnionClosed.UC11.NonVanishing
+import UnionClosed.UC11.CohomologyClass
 import UnionClosed.UC13_PartA.IsotypePreservation
 import UnionClosed.UC13_PartA.CorrectedLanding
 import UnionClosed.UC13_PartA.DialectCheck
