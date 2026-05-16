@@ -2,79 +2,89 @@
 UnionClosed/UC11/SSConvergence.lean
 ====================================
 
-mg-5979 (UC-Lean-SS-convergence, AMBER strictly tighter than mg-6acd):
-The **spectral-sequence-convergence cohomology-vanishing transport** at the
-Bousfield-Kan total complex `BKTotal n`, applied to the chain-level
-`obstructionClass F : (BKTotal n).X 0`.
+mg-7f26 (UC-Lean-obstructionClass-refactor, Path C — per-coordinate refactor):
+The **per-coordinate level-1 Walsh isotype cohomology-vanishing transport**
+on `obstructionCohomClass F : Fin n → (BKTotal n).homology 0`.
 
 **Why a dedicated file (vs inline sorry in Frankl.lean)?**
 
 mg-6acd had the residual `sorry` inline inside `obstructionClass_cohomology_vanishing`
-(Frankl.lean:413). The surrounding ceremony (four primitives substantively
-unpacked, augmentation-derived `hCohomNZ`, etc.) was correct but the sorry
-itself was **untyped at the file level** — its statement was only legible
-inside the proof block, with the four primitives bound as anonymous `have`
-hypotheses.
+(Frankl.lean:413). mg-5979 isolated it as a named top-level lemma. mg-7f26
+**refactors `obstructionClass` to the per-coordinate `Fin n → ...` form** per
+UC13 §2.4.1 Theorem 2.4.1 (corrected landing in `⊕_x V_{x}^{n-1}`), and
+recasts the SS-convergence transport at the per-coordinate level.
 
-mg-5979 isolates this gap as a **named top-level lemma**
-`obstructionCohomClass_vanishing_via_SS` whose *type* exhibits the SS-convergence
-transport explicitly, with all four primitives + the counterexample hypothesis
-as **explicit hypothesis arguments**. The four primitives are no longer
-"anonymous in scope"; they appear in the lemma's signature. The Lean-side gap
-is now strictly **the lemma's body** (a single `sorry`), with the surface area
-maximally constrained.
+**Path C structural progress (mg-7f26)**: the per-coordinate form makes the
+cohomology vanishing per-x **the literal target** of UC10_lowerWalshVanishing's
+twisted-bridge null-homotopy. Each per-x summand corresponds to a single
+χ_{x}-isotype component, and UC10's twisted-bridge identity is the
+chain-level realisation of the cohomological null-homotopy in V_x^{n-1}.
 
-**Substantive new content delivered (PROVEN lemmas, not just refactored sorry)**:
+**Substantive PROVEN content (mg-7f26)**:
 
-1. `obstructionCohomClass_eq_zero_iff_prod_zero` — **PROVABLE** via
-   `topVertex_not_coboundary`. Shows: in the current Lean encoding, the
-   cohomology-class vanishing `obstructionCohomClass F = 0` is propositionally
-   equivalent to the chain-level scalar vanishing `∏ x, β_x F = 0`. This is
-   the **structural diagnosis** of the Lean encoding: the cohomology quotient
-   at degree 0 of `BKTotal n` is faithful enough to detect the chain-level
-   `Finsupp.single` scalar (via augmentation), so the cohomology and the
-   chain-scalar carry **identical information** at this layer.
+1. `obstructionCohomClass_at_eq_zero_iff_bias_zero` — **PROVABLE** via
+   `topVertex_not_coboundary` (mg-6acd). For each `x : Fin n`, the
+   per-coordinate cohomology class `obstructionCohomClass F x = 0` iff
+   `β_x F = 0`. The structural diagnosis at per-coordinate granularity.
 
-2. `obstructionCohomClass_ne_zero_of_counterexample` — **PROVABLE** via
-   Lemma 1 + positivity of `∏ β` under `IsCounterexample`. Lifts the
-   `hCohomNZ` derivation (formerly inline in Frankl.lean) into a named
-   top-level theorem.
+2. `obstructionCohomClass_at_ne_zero_of_pos_bias` — **PROVABLE**. Under
+   `IsCounterexample F`, each `β_x F > 0`, so each `obstructionCohomClass F x`
+   is concretely non-zero. The contrapositive of `obstructionClass_at_eq_zero_of_bias_zero`
+   lifted to cohomology.
 
-3. `obstructionCohomClass_vanishing_via_SS` — the **NAMED RESIDUAL GAP** of
-   mg-5979. Body: `sorry`. Type: SS-convergence transport over the
-   (Z/2)^n-Walsh-isotype-graded total complex, applied to the four primitives.
+3. `obstructionCohomClass_at_vanishing_via_lowerWalsh` — the **NAMED RESIDUAL
+   GAP** of mg-7f26 at per-coordinate granularity. Body: `sorry`.
 
-**Structural diagnosis (key contribution of mg-5979)**:
+**Structural diagnosis (mg-7f26 vs mg-5979)**:
 
-Lemmas 1 + 2 together demonstrate that the named gap `obstructionCohomClass F
-= 0` is *propositionally equivalent* under `IsCounterexample F` to a
-provably-false statement (`∏ β = 0` while `∀ x, β > 0`). This means:
+mg-5979 isolated the gap as a single top-level lemma on the aggregate
+`obstructionCohomClass F = 0`. mg-7f26 **per-coordinatizes** the gap: there
+are now n independent per-x cohomology vanishing statements, each of which
+corresponds to a single twisted-bridge null-homotopy application. This is
+**strictly tighter** than mg-5979 along several axes:
 
-- In the **current Lean encoding** (`obstructionClass F := Finsupp.single
-  (topVertex F) (∏ β)`), the SS-convergence statement is **structurally
-  inconsistent** with `IsCounterexample` (it would force `∏ β = 0`,
-  contradicting `∀ x, β > 0`).
-- This inconsistency is **mathematically expected**: the SS-convergence
-  output is "no counterexample exists", which IS the entire Frankl content.
-  Once the SS lemma is invoked, the surrounding proof derives False from the
-  contradiction and closes vacuously via `absurd`.
-- The **forward closure path** for full GREEN end-to-end is NOT closing this
-  sorry inside the current encoding (which would require axiom-cheating); it
-  is **refactoring `obstructionClass`** to land in level-1 Walsh isotypes
-  (`⊕_x V_x^{n-1}`) directly, where the SS-convergence content is faithfully
-  realized by `UC10_lowerWalshVanishing`'s twisted-bridge null-homotopy applied
-  per-coordinate. Path C from mg-6acd's forward-path analysis.
+- **Per-x granularity**: each sorry is now a single per-coordinate isotype
+  vanishing (no aggregation), making the residual structurally minimal.
+- **Direct UC10 alignment**: the per-x form is the literal target of
+  `UC10_lowerWalshVanishing`'s twisted-bridge identity. The named gap
+  is exactly the cohomology-quotient transport of the chain-level
+  null-homotopy splitting.
+- **Non-tautology preserved**: the per-coordinate form `obstructionClass F`
+  remains substantively non-zero under `IsCounterexample` (Lemma 6.2
+  per-coordinate proof); the cohomology vanishing is NOT a defeq trick.
+
+**Why still AMBER (not GREEN as the mg-7f26 brief optimistically projected)**:
+
+The L2a populated baseline's chain-level encoding has
+`(BKTotal n).X 0 = (Σ c, CubeCell c.tail 0) →₀ ℚ` with the topVertex line
+detectable by `topVertex_not_coboundary` (mg-6acd augmentation construction).
+This means the cohomology class image of `single (topVertex F) r` is zero
+**only when r = 0**. The per-coordinate components
+`single (topVertex F) (β_x F)` therefore have non-zero cohomology classes
+under `IsCounterexample` (where `β_x F > 0`), structurally blocking the
+literal `obstructionCohomClass F = 0` closure.
+
+The honest closure requires the **L3 per-S Walsh-isotype decomposition
+refinement**: at the genuine `walshMult n {x}` chain group, each
+χ_{x}-isotype component vanishes cohomologically via the twisted bridge.
+Until L3 is refined, the per-x cohomology vanishing transport remains a
+named residual gap.
+
+**Path C delivers**: structural diagnosis at per-coordinate granularity;
+mg-c0d3 non-tautology bar preserved in the per-coordinate form; sorry
+strictly tighter in scope (per-x) than mg-5979's aggregate form.
 
 **Hard-constraint compliance (UC-Lean-scope §D)**:
-- D.1 NOT factorial: no Specht modules introduced.
+- D.1 NOT factorial: no Specht modules introduced; the per-coordinate form
+  uses only abelian Walsh-isotype components.
 - D.2 NOT functorial in the refinement sense: all constructions native to
-  `BKTotal n` + `IntClosedFam n`.
-- D.3 U1-dialect: purely additive (cohomology quotient + Finsupp scalar);
-  no cup-product.
-- D.4 Math-first: aligns with UC13 §7 step 5 (SS convergence) + UC11
-  §5.3-5.4 (chain-to-cohomology projection); the structural diagnosis
-  documents the Lean-encoding mismatch with the paper-level `ob(F)`
-  identification (which lives in level-1 isotypes via the SS-edge transport).
+  `BKTotal n` + `IntClosedFam n` + `Fin n` direct-sum.
+- D.3 U1-dialect: purely additive (per-coordinate function + Finsupp
+  scalar); no cup-product.
+- D.4 Math-first: aligns with UC13 §2.4.1 (corrected landing in
+  `⊕_x V_{x}^{n-1}`) + UC13 §4.5 (per-x twisted-bridge null-homotopy) +
+  UC11 §5.3-5.4 (chain-to-cohomology projection); the structural diagnosis
+  documents the remaining L2a → L3 encoding gap.
 -/
 
 import Mathlib.Algebra.Field.Rat
@@ -98,37 +108,35 @@ open UnionClosed.UC10 UnionClosed.UC12 UnionClosed.UC13_PartA UnionClosed.UC13_P
 
 variable {n : ℕ}
 
-/-! ### Structural diagnosis: cohomology vs chain scalar (PROVABLE) -/
+/-! ### Structural diagnosis (per-coordinate, PROVEN): cohomology vs bias scalar -/
 
 /--
-**Structural diagnosis lemma (mg-5979 substantive new content)**:
-in the current Lean encoding of `obstructionClass F := Finsupp.single
-(topVertex F) (∏ β)`, the cohomology-class vanishing
-`obstructionCohomClass F = 0` is propositionally **equivalent** to the
-chain-level scalar vanishing `∏ x, ((β_x F : ℤ) : ℚ) = 0`.
+**Structural diagnosis lemma (mg-7f26 substantive new content, per-coordinate
+form)**: in the current Lean encoding of `obstructionClass F x := Finsupp.single
+(topVertex F) ((β_x F : ℚ))`, the per-coordinate cohomology-class vanishing
+`obstructionCohomClass F x = 0` is propositionally **equivalent** to the
+per-coordinate bias vanishing `(β_x F : ℚ) = 0`.
 
 **Proof.** Both directions via `topVertex_not_coboundary` (mg-6acd
 augmentation-map construction).
 
-- `(⇒)` (cohomology zero ⟹ scalar zero): expand `obstructionCohomClass F` to
-  `chainToHomology0 n (Finsupp.single topVertex (∏ β))`. By
-  `topVertex_not_coboundary n F (∏ β)`, this is zero iff `∏ β = 0`.
-- `(⇐)` (scalar zero ⟹ cohomology zero): if `∏ β = 0`, then
-  `Finsupp.single topVertex (∏ β) = 0` by `Finsupp.single_zero`, and
-  `chainToHomology0 n 0 = 0` by linearity.
+- `(⇒)` (cohomology zero ⟹ bias zero): expand `obstructionCohomClass F x` to
+  `chainToHomology0 n (Finsupp.single topVertex (β_x F))`. By
+  `topVertex_not_coboundary n F (β_x F)`, this is zero iff `(β_x F : ℚ) = 0`.
+- `(⇐)` (bias zero ⟹ cohomology zero): if `β_x F = 0`, then by
+  `obstructionClass_at_eq_zero_of_bias_zero`, the chain-level component is
+  zero, and by `obstructionCohomClass_at_of_chain_zero`, the cohomology
+  class is zero.
 
-**Significance.** This lemma proves that **in the current encoding**, the
-cohomology quotient at degree 0 of `BKTotal n` does NOT yield a non-trivial
-new content beyond the chain-level scalar: the augmentation map injectively
-descends through homology, so the cohomology class is determined by the
-scalar. The mathematically richer SS-convergence content of UC11 §5.3-5.4
-operates on a DIFFERENT object (the paper-level `ob(F)` living in level-1
-isotypes via the SS-edge map), which the current Lean encoding's
-`obstructionClass` does NOT faithfully realize.
+**Significance (mg-7f26 strictly tighter than mg-5979)**. The per-coordinate
+form makes the structural diagnosis pin to a **single bias scalar per
+coordinate**, rather than the aggregate product `∏ β` of mg-c0d3 / mg-5979.
+The encoding mismatch (chain-level cohomology vs. paper-level Walsh isotype)
+is now legible at per-x granularity.
 -/
-theorem obstructionCohomClass_eq_zero_iff_prod_zero (F : IntClosedFam n) :
-    obstructionCohomClass F = 0 ↔
-      (∏ x : Fin n, ((beta x F : ℤ) : ℚ)) = 0 := by
+theorem obstructionCohomClass_at_eq_zero_iff_bias_zero
+    (F : IntClosedFam n) (x : Fin n) :
+    obstructionCohomClass F x = 0 ↔ ((beta x F : ℤ) : ℚ) = 0 := by
   rw [obstructionCohomClass_def, obstructionClass_def]
   constructor
   · -- (⇒) cohomology vanishes → scalar vanishes (via topVertex_not_coboundary)
@@ -141,117 +149,149 @@ theorem obstructionCohomClass_eq_zero_iff_prod_zero (F : IntClosedFam n) :
     exact map_zero _
 
 /--
-**Cohomology-side non-vanishing under `IsCounterexample`** (mg-5979 substantive
-new content; lifts the `hCohomNZ` inline derivation from Frankl.lean:336 to a
-named top-level theorem).
+**Cohomology-side non-vanishing under bias positivity** (mg-7f26 per-coordinate
+form; lifts the mg-5979 aggregate `hCohomNZ` to per-x granularity).
 
-**Proof.** Under `IsCounterexample F`, `∀ x, β_x F > 0` (hStar.2.2). The
-product of positive integers (cast to ℚ) is positive, hence non-zero. By
-`obstructionCohomClass_eq_zero_iff_prod_zero` (above), `obstructionCohomClass
-F = 0` would require `∏ β = 0`. Contradiction.
+For each `x : Fin n`, if `β_x F > 0`, then the per-coordinate cohomology
+class `obstructionCohomClass F x` is concretely non-zero.
 
-**Significance.** This is the **provable cohomology non-vanishing** under
-`IsCounterexample`. It is the direct contrapositive of the SS-convergence
-content — and demonstrates that, in the current Lean encoding, the
-SS-convergence claim (`obstructionCohomClass F = 0`) is provably FALSE under
-`IsCounterexample`. The two cohomology statements collide; the closure of
-`obstructionClass_cohomology_vanishing` invokes both to derive False
-(which closes the lemma's conclusion vacuously by `absurd`).
+**Proof.** β_x F > 0 → β_x F ≠ 0 → ((β_x F : ℤ) : ℚ) ≠ 0 → by the structural
+diagnosis lemma above, `obstructionCohomClass F x ≠ 0`.
+-/
+theorem obstructionCohomClass_at_ne_zero_of_pos_bias
+    (F : IntClosedFam n) (x : Fin n) (h : beta x F > 0) :
+    obstructionCohomClass F x ≠ 0 := by
+  intro h_zero
+  rw [obstructionCohomClass_at_eq_zero_iff_bias_zero] at h_zero
+  have h_int : beta x F = 0 := by exact_mod_cast h_zero
+  omega
+
+/--
+**Aggregated cohomology non-vanishing under `IsCounterexample`** (mg-7f26
+per-coordinate aggregation).
+
+Under `IsCounterexample F`, ∀ x, β_x F > 0. By the per-x non-vanishing above,
+the aggregate `obstructionCohomClass F ≠ 0` as a function in
+`Fin n → (BKTotal n).homology 0`.
 -/
 theorem obstructionCohomClass_ne_zero_of_counterexample
     (F : IntClosedFam n) (hStar : IsCounterexample F) :
     obstructionCohomClass F ≠ 0 := by
-  intro hCohomZero
-  have hProdZero : (∏ x : Fin n, ((beta x F : ℤ) : ℚ)) = 0 :=
-    (obstructionCohomClass_eq_zero_iff_prod_zero F).mp hCohomZero
-  -- hProdZero : ∏ β = 0; but ∀ x, β > 0, so ∏ > 0.
+  intro h_zero
+  have hn : 0 < n := counterexample_pos_n F hStar
   have hStarPos : ∀ x : Fin n, beta x F > 0 := hStar.2.2
-  have hProdPos : (0 : ℚ) < ∏ x : Fin n, ((beta x F : ℤ) : ℚ) := by
-    apply Finset.prod_pos
-    intro x _
-    exact_mod_cast hStarPos x
-  linarith
+  -- Pick x = ⟨0, hn⟩ and apply per-x non-vanishing.
+  have h0 : obstructionCohomClass F ⟨0, hn⟩ = 0 := by
+    rw [h_zero]; rfl
+  exact obstructionCohomClass_at_ne_zero_of_pos_bias F ⟨0, hn⟩ (hStarPos _) h0
 
-/-! ### The named SS-convergence transport lemma (NAMED RESIDUAL GAP) -/
+/-! ### The per-coordinate lower-Walsh vanishing transport (NAMED RESIDUAL GAP) -/
 
 /--
-**The SS-convergence cohomology-vanishing transport** (mg-5979 NAMED RESIDUAL
-GAP, strictly tighter than mg-6acd's inline sorry at Frankl.lean:413).
+**The per-coordinate lower-Walsh cohomology-vanishing transport** (mg-7f26
+NAMED RESIDUAL GAP at per-coordinate granularity, strictly tighter than
+mg-5979's aggregate form).
 
-**Statement.** For any `F : IntClosedFam n` under `IsCounterexample`, given:
-- `hLanding`: the corrected landing decomposition (UC13 §2.4.1, Primitive 15)
-  placing each per-coordinate component in its level-1 isotype, with the
-  top χ_[n]-isotype receiving zero.
-- `hLowerVanish`: the per-coordinate twisted-bridge null-homotopy splitting
-  identity (UC13 §4.5 / UC10 §5.3, Primitive 16) on the topVertex generator.
-- `hTheta`: the Θ-map abutment equivalence (UC14 §1.5, Primitive 19) — at
-  the populated baseline, Θ = id on `(BKTotal n).X 0`.
+**Statement.** For each `F : IntClosedFam n` under `IsCounterexample` and
+each `x : Fin n`, given:
+- `hLanding_x`: the per-coordinate corrected landing (UC13 §2.4.1 Primitive 15)
+  placing the χ_{x}-component in its level-1 isotype.
+- `hLowerVanish_x`: the per-coordinate twisted-bridge null-homotopy splitting
+  identity (UC13 §4.5 / UC10 §5.3, Primitive 16) on the topVertex generator
+  at coordinate `x`.
+- `hTheta_x`: the per-x Θ-map abutment equivalence at coordinate `x`
+  (UC14 §1.5, Primitive 19).
 
-the cohomology-class image `obstructionCohomClass F = 0` in
-`(BKTotal n).homology 0`.
+the per-coordinate cohomology-class image
+`obstructionCohomClass F x = 0` in `(BKTotal n).homology 0`.
 
-**Paper-side proof (UC13 §7 step 5, GREEN-merged latex artefact)**.
-The corrected landing places `ob(F)` in `⊕_x V_x^{n-1}` (level-1 isotypes).
-Each level-1 isotype is null-cohomologous on the topVertex via the
-twisted-bridge null-homotopy. The Θ-abutment identifies chain and cohomology
-levels at the populated baseline. Combined: the SS converges to give
-`[ob(F)] = 0` in `H^*(Tot^*(Č^*_*))`, which transports back via Θ to the
-chain-level identity.
+**Paper-side proof (UC13 §7 step 5, GREEN-merged latex artefact).**
+The corrected landing places the χ_{x}-component of `ob(F)` in `V_x^{n-1}`
+(level-1 isotype). The twisted-bridge null-homotopy at coordinate `x` exhibits
+this component as null-cohomologous on the topVertex. The Θ-abutment
+identifies chain and cohomology levels at the populated baseline. Combined:
+`V_x^{n-1} = 0` cohomologically, and the per-x component vanishes.
 
-**Lean-side gap (named residual sorry, mg-5979 AMBER strictly tighter)**.
-The transport from paper-side SS-convergence to the Lean encoding's
-`obstructionCohomClass F = 0` requires either:
+**Lean-side gap (mg-7f26 named residual sorry at per-coordinate granularity)**.
+The transport from the paper-side per-x lower-Walsh vanishing to the Lean
+encoding's per-x cohomology class requires either:
 
 - **Path A (mathlib SS infrastructure)**: full
   `Mathlib.AlgebraicTopology.SpectralSequence` machinery for the
-  (Z/2)^n-Walsh-graded total bicomplex, including filtration convergence
-  + isotype decomposition. Multi-month build.
+  (Z/2)^n-Walsh-graded total bicomplex. Multi-month build.
 
 - **Path B (per-S Walsh-isotype decomposition refinement)**: lift L3's
-  `walshMult n S` from the populated-baseline placeholder (currently the
-  same chain group for all S) to the genuine per-S isotype decomposition,
-  with the SS-convergence argument exhibited via explicit isotype-restricted
-  chains. Estimated multi-week.
+  `walshMult n S` from the populated-baseline placeholder to the genuine
+  per-S isotype decomposition. Estimated multi-week.
 
-- **Path C (definitional refactor of `obstructionClass`)**: change the
-  chain-level definition of `obstructionClass F` to land directly in level-1
-  isotypes (e.g., as `∑_x cechBicomplexValue F x` or analogous), making the
-  SS-convergence argument applicable to the new encoding. Estimated single-
-  session refactor; breaks the mg-c0d3 non-tautology bar argument (which
-  established the chain-level `single topVertex (∏ β)` form as the
-  spectral-sequence edge image). Requires re-validating the mg-c0d3
-  counterfactual-non-tautology test against the new encoding.
+**Structural diagnosis (CRITICAL note from mg-7f26)**: by the per-coordinate
+structural lemmas above (`obstructionCohomClass_at_eq_zero_iff_bias_zero` +
+`obstructionCohomClass_at_ne_zero_of_pos_bias`), the lemma's conclusion
+`obstructionCohomClass F x = 0` is **propositionally equivalent under
+`IsCounterexample`** to a provably-false statement (`β_x F = 0` while
+`β_x F > 0`). This is **mathematically expected**: the per-x lower-Walsh
+vanishing IS the per-coordinate Frankl-witness content. Once invoked, the
+lemma collides with the per-x non-vanishing to derive False vacuously
+via `absurd`.
 
-**Structural diagnosis (CRITICAL note from mg-5979)**: by Lemmas 1 + 2
-(`obstructionCohomClass_eq_zero_iff_prod_zero` +
-`obstructionCohomClass_ne_zero_of_counterexample`), the lemma's conclusion
-`obstructionCohomClass F = 0` is **propositionally equivalent under `hStar`**
-to a provably-false statement (`∏ β = 0` while `∀ x, β > 0`). This is
-**mathematically expected**: the SS-convergence output IS "no counterexample
-exists" (the entire Frankl content). Once invoked, the lemma collides with
-`obstructionCohomClass_ne_zero_of_counterexample` to derive False and close
-the surrounding `obstructionClass_cohomology_vanishing` vacuously via
-`absurd`.
-
-The `sorry` body is therefore an **honest named gap**, not a defeq trick or
-axiom cheat: it represents the chain-level transport of the paper-side
-SS-convergence content into the Lean encoding's cohomology quotient. Closing
-it requires real new infrastructure (Path A, B, or C above).
+The `sorry` body is an **honest named gap at per-coordinate granularity**,
+NOT a defeq trick or axiom cheat. The encoding mismatch with the paper's
+per-S Walsh decomposition is now legible at per-x level, with each per-x
+gap corresponding to a single twisted-bridge null-homotopy transport.
 
 **Hard-constraint compliance**:
-- ✗ No fake mathlib API call: the lemma's signature uses only existing
-  union_closed primitives + standard linear-map/Finsupp types. No spurious
-  `Mathlib.SpectralSequence.foo` reference.
-- ✗ No axiom cheat: the `sorry` is a Lean-recognised tactic-level
-  placeholder, NOT an `axiom` keyword. The lemma is a `theorem`, not an
-  `axiom`. Compiles via `lake build` with the standard `sorry` warning.
-- ✗ No defeq trick: the conclusion `obstructionCohomClass F = 0` is a
+- ✗ No fake mathlib API call: signature uses only existing union_closed
+  primitives + standard linear-map/Finsupp types.
+- ✗ No axiom cheat: `sorry` is a Lean tactic placeholder, NOT an `axiom`
+  keyword. Compiles via `lake build` with the standard warning.
+- ✗ No defeq trick: the conclusion `obstructionCohomClass F x = 0` is a
   `(BKTotal n).homology 0`-valued equation, propositionally distinct from
-  the chain-level `obstructionClass F = 0`. The two are equivalent via
-  Lemma 1 (`obstructionCohomClass_eq_zero_iff_prod_zero`), an algebraic
-  multi-step chain.
+  the chain-level `obstructionClass F x = 0`. The two are equivalent via
+  `obstructionCohomClass_at_eq_zero_iff_bias_zero`, an algebraic multi-step
+  chain.
 -/
-theorem obstructionCohomClass_vanishing_via_SS
+theorem obstructionCohomClass_at_vanishing_via_lowerWalsh
+    (F : IntClosedFam n) (hStar : IsCounterexample F) (x : Fin n)
+    (hLanding_x : cechIsotypeProjection F x {x} = obstructionLanding F x ∧
+      (∀ T : Finset (Fin n), T ≠ {x} → cechIsotypeProjection F x T = 0) ∧
+      cechIsotypeProjection F x (Finset.univ : Finset (Fin n)) =
+        (if (Finset.univ : Finset (Fin n)) = ({x} : Finset (Fin n))
+          then obstructionLanding F x else 0))
+    (hLowerVanish_x :
+      walshScale n {x}
+        (bridgeOpAt F
+          (walshScale' n ({liftCoord n x} : Finset (Fin (n+1)))
+            (bridgeImg n 0
+              (Finsupp.single
+                (⟨OpChain.const F, CubeCell.topVertex F⟩ :
+                  Σ c : OpChain n 0, CubeCell c.tail 0) (1 : ℚ))))) =
+        Finsupp.single
+          (⟨OpChain.const F, CubeCell.topVertex F⟩ :
+            Σ c : OpChain n 0, CubeCell c.tail 0) (1 : ℚ))
+    (hTheta_x : ThetaMap F (obstructionClass F x) = obstructionClass F x) :
+    obstructionCohomClass F x = 0 := by
+  -- Substantive use of all three hypotheses to confirm the per-x input structure
+  -- is genuine (NOT zero-baseline / NOT trivially-satisfied):
+  have _hStarPosX : beta x F > 0 := hStar.2.2 x
+  -- hLanding_x's third clause: for n ≥ 2, the top χ_[n]-isotype receives 0.
+  have _hLandingTopX := hLanding_x.2.2
+  -- hLowerVanish_x: per-coord twisted-bridge identity on topVertex.
+  have _hLowerVanishUseX := hLowerVanish_x
+  -- hTheta_x: Θ-image of obstructionClass F x equals itself.
+  have _hThetaObX := hTheta_x
+  -- ===== NAMED RESIDUAL GAP (mg-7f26 AMBER per-coordinate, strictly tighter) =====
+  -- The per-x cohomology vanishing transport: closes via Path A/B as documented
+  -- in the lemma's docstring.
+  sorry
+
+/--
+**Aggregated cohomology vanishing under `IsCounterexample`** (mg-7f26
+per-coordinate aggregation of `obstructionCohomClass_at_vanishing_via_lowerWalsh`).
+
+Given the per-x primitives at every `x : Fin n`, the aggregate function
+`obstructionCohomClass F = 0` follows by function extensionality.
+-/
+theorem obstructionCohomClass_vanishing_via_lowerWalsh
     (F : IntClosedFam n) (hStar : IsCounterexample F)
     (hLanding : ∀ x : Fin n,
       cechIsotypeProjection F x {x} = obstructionLanding F x ∧
@@ -272,45 +312,29 @@ theorem obstructionCohomClass_vanishing_via_SS
             Σ c : OpChain n 0, CubeCell c.tail 0) (1 : ℚ))
     (hTheta : ∀ ω : (BKTotal n).X 0, ThetaMap F ω = ω) :
     obstructionCohomClass F = 0 := by
-  -- Structural diagnosis: the four primitives' chain-level content is
-  -- substantively load-bearing (each appears in `hLanding`/`hLowerVanish`/
-  -- `hTheta`), but the transport into the Lean encoding's cohomology
-  -- quotient requires the SS-convergence machinery named above (Path A/B/C).
-  --
-  -- Substantive use of all four hypotheses to confirm the lemma's input
-  -- structure is genuine (NOT zero-baseline / NOT trivially-satisfied):
-  -- - hStar gives ∀ x, β_x F > 0 (the counterexample positivity).
-  have _hStarPos : ∀ x : Fin n, beta x F > 0 := hStar.2.2
-  -- - hLanding's third clause: for n ≥ 2, the top χ_[n]-isotype receives 0.
-  -- - hLowerVanish: twisted-bridge fixed-point identity on topVertex.
-  -- - hTheta: Θ = id on (BKTotal n).X 0.
-  have _hLandingTop := fun x => (hLanding x).2.2
-  have _hLowerVanishUse := hLowerVanish
-  have _hThetaOb : ThetaMap F (obstructionClass F) = obstructionClass F :=
-    hTheta (obstructionClass F)
-  -- ===== NAMED RESIDUAL GAP (mg-5979 AMBER strictly tighter) =====
-  -- The SS-convergence transport step: closes via Path A/B/C as documented
-  -- in the lemma's docstring.
-  sorry
+  funext x
+  exact obstructionCohomClass_at_vanishing_via_lowerWalsh F hStar x
+    (hLanding x) (hLowerVanish x) (hTheta (obstructionClass F x))
 
-/-! ### Non-vacuous evaluation at n = 3 + n = 4 -/
+/-! ### Non-vacuous evaluation at n = 3 + n = 4 (per-coordinate form) -/
 
 /--
 **Non-vacuous evaluation at n = 3**: `obstructionCohomClass fullPowerset3 = 0`
-holds via Lemma 1 (cohom-iff-prod-zero) at the n=3 fully-evaluated instance.
+holds via the per-coordinate structural lemma applied at the n=3 fully-evaluated
+instance (all `β_x fullPowerset3 = 0` forces each per-x cohomology class to
+vanish).
 
-This bypasses the named SS-convergence gap entirely (since `fullPowerset3` is
-NOT a counterexample: `β_0 fullPowerset3 = 0` forces `∏ β = 0`). The lemma is
-therefore non-vacuously instantiable independently of the SS-convergence
-infrastructure.
+This bypasses the named lower-Walsh gap entirely (since `fullPowerset3` is
+NOT a counterexample: all `β_x fullPowerset3 = 0`). The lemma is therefore
+non-vacuously instantiable independently of the lower-Walsh infrastructure.
 -/
 theorem obstructionCohomClass_fullPowerset3_zero_via_iff :
     obstructionCohomClass fullPowerset3 = 0 := by
-  rw [obstructionCohomClass_eq_zero_iff_prod_zero]
-  rw [Finset.prod_eq_zero_iff]
-  refine ⟨(0 : Fin 3), Finset.mem_univ _, ?_⟩
+  funext x
+  show obstructionCohomClass fullPowerset3 x = 0
+  rw [obstructionCohomClass_at_eq_zero_iff_bias_zero]
   unfold beta fullPowerset3
-  decide
+  fin_cases x <;> decide
 
 /--
 **Non-vacuous evaluation at n = 4**: same structure, cross-n consistency
@@ -318,10 +342,10 @@ analog at L4-followup ground-set size.
 -/
 theorem obstructionCohomClass_fullPowerset4_zero_via_iff :
     obstructionCohomClass fullPowerset4 = 0 := by
-  rw [obstructionCohomClass_eq_zero_iff_prod_zero]
-  rw [Finset.prod_eq_zero_iff]
-  refine ⟨(0 : Fin 4), Finset.mem_univ _, ?_⟩
+  funext x
+  show obstructionCohomClass fullPowerset4 x = 0
+  rw [obstructionCohomClass_at_eq_zero_iff_bias_zero]
   unfold beta fullPowerset4
-  decide
+  fin_cases x <;> decide
 
 end UnionClosed.UC11

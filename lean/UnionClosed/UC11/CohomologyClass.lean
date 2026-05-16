@@ -103,36 +103,39 @@ noncomputable def chainToHomology0 (n : ℕ) :
     (BKTotal n).X 0 ⟶ (BKTotal n).homology 0 :=
   BKTotal_chainToCycles0 n ≫ (BKTotal n).homologyπ 0
 
-/-! ### The cohomology-class image of `obstructionClass` -/
+/-! ### The cohomology-class image of `obstructionClass` (per-coordinate, mg-7f26) -/
 
 /--
 **The cohomology-class image of the obstruction** (`obstructionCohomClass F`)
-in `(BKTotal n).homology 0`.
+as a `Fin n → (BKTotal n).homology 0` per-coordinate function.
 
-Defined as the `chainToHomology0` projection of the chain-level
-`obstructionClass F`. This is the cohomologically-correct interpretation
-of `ob(F^*) := image of [m_xy] under SS-edge` per UC11 §5.3-5.4.
+Defined as the `chainToHomology0` projection of each per-coordinate
+component of the (now refactored) `obstructionClass F : Fin n → (BKTotal n).X 0`.
+This is the cohomologically-correct interpretation of `ob(F^*) := image of
+[m_xy] under SS-edge` per UC11 §5.3-5.4 + UC13 §2.4.1 (corrected landing
+in `⊕_x V_{x}^{n-1}`).
 
-**Why this resolves the mg-a5ac conflation diagnosis.** The chain-level
-`obstructionClass F : (BKTotal n).X 0` is a Finsupp scalar at the
-topVertex basis. Its cohomology-class image `obstructionCohomClass F :
-(BKTotal n).homology 0` is the genuine SS-edge transport — distinct
-from the chain-level value (in particular, a non-zero chain can have
-a zero cohomology class, when the chain is a coboundary).
+**Why this resolves the mg-a5ac conflation diagnosis.** Each per-coordinate
+component `obstructionClass F x : (BKTotal n).X 0` is a Finsupp scalar at the
+topVertex basis (scaled by `β_x F`). Its cohomology-class image
+`obstructionCohomClass F x : (BKTotal n).homology 0` is the genuine SS-edge
+transport at coordinate `x` — distinct from the chain-level per-x value (a
+non-zero chain can have a zero cohomology class, when the chain is a
+coboundary).
 
 **SS-edge geometric content.** At the populated baseline, the SS-edge
-identification factors as: chain → cycle (automatic at degree 0 since
+identification factors per-x as: chain → cycle (automatic at degree 0 since
 d 0 0 = 0) → homology quotient (via `homologyπ`). The Θ-abutment
 (`ThetaMap_isAbutmentEquivalence` from UC14 R1) provides the inverse
 identification at the populated chain group.
 -/
 noncomputable def obstructionCohomClass (F : IntClosedFam n) :
-    (BKTotal n).homology 0 :=
-  (chainToHomology0 n) (obstructionClass F)
+    Fin n → (BKTotal n).homology 0 :=
+  fun x => (chainToHomology0 n) (obstructionClass F x)
 
-/-- Defining equation for `obstructionCohomClass`. -/
-theorem obstructionCohomClass_def (F : IntClosedFam n) :
-    obstructionCohomClass F = (chainToHomology0 n) (obstructionClass F) := rfl
+/-- Defining equation for `obstructionCohomClass` (per-coordinate). -/
+theorem obstructionCohomClass_def (F : IntClosedFam n) (x : Fin n) :
+    obstructionCohomClass F x = (chainToHomology0 n) (obstructionClass F x) := rfl
 
 /-! ### Functorial behavior: the projection is linear -/
 
@@ -146,18 +149,40 @@ theorem chainToHomology0_zero (n : ℕ) :
   exact map_zero _
 
 /--
-If the chain-level `obstructionClass F = 0`, then the cohomology-class
-image `obstructionCohomClass F = 0`.
+**Aggregated function-vanishing**: `obstructionCohomClass F = 0` (as a
+`Fin n → (BKTotal n).homology 0` function) iff each per-coordinate cohomology
+class vanishes.
+-/
+theorem obstructionCohomClass_eq_zero_iff (F : IntClosedFam n) :
+    obstructionCohomClass F = 0 ↔ ∀ x : Fin n, obstructionCohomClass F x = 0 := by
+  constructor
+  · intro h x; rw [h]; rfl
+  · intro h; funext x; exact h x
+
+/--
+**Per-coordinate forward direction**: if the chain-level per-x component
+`obstructionClass F x = 0`, then the cohomology class
+`obstructionCohomClass F x = 0`.
 
 (The reverse implication is **not** generally true: a non-zero chain
-can have zero cohomology class if it is a coboundary. The SS-edge
-content of UC11 §5.3-5.4 is precisely the cohomology-side vanishing
-of `obstructionCohomClass F` under `IsCounterexample F`.)
+can have zero cohomology class if it is a coboundary.)
+-/
+theorem obstructionCohomClass_at_of_chain_zero (F : IntClosedFam n) (x : Fin n)
+    (h : obstructionClass F x = 0) :
+    obstructionCohomClass F x = 0 := by
+  rw [obstructionCohomClass_def, h, chainToHomology0_zero]
+
+/--
+**Aggregated forward direction**: if the per-coordinate chain-level
+`obstructionClass F = 0`, then the cohomology-class function
+`obstructionCohomClass F = 0`.
 -/
 theorem obstructionCohomClass_of_chain_zero (F : IntClosedFam n)
     (h : obstructionClass F = 0) :
     obstructionCohomClass F = 0 := by
-  rw [obstructionCohomClass_def, h, chainToHomology0_zero]
+  funext x
+  apply obstructionCohomClass_at_of_chain_zero
+  rw [h]; rfl
 
 /-! ### Non-vacuous evaluation at n = 3 + n = 4
 
@@ -170,11 +195,12 @@ intersection-closed families at the L4-followup ground-set sizes.
 
 /--
 **Non-vacuous n=3 cohomology evaluation**: `obstructionCohomClass
-fullPowerset3 = 0` in `(BKTotal 3).homology 0`.
+fullPowerset3 = 0` in `Fin 3 → (BKTotal 3).homology 0`.
 
 The chain-level value vanishes by `obstructionClass_fullPowerset3_zero`
-(since `β_0 fullPowerset3 = 0` forces `∏ β = 0`). The cohomology image
-of zero is zero by `chainToHomology0_zero` (linearity at zero).
+(since `∀ x, β_x fullPowerset3 = 0`). The cohomology image of zero is
+zero by `chainToHomology0_zero` (linearity at zero), aggregated by
+function extensionality.
 -/
 theorem obstructionCohomClass_fullPowerset3_zero :
     obstructionCohomClass fullPowerset3 = 0 :=
@@ -182,7 +208,7 @@ theorem obstructionCohomClass_fullPowerset3_zero :
 
 /--
 **Non-vacuous n=4 cohomology evaluation**: `obstructionCohomClass
-fullPowerset4 = 0` in `(BKTotal 4).homology 0`. Cross-n consistency
+fullPowerset4 = 0` in `Fin 4 → (BKTotal 4).homology 0`. Cross-n consistency
 analog at the L4-followup ground-set size.
 -/
 theorem obstructionCohomClass_fullPowerset4_zero :

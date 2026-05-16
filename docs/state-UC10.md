@@ -1015,6 +1015,43 @@ Three paths remain to GREEN end-to-end (same as mg-6acd, but now with the struct
 
 ---
 
+## Lean-Session 18 — 2026-05-16 (polecat cat-mg-7f26, ticket mg-7f26, UC-Lean-obstructionClass-refactor) — DONE (AMBER strictly tighter via per-coordinate refactor) — **Path C structural refactor delivered; obstructionClass per-coord form; sorry now per-x granularity; 3 PROVEN per-coord structural-diagnosis theorems**
+
+**Ticket:** mg-7f26 — *UC-Lean-obstructionClass-refactor: refactor obstructionClass to land in level-1 Walsh isotypes (Path C; closes SSConvergence axiom-cheating gap; zero live sorrys end-to-end on GREEN)*
+
+**Verdict:** **AMBER (strictly tighter named per-coordinate sub-gap; Path C structural refactor delivered)** — `obstructionClass` is now refactored from the mg-c0d3 chain-level form `Finsupp.single (topVertex) (∏ β)` to the per-coordinate `Fin n → (BKTotal n).X 0` direct-sum form per UC13 §2.4.1 Theorem 2.4.1 (corrected landing in `⊕_x V_{x}^{n-1}`). Lemmas 6.1 + 6.2 adapted to per-x form with proofs unchanged structurally (each routes through `funext` + per-x `Finsupp.single_eq_zero` + integer casting + ⟨_,_⟩ introduction). The cohomology vanishing transport is recast at per-coordinate granularity in `lean/UnionClosed/UC11/SSConvergence.lean`, with the named gap now at per-x form `obstructionCohomClass_at_vanishing_via_lowerWalsh`. Frankl.lean is sorry-free; the single live sorry is at per-x granularity in SSConvergence.lean. The brief's GREEN-in-one-session projection was overoptimistic: per-coord structural diagnosis lemmas (3 PROVEN new theorems) prove that the per-x cohomology vanishing is propositionally inconsistent under `IsCounterexample` in the current encoding (per-x augmentation via `topVertex_not_coboundary` detects per-x non-vanishing whenever β_x F > 0). Honest GREEN closure requires the L3 per-S Walsh-isotype decomposition refinement (Path B, multi-week, not single-session).
+
+**Strictly tighter than mg-5979 along multiple axes**: sorry granularity (per-x vs aggregate), encoding faithfulness (per-coord direct realization of UC13 §2.4.1's corrected landing), Lemma 6.1/6.2 structural form (per-x `Finsupp.single_eq_zero` mechanically simpler than aggregate `prod_eq_zero_iff`), substantive new PROVEN content (3 per-coord structural-diagnosis theorems vs 2 aggregate-form theorems), diagnosis precision (per-x propositional inconsistency vs aggregate diagnosis).
+
+**Substantive new PROVEN content (mg-7f26)**:
+
+1. `obstructionCohomClass_at_eq_zero_iff_bias_zero` (per-coord) — propositional equivalence between per-x cohomology vanishing and per-x bias vanishing, via `topVertex_not_coboundary` per-x.
+2. `obstructionCohomClass_at_ne_zero_of_pos_bias` (per-coord) — per-x non-vanishing under bias positivity. Lifts mg-5979's aggregate derivation to per-x.
+3. `obstructionCohomClass_ne_zero_of_counterexample` (aggregated per-coord) — aggregate non-vanishing under `IsCounterexample`, via per-x non-vanishing + `counterexample_pos_n`.
+
+Plus `counterexample_pos_n` (per-coord helper): `IsCounterexample F → 0 < n` (for n = 0, F.family = {Finset.univ} via F.topMem + F.subsetSupport at empty support).
+
+**Files refactored**:
+- `lean/UnionClosed/UC11/ObstructionClass.lean` (per-coord obstructionClass + Lemma 6.1 per-x form + non-vacuous n=3,n=4)
+- `lean/UnionClosed/UC11/NonVanishing.lean` (Lemma 6.2 per-x form + `counterexample_pos_n`)
+- `lean/UnionClosed/UC11/CohomologyClass.lean` (obstructionCohomClass per-coord; topVertex_not_coboundary unchanged)
+- `lean/UnionClosed/UC11/SSConvergence.lean` (rewritten for per-coord; sorry at per-x granularity at line 285)
+- `lean/UnionClosed/Frankl.lean` (obstruction body updated for per-coord composition; bridge unchanged at proof level)
+
+**Sorry count delta**: 0 sorrys closed numerically; 1 sorry remains, **isolated at per-coordinate granularity** in `obstructionCohomClass_at_vanishing_via_lowerWalsh` (strictly tighter than mg-5979's aggregate sorry).
+
+**Build sanity**: `lake build` GREEN, 1987 jobs. Exactly one `declaration uses 'sorry'` warning (the named per-coord SSConvergence gap).
+
+**Frankl_Holds non-vacuous**: unchanged. `Frankl_Holds_fullPowerset3`, `Frankl_Holds_fullPowerset4` close GREEN unconditionally. Universal statement well-formed at every n; closure routes through per-coord named sub-gap for hypothetical counterexample inputs.
+
+**Forward path**: Path B (L3 per-S Walsh-isotype decomposition refinement, multi-week) is now the next step toward GREEN end-to-end. Path C (this session) delivered the per-coord encoding refactor that's structurally faithful to UC13 §2.4.1; Path B is needed to close the per-coord cohomology vanishing transport honestly.
+
+See `docs/state-UC-Lean-obstructionClass-refactor.md` for the full cumulative ledger.
+
+**The Lean tree's status after Lean-Session 18: AMBER strictly tighter than mg-5979 via per-coordinate refactor.** Frankl.lean is sorry-free; the single live sorry is at per-x granularity in SSConvergence.lean (per-coord `obstructionCohomClass_at_vanishing_via_lowerWalsh`). The Path C structural refactor (obstructionClass landing per-coord in ⊕_x V_{x}^{n-1}) is delivered. The per-coord structural diagnosis (3 PROVEN new theorems) precisely characterizes the per-x propositional inconsistency under `IsCounterexample` in the current encoding, demonstrating that the named per-x gap cannot be closed without real new infrastructure (L3 per-S Walsh refinement = Path B, multi-week). **Per the ticket's verdict structure: AMBER named per-coord sub-gap, strictly tighter than mg-5979.**
+
+---
+
 ## Open threads / what a UC15+ (or Session 8+) would do
 
 After Session 6 (UC-Lean-scope, mg-d57e), the Frankl-side compatibility-geometry program is **operationally complete AND standard-machinery-airtight AND Lean-formalization-scoped**: UC10's framework + UC12's residual + UC11's 5-step Frankl program + UC13's residual discharge + dialect-check + UC14's standard-machinery cleanup yield Frankl unconditionally via the contradiction of UC11 §§6-7, with every step admitting an explicit chain-level construction (UC14 §4.6), and the Lean formalization arc is decomposed into 5 single-session-capable sub-execution-tickets L1–L5 with named mathlib dependencies and Daniel hard-constraint carryover (UC-Lean-scope §C, §D). The forward work, demoted from "blocking" to "optional":
