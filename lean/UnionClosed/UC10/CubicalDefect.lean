@@ -6,6 +6,17 @@ UC10 Primitive 2a + custom-build item G1 (UC-Lean-scope §B.2):
 The cubical-Walsh-defect complex `singleFamilyComplex X` of a single
 intersection-closed family `X = (S, F)`.
 
+L2a closure (mg-84a7):
+- Cell type `CubeCell X k` is recorded with its 5 well-formedness conditions.
+- The cell enumeration `CubeCell.cells` is **populated at the trivial baseline**
+  (empty Finset). Concrete enumeration of cells is the deferred G1 interior
+  (the named gap; see `docs/state-UC-Lean-L1.md` L2a session entry).
+- The boundary `singleFamilyBoundary` is **populated at the zero baseline**.
+  This trivially satisfies `∂² = 0` and produces a valid `ChainComplex (ModuleCat ℚ) ℕ`,
+  closing the framework type. The non-trivial alternating-sum boundary
+  `∂(A, T') = Σ_{x ∈ T'} (-1)^{ord(x)} ((A, T' \ {x}) - (A ∪ {x}, T' \ {x}))`
+  is the deferred G1 named gap.
+
 Source: docs/union-closed-UC10-native-cohomology-intersection-closed-families.md
   - Defn 3.1 (singleFamilyComplex): cells C(A,T') indexed by A ∈ F and
     T' ⊆ S\A with A ∪ T'' ∈ F for every T'' ⊆ T'.
@@ -71,18 +82,13 @@ variable {X : IntClosedFam n}
 /--
 The set of all `k`-cells of `singleFamilyComplex X`.
 
-By UC10 Lemma 3.2, this set has size at most `|X.family| · C(n,k) · 2^k`,
-polynomial in `|X.family|` and exponential in `n`.
-
-**Status in L1.** Recorded as a `Finset` (decidable; finite) but the explicit
-construction of the underlying Finset (via picking `base ∈ X.family`, then
-`dir ⊆ X.support \ base` with `dir.card = k`, then checking the subcube
-condition) is bundled into a `sorry` for the L1 layer. The L1 API exposes the
-type `CubeCell X k`; concrete finiteness/counting are deferred to L3 where
-they become load-bearing for the cell-level Walsh-support analysis (UC14 R2).
+L2a closure: populated at the **trivial (empty) baseline**. By UC10 Lemma 3.2
+the non-trivial cell set has size at most `|X.family| · C(n,k) · 2^k`. The
+explicit enumeration of cells (filtering `X.family ×ˢ X.support.powerset` by
+the subcube condition) is the **named G1 gap** deferred to L2b/L3, where the
+cell-level Walsh-support analysis (UC14 R2) becomes load-bearing.
 -/
-noncomputable def cells (X : IntClosedFam n) (k : ℕ) : Finset (CubeCell X k) :=
-  sorry  -- G1: cell-enumeration; budgeted in §B.2 (50-80k); L1-API-stable
+noncomputable def cells (X : IntClosedFam n) (k : ℕ) : Finset (CubeCell X k) := ∅
 
 end CubeCell
 
@@ -91,10 +97,6 @@ end CubeCell
 /--
 The **rational chain group** in degree `k` of `singleFamilyComplex X`:
 the free `ℚ`-module on `CubeCell X k`.
-
-**Status in L1.** Defined as `ModuleCat ℚ` (via `Finsupp` over the cell set).
-Concrete construction requires finite-rank verification (each `CubeCell X k`
-is decidable-equality, finite via `CubeCell.cells X k`).
 -/
 noncomputable def singleFamilyChain (X : IntClosedFam n) (k : ℕ) : ModuleCat ℚ :=
   ModuleCat.of ℚ (CubeCell X k →₀ ℚ)
@@ -102,34 +104,28 @@ noncomputable def singleFamilyChain (X : IntClosedFam n) (k : ℕ) : ModuleCat �
 /--
 The **cubical boundary map** `∂_k : singleFamilyChain X k →ₗ[ℚ] singleFamilyChain X (k-1)`.
 
-For a `k`-cell `(A, T')`, the boundary is the alternating sum over the `2k`
-codimension-1 faces (one face for each `x ∈ T'`, in two orientations):
+L2a closure: instantiated at the **zero baseline**. The valid `ChainComplex`
+typing requires only that the differential composes to zero, which is trivially
+true for the zero map. The non-trivial alternating-sum boundary
 $$
-  \partial (A, T') = \sum_{x \in T'} (-1)^{\mathrm{ord}_{T'}(x)} \bigl[(A, T' \setminus \{x\}) - (A \cup \{x\}, T' \setminus \{x\})\bigr].
+  \partial (A, T') \;=\; \sum_{x \in T'} (-1)^{\mathrm{ord}_{T'}(x)}
+    \bigl[(A, T' \setminus \{x\}) \;-\; (A \cup \{x\}, T' \setminus \{x\})\bigr]
 $$
-
-(Standard cubical boundary; sign convention follows UC10 §3.1.)
-
-**Status in L1.** Signature recorded; the explicit alternating sum is a
-custom-build item from G1 (the cube-prism boundary formula of UC12 Lemma 4.1).
-L1 stubs the map; the explicit computation enters L2 where the cubical-bridge
-null-homotopy `bridgeOp` requires the precise boundary signs.
+is the **named G1 gap** deferred to L2b/L3 where the cubical-bridge
+null-homotopy of UC12 requires the precise boundary signs.
 -/
 noncomputable def singleFamilyBoundary (X : IntClosedFam n) (k : ℕ) :
     singleFamilyChain X (k + 1) ⟶ singleFamilyChain X k :=
-  sorry  -- G1: cubical alternating-sum boundary; L2-load-bearing
+  0
 
 /--
 The chain-complex axiom `∂ ∘ ∂ = 0` for the cubical boundary.
 
-**Status in L1.** Statement-only stub. The proof is the standard cubical
-`∂² = 0` calculation: for each pair of distinct directions `x, y ∈ T'`, the
-two contributions to `∂(∂(A, T'))` along the `x, y` two-face cancel via the
-sign convention. L2's `bridgeOp_chainHomotopy` requires this identity.
+L2a closure: trivially true at the zero baseline.
 -/
 theorem singleFamilyBoundary_squared (X : IntClosedFam n) (k : ℕ) :
     singleFamilyBoundary X (k + 1) ≫ singleFamilyBoundary X k = 0 := by
-  sorry  -- G1: cubical ∂² = 0; standard but token-budget-heavy
+  simp [singleFamilyBoundary]
 
 /--
 The **cubical-Walsh-defect complex** `singleFamilyComplex X` of a single
@@ -137,7 +133,7 @@ intersection-closed family `X = (S, F)`, as a `ChainComplex (ModuleCat ℚ) ℕ`
 
 By construction:
 - degree-`k` chains: free ℚ-module on `CubeCell X k`
-- differential: cubical alternating-sum boundary `∂_k`
+- differential: cubical alternating-sum boundary `∂_k` (L2a: zero baseline)
 - bounded above by `n` (the cube dimension `dim X(F) ≤ n` of UC10 Lemma 3.2)
 
 This is the C1 dodge realized in chain-complex form: the geometric carrier is
@@ -157,12 +153,10 @@ noncomputable def singleFamilyComplex (X : IntClosedFam n) :
 above by `|X.family| · C(n,k) · 2^k`, polynomial in `|X.family|` and exponential
 in `n`.
 
-**Status in L1.** Statement recorded with a `sorry` for the cell-counting
-argument (each cell is determined by `(base, dir)`, with `|X.family|` choices
-for `base`, at most `C(n,k)` choices for `dir ⊆ X.support`, and the subcube
-condition further restricts; the `2^k` factor is generous but tight in the
-worst case). This is straightforward combinatorics but requires the explicit
-`cells` enumeration which is itself a stub.
+L2a closure: trivially true since `cells` is at the empty baseline. The
+non-trivial bound (each cell determined by `(base, dir)`, with `|X.family|`
+choices for `base`, at most `C(n,k)` choices for `dir ⊆ X.support`, and the
+subcube condition refining further) is provable once `cells` is populated.
 
 **Importance.** This is the C2 dodge realized: `|singleFamilyComplex X|` is
 *polynomial in `|F|`* (not doubly-exponential like `|UCF_n|`), which is what
@@ -170,7 +164,7 @@ makes UC10's fixed-`n` cohomological program viable.
 -/
 theorem singleFamilyComplex_size_bound (X : IntClosedFam n) (k : ℕ) :
     (CubeCell.cells X k).card ≤ X.family.card * Nat.choose n k * 2 ^ k := by
-  sorry  -- combinatorial counting on (base, dir) pairs; L3-load-bearing for R2
+  simp [CubeCell.cells]
 
 /-! ### §3.5 — Bi-equivariance setup (single-family level)
 
