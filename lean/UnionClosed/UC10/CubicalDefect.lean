@@ -614,21 +614,54 @@ noncomputable def singleFamilyComplex (X : IntClosedFam n) :
 above by `|X.family| · C(n,k) · 2^k`, polynomial in `|X.family|` and exponential
 in `n`.
 
-L2a-residual closure: stated for the concrete `cells`. The proof of the precise
-bound (each cell determined by `(base, dir)`, with `|X.family|` choices for
-`base`, `C(n,k)` choices for `dir`, and further refining via the subcube
-condition) is combinatorial and deferred to L3 where the cell-level Walsh-
-support analysis (UC14 R2) becomes load-bearing.
+**Proof outline (UC-Lean-size-bound, mg-8ce5):** every cell `c : CubeCell X k`
+is uniquely determined by `(c.base, c.dir) ∈ X.family × {T ⊆ [n] : |T| = k}`
+via the `toPair` injection. So
+
+    |CubeCell.cells X k|
+      = |image toPair (CubeCell.cells X k)|       -- toPair injective
+      ≤ |X.family ×ˢ (Finset.univ.powersetCard k)|  -- image ⊆ this product
+      = |X.family| · C(n, k)                       -- card_product, card_powersetCard
+      ≤ |X.family| · C(n, k) · 2^k                 -- 2^k ≥ 1.
+
+The `2^k` factor is slack — the tighter bound `|X.family| · C(n, k)` already
+holds, but the lemma statement (matching UC10 Lemma 3.2 in the paper) carries
+the extra `2^k` accounting for the subcube structure on each direction set.
 -/
 theorem singleFamilyComplex_size_bound (X : IntClosedFam n) (k : ℕ) :
     (CubeCell.cells X k).card ≤ X.family.card * Nat.choose n k * 2 ^ k := by
-  -- Use the injection `toPair : CubeCell X k → Finset (Fin n) × Finset (Fin n)`.
-  -- |CubeCell X k| ≤ |Finset (Fin n) × Finset (Fin n)| (huge upper bound;
-  -- tightening to |F| · C(n,k) · 2^k requires the subcube structure).
-  -- L2a-residual: this is the **stated** bound with the precise combinatorial
-  -- counting deferred to L3 (the bound is correct; the counting argument is
-  -- well-known but ~50-100 lines in Lean).
-  sorry
+  -- Step 1: by injectivity of `toPair`, |cells| = |image toPair cells|.
+  have hinj : Function.Injective (CubeCell.toPair (X := X) (k := k)) :=
+    CubeCell.toPair_injective X k
+  have h_image_card :
+      ((CubeCell.cells X k).image CubeCell.toPair).card =
+        (CubeCell.cells X k).card :=
+    Finset.card_image_of_injective _ hinj
+  -- Step 2: the image lies in `X.family ×ˢ (Finset.univ.powersetCard k)`.
+  have h_subset :
+      (CubeCell.cells X k).image CubeCell.toPair ⊆
+        X.family ×ˢ ((Finset.univ : Finset (Fin n)).powersetCard k) := by
+    intro p hp
+    rw [Finset.mem_image] at hp
+    obtain ⟨c, _, rfl⟩ := hp
+    rw [Finset.mem_product]
+    refine ⟨c.base_mem, ?_⟩
+    rw [Finset.mem_powersetCard]
+    exact ⟨Finset.subset_univ _, c.dir_card⟩
+  -- Step 3: the bounding product has cardinality `|X.family| · C(n, k)`.
+  have h_prod_card :
+      (X.family ×ˢ ((Finset.univ : Finset (Fin n)).powersetCard k)).card =
+        X.family.card * Nat.choose n k := by
+    rw [Finset.card_product, Finset.card_powersetCard,
+        Finset.card_univ, Fintype.card_fin]
+  -- Step 4: chain the (in)equalities, then multiply by `2^k ≥ 1`.
+  calc (CubeCell.cells X k).card
+      = ((CubeCell.cells X k).image CubeCell.toPair).card := h_image_card.symm
+    _ ≤ (X.family ×ˢ ((Finset.univ : Finset (Fin n)).powersetCard k)).card :=
+          Finset.card_le_card h_subset
+    _ = X.family.card * Nat.choose n k := h_prod_card
+    _ ≤ X.family.card * Nat.choose n k * 2 ^ k :=
+          Nat.le_mul_of_pos_right _ (Nat.two_pow_pos k)
 
 /-! ### §3.1 — Non-triviality witness
 
@@ -642,6 +675,68 @@ This is the **load-bearing non-triviality check**: the chain group
 `singleFamilyChain X 0` contains the basis vector `single (topVertexCell X) 1`,
 which is non-zero — so `singleFamilyComplex X` is not the zero chain complex.
 -/
+
+/-! ### §3.2 — non-vacuity witnesses for the size bound (UC-Lean-size-bound, mg-8ce5)
+
+The L2a-residual placeholder for `singleFamilyComplex_size_bound` left a
+`sorry`; UC-Lean-size-bound discharges it via a `Finset.card` injection
+through the `toPair` map. We now verify the bound is **non-vacuous** by
+specializing at concrete `(n, k)` — the bound becomes a concrete numeric
+constraint on `(CubeCell.cells X k).card` (not a `True` or `0 ≤ 0`
+tautology).
+
+The acceptance bar (per the ticket) is:
+- `n = 3, k = 0`: bound predicts `≤ X.family.card`.
+- `n = 3, k = 1`: bound predicts `≤ 6 · X.family.card`.
+- `n = 4, k = 0` / `n = 4, k = 1`: same at cross-`n`.
+
+These are universal in `X` (any `IntClosedFam n`), and combined with the
+`cells_zero_nonempty` witness below they bracket `(cells X 0).card` between
+`1` and `X.family.card` — saturating the bound (each `A ∈ X.family` yields
+exactly one `0`-cell with `dir = ∅`). -/
+
+/-- **Size bound at n = 3, k = 0**: `(cells X 0).card ≤ X.family.card`. The
+bound `|F| · C(3,0) · 2^0 = |F| · 1 · 1 = |F|`. -/
+theorem singleFamilyComplex_size_bound_n3_k0 (X : IntClosedFam 3) :
+    (CubeCell.cells X 0).card ≤ X.family.card := by
+  have h := singleFamilyComplex_size_bound X 0
+  simpa using h
+
+/-- **Size bound at n = 3, k = 1**: `(cells X 1).card ≤ 6 · X.family.card`.
+The bound `|F| · C(3,1) · 2^1 = |F| · 3 · 2 = 6|F|`. -/
+theorem singleFamilyComplex_size_bound_n3_k1 (X : IntClosedFam 3) :
+    (CubeCell.cells X 1).card ≤ 6 * X.family.card := by
+  have h := singleFamilyComplex_size_bound X 1
+  -- `Nat.choose 3 1 = 3`, `2 ^ 1 = 2`, so the RHS is `|F| · 3 · 2 = 6|F|`.
+  have hchoose : Nat.choose 3 1 = 3 := by decide
+  have hpow : (2 : ℕ) ^ 1 = 2 := by decide
+  rw [hchoose, hpow] at h
+  omega
+
+/-- **Size bound at n = 4, k = 0** (cross-`n`): same shape as `n = 3, k = 0`.
+The bound `|F| · C(4,0) · 2^0 = |F|`. -/
+theorem singleFamilyComplex_size_bound_n4_k0 (X : IntClosedFam 4) :
+    (CubeCell.cells X 0).card ≤ X.family.card := by
+  have h := singleFamilyComplex_size_bound X 0
+  simpa using h
+
+/-- **Size bound at n = 4, k = 1** (cross-`n`): `(cells X 1).card ≤ 8·|F|`.
+The bound `|F| · C(4,1) · 2^1 = |F| · 4 · 2 = 8|F|`. -/
+theorem singleFamilyComplex_size_bound_n4_k1 (X : IntClosedFam 4) :
+    (CubeCell.cells X 1).card ≤ 8 * X.family.card := by
+  have h := singleFamilyComplex_size_bound X 1
+  have hchoose : Nat.choose 4 1 = 4 := by decide
+  have hpow : (2 : ℕ) ^ 1 = 2 := by decide
+  rw [hchoose, hpow] at h
+  omega
+
+/-! ### §3.1 — Non-triviality witness (chain group)
+
+The L2a closure populated `CubeCell.cells X k := ∅`, making the chain groups
+trivially zero. The L2a-residual closure populates `cells` via `Fintype.univ`
+on the concrete `CubeCell` structure. The witness below shows that
+**`cells X 0` is non-empty for every `X`** via the top-vertex cell
+`(X.support, ∅)`. -/
 
 /-- The 0-cell at the top vertex `(X.support, ∅)`. This is always a valid
 `CubeCell X 0` because `X.support ∈ X.family` (via `X.topMem`) and `∅` is
@@ -667,6 +762,18 @@ and witnesses that `singleFamilyChain X 0` is a non-zero `ℚ`-module.
 theorem cells_zero_nonempty (X : IntClosedFam n) :
     (CubeCell.cells X 0).Nonempty :=
   ⟨CubeCell.topVertex X, CubeCell.mem_cells _⟩
+
+/-- **Paired non-vacuity of the size bound at k = 0** — combining the size
+bound with the `cells_zero_nonempty` witness: for every `X : IntClosedFam n`,
+the chain group `(CubeCell.cells X 0).card` lies in the non-degenerate range
+`[1, X.family.card]`. This rules out a vacuous reading of
+`singleFamilyComplex_size_bound` (where both sides could be `0`). -/
+theorem cells_zero_card_bracketed (X : IntClosedFam n) :
+    1 ≤ (CubeCell.cells X 0).card ∧
+      (CubeCell.cells X 0).card ≤ X.family.card := by
+  refine ⟨Finset.card_pos.mpr (cells_zero_nonempty X), ?_⟩
+  have h := singleFamilyComplex_size_bound X 0
+  simpa using h
 
 /-! ### §3.5 — Bi-equivariance setup (single-family level)
 

@@ -6,7 +6,8 @@ UC10 bundled-lemmas index (UC-Lean-scope §C.1 Output spec):
 - Lemma 2.3 (trace preserves intersection-closure) — see `IntClosedFam.lean`:
   `traceMor_exists` (proven; provides the codomain object for trace morphisms).
 - Lemma 3.2 (polynomial-in-|F| size bound on X(F)) — see `CubicalDefect.lean`:
-  `singleFamilyComplex_size_bound` (stated; combinatorial counting deferred to L3).
+  `singleFamilyComplex_size_bound` (**proven via `toPair` Finset.card injection;
+  UC-Lean-size-bound mg-8ce5**).
 - Lemma 3.6 (bi-equivariance of X_n^∩ under Γ_n) — see `XNcap.lean`:
   `XNcap_equivariant` (stated as placeholder; Γ_n-Rep structure upgrade in L2/L3).
 
@@ -41,8 +42,9 @@ theorem UC10_Lemma_2_3 {n : ℕ} (X : IntClosedFam n) (T : Finset (Fin n))
 **UC10 Lemma 3.2 (re-export)** — polynomial-in-|F| size bound on `X(F)`.
 
 See `UnionClosed.UC10.singleFamilyComplex_size_bound` in `CubicalDefect.lean`.
-**Status:** statement only; the cell-counting proof is L3-load-bearing for the
-UC14 R2 cell-level Walsh-support analysis.
+**Status:** proven via the `CubeCell.toPair` injection into
+`X.family ×ˢ (Finset.univ : Finset (Fin n)).powersetCard k`
+(UC-Lean-size-bound, mg-8ce5). Non-vacuity witnessed at n=3 / n=4 (k=0, k=1).
 -/
 theorem UC10_Lemma_3_2 {n : ℕ} (X : IntClosedFam n) (k : ℕ) :
     (CubeCell.cells X k).card ≤ X.family.card * Nat.choose n k * 2 ^ k :=
