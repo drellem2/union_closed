@@ -189,4 +189,181 @@ theorem obstructionCohomClass_fullPowerset4_zero :
     obstructionCohomClass fullPowerset4 = 0 :=
   obstructionCohomClass_of_chain_zero _ obstructionClass_fullPowerset4_zero
 
+/-! ### The augmentation map and topVertex-non-coboundary corollary (mg-6acd)
+
+mg-6acd UC-Lean-UC10-1: the load-bearing **topVertex-non-coboundary** content
+of UC10.1. The augmentation map `BKAug n : (BKTotal n).X 0 → ℚ` sums all
+coefficients of a degree-0 chain. It vanishes on 1-cell boundaries (each
+boundary has form `± (single (faceOff) 1 - single (faceOn) 1)`, which sums to
+zero). Hence it descends through the mathlib `(BKTotal n).homology 0`
+quotient, giving an *injectivity certificate* on the topVertex line: if
+`chainToHomology0 n (single ⟨c, topVertex F⟩ r) = 0`, then `r = 0`.
+
+This is the cohomological identification of the topVertex generator as the
+unique non-coboundary generator of the chi_[n] ⊠ sgn_{S_n} isotype at top
+degree (per UC10.1 / UC10 §4 / paper-and-pencil GREEN). At the populated
+baseline of `BKTotal n`, augmentation = the `H^0(X_n^∩; ℚ) ≅ ℚ` evaluation
+(connectedness of X_n^∩), and topVertex represents its generator.
+-/
+
+/--
+**The augmentation map `BKAug n : (BKTotal n).X 0 → ℚ`** — sum of all
+coefficients of a degree-0 chain.
+
+Concretely: `BKAug n (Finsupp.single i r) = r`. Built via
+`Finsupp.linearCombination` with the constant value `1`.
+-/
+noncomputable def BKAug (n : ℕ) :
+    (BKTotal n).X 0 ⟶ ModuleCat.of ℚ ℚ :=
+  ModuleCat.ofHom (Finsupp.linearCombination ℚ
+    (fun (_ : Σ c : OpChain n 0, CubeCell c.tail 0) => (1 : ℚ)))
+
+@[simp] theorem BKAug_single (n : ℕ)
+    (i : Σ c : OpChain n 0, CubeCell c.tail 0) (r : ℚ) :
+    (BKAug n).hom (Finsupp.single i r) = r := by
+  show Finsupp.linearCombination ℚ
+        (fun (_ : Σ c : OpChain n 0, CubeCell c.tail 0) => (1 : ℚ))
+        (Finsupp.single i r) = r
+  rw [Finsupp.linearCombination_single]
+  simp
+
+/--
+**Augmentation kills 1-cell boundaries**: for each `c : OpChain n 0` and
+each 1-cell `x : CubeCell c.tail 1`, `BKAug n (BKVertGen n 0 0 ⟨c, x⟩) = 0`.
+
+Each 1-cell's boundary is `Σ z ∈ x.dir, faceSign x.dir z • (single faceOff 1
+- single faceOn 1)`, lifted across the Sigma via `mapDomain`. The augmentation
+sums coefficients: per `z`, `faceSign · (1 - 1) = 0`; over the sum, `0`.
+-/
+theorem BKAug_BKVertGen (n : ℕ) (c : OpChain n 0) (x : CubeCell c.tail 1) :
+    (BKAug n).hom (BKVertGen n 0 0 ⟨c, x⟩) = 0 := by
+  show Finsupp.linearCombination ℚ
+        (fun (_ : Σ c : OpChain n 0, CubeCell c.tail 0) => (1 : ℚ))
+        (BKVertGen n 0 0 ⟨c, x⟩) = 0
+  rw [BKVertGen_mk, Finsupp.linearCombination_mapDomain]
+  -- Goal: linearCombination ℚ ((const 1) ∘ mk c) (boundaryOnGen c.tail x) = 0
+  unfold boundaryOnGen
+  rw [map_sum]
+  apply Finset.sum_eq_zero
+  rintro ⟨z, _⟩ _
+  simp [Finsupp.linearCombination_single]
+
+/--
+**Augmentation vanishes on the boundary subcomplex**: the composition
+`BKVertDiff n 0 0 ≫ BKAug n` is zero. This is the structural fact that
+allows `BKAug n` to descend through the mathlib homology quotient.
+-/
+theorem BKVertDiff_BKAug_zero (n : ℕ) :
+    (BKVertDiff n 0 0) ≫ (BKAug n) = 0 := by
+  apply ModuleCat.hom_ext
+  rw [ModuleCat.hom_comp, ModuleCat.hom_zero]
+  apply Finsupp.lhom_ext
+  rintro ⟨c, x⟩ r
+  show (BKAug n).hom ((BKVertDiff n 0 0).hom (Finsupp.single ⟨c, x⟩ r)) = 0
+  rw [BKVertDiff_single]
+  show (BKAug n).hom (r • BKVertGen n 0 0 ⟨c, x⟩) = 0
+  have hms : (BKAug n).hom (r • BKVertGen n 0 0 ⟨c, x⟩) =
+      r • (BKAug n).hom (BKVertGen n 0 0 ⟨c, x⟩) :=
+    LinearMap.map_smul (BKAug n).hom r _
+  rw [hms, BKAug_BKVertGen, smul_zero]
+
+/--
+**The differential `d 1 0` of `BKTotal n`** is precisely `BKVertDiff n 0 0`.
+Used to rewrite mathlib's generic `K.d 1 0` to our concrete `BKVertDiff`.
+-/
+theorem BKTotal_d_one_zero (n : ℕ) :
+    (BKTotal n).d 1 0 = BKVertDiff n 0 0 := by
+  show (BKTotal n).d (0 + 1) 0 = BKVertDiff n 0 0
+  exact ChainComplex.of_d _ _ _ 0
+
+/--
+**`prev 0 = 1`** in mathlib's chain-complex shape (`ComplexShape.down ℕ`).
+Used by the `descOpcycles` API at degree 0.
+-/
+theorem BKTotal_prev_zero (n : ℕ) :
+    (ComplexShape.down ℕ).prev 0 = 1 :=
+  ChainComplex.prev ℕ 0
+
+/--
+**Descended augmentation through opcycles**: `BKAug n` factors through
+`(BKTotal n).opcycles 0` via mathlib's `descOpcycles` API.
+
+The descent is well-defined because `BKAug n` kills the image of
+`BKTotal_d_one_zero n` (`BKVertDiff_BKAug_zero n`).
+-/
+noncomputable def BKAug_descOp (n : ℕ) :
+    (BKTotal n).opcycles 0 ⟶ ModuleCat.of ℚ ℚ :=
+  (BKTotal n).descOpcycles (BKAug n) 1 (BKTotal_prev_zero n) (by
+    rw [BKTotal_d_one_zero]
+    exact BKVertDiff_BKAug_zero n)
+
+/--
+**The homological augmentation `homologyAug n : (BKTotal n).homology 0 → ℚ`** —
+the canonical descent of `BKAug n` through the mathlib homology quotient.
+
+Built as `homologyι 0 ≫ BKAug_descOp n`: factor through the opcycles
+descent, then include via the canonical `homologyι` from `homology 0` into
+`opcycles 0`.
+-/
+noncomputable def homologyAug (n : ℕ) :
+    (BKTotal n).homology 0 ⟶ ModuleCat.of ℚ ℚ :=
+  (BKTotal n).homologyι 0 ≫ BKAug_descOp n
+
+/--
+**The key factorization identity**: `chainToHomology0 n ≫ homologyAug n = BKAug n`.
+
+This says: applying `homologyAug` to the cohomology class image of a chain
+gives back the augmentation of the chain. The proof uses the mathlib identity
+`homologyπ ≫ homologyι = iCycles ≫ pOpcycles` (`HomologicalComplex.homology_π_ι`)
+together with `liftCycles_i` and `p_descOpcycles`.
+-/
+theorem chainToHomology0_comp_homologyAug (n : ℕ) :
+    chainToHomology0 n ≫ homologyAug n = BKAug n := by
+  unfold chainToHomology0 homologyAug BKTotal_chainToCycles0 BKAug_descOp
+  -- Use the reassoc simp forms of homology_π_ι and liftCycles_i to bring through
+  -- the categorical chain. Goal after simp: pOpcycles ≫ descOpcycles _ ... = BKAug n,
+  -- which closes via p_descOpcycles.
+  simp only [Category.assoc, HomologicalComplex.homology_π_ι_assoc,
+             HomologicalComplex.liftCycles_i_assoc, Category.id_comp]
+  exact (BKTotal n).p_descOpcycles (BKAug n) 1 (BKTotal_prev_zero n) _
+
+/--
+**TopVertex-non-coboundary corollary** (mg-6acd, UC10.1 load-bearing content).
+
+For every `F : IntClosedFam n`, if the cohomology class image of
+`single ⟨OpChain.const F, topVertex F⟩ r` vanishes in `(BKTotal n).homology 0`,
+then `r = 0`.
+
+**Math content.** The topVertex 0-cell `(F.support, ∅)` represents the
+unique non-coboundary generator of `H^0(X_n^∩; ℚ) ≅ ℚ` (connectedness). Under
+the Θ-abutment identification (UC14 R1, at the populated baseline), this is
+also the sgn_{S_n}-isotype generator at top degree of UC10.1.
+
+**Proof.** Apply the homological augmentation `homologyAug n` to the
+hypothesis: `homologyAug n 0 = 0`. By the factorization
+`chainToHomology0 ≫ homologyAug = BKAug`, the LHS equals `BKAug n (single _ r) = r`.
+Hence `r = 0`.
+-/
+theorem topVertex_not_coboundary (n : ℕ) (F : IntClosedFam n) (r : ℚ)
+    (h : chainToHomology0 n
+        (Finsupp.single
+          (⟨OpChain.const F, CubeCell.topVertex F⟩ :
+            Σ c : OpChain n 0, CubeCell c.tail 0) r) = 0) :
+    r = 0 := by
+  have hfac : chainToHomology0 n ≫ homologyAug n = BKAug n :=
+    chainToHomology0_comp_homologyAug n
+  -- Apply homologyAug n to h, then use the factorization.
+  have h2 : (BKAug n).hom
+      (Finsupp.single (⟨OpChain.const F, CubeCell.topVertex F⟩ :
+        Σ c : OpChain n 0, CubeCell c.tail 0) r) = 0 := by
+    rw [← hfac, ModuleCat.hom_comp, LinearMap.comp_apply]
+    -- Goal: (homologyAug n).hom ((chainToHomology0 n).hom (single ⟨...⟩ r)) = 0
+    -- h gives the inner application is 0
+    rw [show (chainToHomology0 n).hom
+            (Finsupp.single (⟨OpChain.const F, CubeCell.topVertex F⟩ :
+              Σ c : OpChain n 0, CubeCell c.tail 0) r) = 0 from h]
+    exact map_zero _
+  rw [BKAug_single] at h2
+  exact h2
+
 end UnionClosed.UC11

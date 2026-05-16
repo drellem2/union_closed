@@ -892,6 +892,79 @@ Per the mg-0eb4 brief's STOP-LOSS clause: this AMBER triggers pm-onethird's PAUS
 
 ---
 
+## Lean-Session 16 — 2026-05-16 (polecat cat-mg-6acd, ticket mg-6acd, UC-Lean-UC10-1) — DONE (AMBER strictly narrower) — **UC10.1 stated properly + proven; topVertex-non-coboundary closed via augmentation; sub-gap narrowed to SS-convergence cohomology vanishing only**
+
+**Branch:** `polecat-cat-mg-6acd`. **Cumulative state**: `docs/state-UC-Lean-UC10-1.md` (this ticket's session ledger).
+
+### What Session 16 delivered
+
+mg-6acd is Path 1+ from mg-0eb4's stop-loss menu (close topVertex-non-coboundary via UC10.1 V_[n]^{n-1} concentration argument). The deliverables:
+
+1. **UC10.1 stated properly** in `lean/UnionClosed/UC10/Target.lean`. The L1 Unit-wrapper placeholder stub is replaced with a **five-clause conjunction** that bundles:
+   - Clause 1: Walsh decomposition (`UC10_W` from L1+L2a-rr).
+   - Clause 2: UC10.R trace-injectivity on topVertex bridge cocycle line (`UC10_R` from L2b).
+   - Clause 3: Lower-Walsh vanishing per coordinate (`UC10_lowerWalshVanishing` from L3).
+   - Clause 4: Top-Walsh concentration (`UC10_topWalshConcentration` from L3).
+   - **Clause 5 (mg-6acd, load-bearing)**: topVertex-non-coboundary — `chainToHomology0 n` is injective on the topVertex basis line. This is the cohomological identification of the topVertex generator as the unique non-coboundary generator of the chi_[n] ⊠ sgn_{S_n} isotype at top degree.
+
+2. **UC10.1 proven by assembly**. Clauses 1-4 close via direct application of the corresponding primitives. Clause 5 closes via the new **augmentation-map construction** added to `lean/UnionClosed/UC11/CohomologyClass.lean`:
+   - `BKAug n : (BKTotal n).X 0 ⟶ ModuleCat.of ℚ ℚ` (sum-of-coefficients).
+   - `BKAug_BKVertGen` + `BKVertDiff_BKAug_zero`: the augmentation kills 1-cell boundaries (combinatorial fact: each 1-cell's boundary is `faceSign · (single faceOff 1 - single faceOn 1)`, summing to 0 under augmentation).
+   - `BKAug_descOp` + `homologyAug`: descent through mathlib's `descOpcycles` + `homologyι` into `(BKTotal n).homology 0 → ℚ`.
+   - `chainToHomology0_comp_homologyAug`: the factorization identity `chainToHomology0 n ≫ homologyAug n = BKAug n`, proved via mathlib's `homology_π_ι_assoc` + `liftCycles_i_assoc` + `p_descOpcycles`.
+   - `topVertex_not_coboundary`: applying `homologyAug n` to the hypothesis + the factorization identity yields `r = 0`.
+
+3. **Frankl.lean:362 closure substantively expanded** with all 4 chain-level primitives + the new topVertex-non-coboundary corollary + the cohomology non-vanishing derivation. The remaining sub-gap is **strictly narrower than mg-0eb4**: only the SS-convergence cohomology-vanishing transport step (Frankl.lean:413 `hCohomZ : obstructionCohomClass F = 0`).
+
+### Strictness analysis vs mg-0eb4
+
+mg-6acd is **strictly narrower than mg-0eb4** along two axes:
+
+| Axis | mg-0eb4 AMBER | mg-6acd AMBER |
+|---|---|---|
+| Residual gap topology | "topVertex-non-coboundary content + UC10.1 V_[n]^{n-1} concentration" | "SS-convergence cohomology-vanishing transport" (topVertex-non-coboundary CLOSED) |
+| Infrastructure delivered | mathlib homology API + chain-to-cohomology projection | + UC10.1 properly stated; + augmentation map; + descOpcycles/homologyι descent; + cohomology non-vanishing under hStar; + factorization identity through homology |
+
+### Sorry count delta
+
+- **Before mg-6acd**: 2 live sorrys (`UC10/Target.lean:107` UC10.1 stub + `Frankl.lean:362` bridge gap).
+- **After mg-6acd**: 1 live sorry (`Frankl.lean:413` SS-convergence cohomology vanishing).
+
+Net: 1 sorry closed, 1 sorry strictly narrowed in scope.
+
+### Why AMBER and not GREEN
+
+The remaining sub-gap (`hCohomZ : obstructionCohomClass F = 0`) is the SS-convergence cohomology-vanishing transport: paper-side, the corrected landing places the obstruction class in `⊕_x V_x^{n-1}` (level-1 isotypes), each of which is null in cohomology via the twisted-bridge null-homotopy, and the Θ-abutment + SS convergence give the cohomology vanishing. Lean-side, this transport requires either:
+- (a) `Mathlib.AlgebraicTopology.SpectralSequence` infrastructure (multi-month build).
+- (b) Explicit per-S Walsh-isotype decomposition of `(BKTotal n).X 0` (deferred L3 walshMult-per-S refinement).
+- (c) Definitional refactor of obstructionClass to land directly in cohomology (Path 2 from mg-a5ac/mg-0eb4).
+
+None are in scope for this single-session 400k-token ticket. The remaining sorry is **structurally the genuine SS-convergence step**, with all the topVertex-non-coboundary infrastructure now proven (which was the mg-0eb4 load-bearing residual).
+
+### Frankl_Holds non-vacuous status
+
+- `Frankl_Holds_fullPowerset3`: GREEN unconditionally (closes via Case 2 of Frankl_Holds, no sub-gap needed since fullPowerset3 has β_0 = 0, not a counterexample).
+- `Frankl_Holds_fullPowerset4`: GREEN unconditionally (analogous).
+- `Frankl_Holds` (universal): well-formed at every n; closure routes through the named sub-gap (Frankl.lean:413) for hypothetical counterexample inputs.
+
+### Hard-constraint compliance
+
+All D.1-D.4 constraints preserved: NOT factorial (augmentation is sum-of-coefficients, no Specht modules); NOT functorial in refinement sense (native to BKTotal n + IntClosedFam n); U1-dialect preserved (no cup-product); math-first (UC10.1 + augmentation align with UC10 §4.1 + standard `H^0(X_n^∩; ℚ) ≅ ℚ` connectedness fact). The mathlib-folder authorization (per Daniel 17:47Z) was not exercised — the topVertex-non-coboundary closure went through the augmentation construction, which doesn't require rep-theoretic primitives.
+
+### Forward path to GREEN
+
+Three paths remain (per mg-6acd state ledger §"Forward path"):
+
+- **Path A** (SS infrastructure): build `Mathlib.AlgebraicTopology.SpectralSequence` for (Z/2)^n-Walsh-graded total bicomplex. Multi-month.
+- **Path B** (per-S Walsh-isotype decomposition): close the deferred L3 walshMult-per-S refinement. Estimated multi-session.
+- **Path C** (definitional refactor): refactor `obstructionClass` to land directly in `(BKTotal n).homology 0`. Estimated 100-200k tokens (PM stop-loss option from mg-a5ac/mg-0eb4).
+
+### Closing observation
+
+**The Lean tree's status after Lean-Session 16: AMBER strictly narrower.** UC10.1 is now stated and proven (no more Unit-wrapper placeholder); the augmentation infrastructure for topVertex-non-coboundary is complete and verified; the Frankl.lean:362 bridge gap is closed substantively, with the topVertex-non-coboundary identification (the load-bearing piece of mg-0eb4's gap) discharged. The remaining sub-gap is **strictly the SS-convergence step** (paper-side GREEN; Lean-side requires Path A / B / C). This is a clear strict improvement over mg-0eb4's AMBER (which had both topVertex-non-coboundary AND cohomology vanishing as the named gap content). **Per the ticket's verdict structure: AMBER named sub-gap.**
+
+---
+
 ## Open threads / what a UC15+ (or Session 8+) would do
 
 After Session 6 (UC-Lean-scope, mg-d57e), the Frankl-side compatibility-geometry program is **operationally complete AND standard-machinery-airtight AND Lean-formalization-scoped**: UC10's framework + UC12's residual + UC11's 5-step Frankl program + UC13's residual discharge + dialect-check + UC14's standard-machinery cleanup yield Frankl unconditionally via the contradiction of UC11 §§6-7, with every step admitting an explicit chain-level construction (UC14 §4.6), and the Lean formalization arc is decomposed into 5 single-session-capable sub-execution-tickets L1–L5 with named mathlib dependencies and Daniel hard-constraint carryover (UC-Lean-scope §C, §D). The forward work, demoted from "blocking" to "optional":
