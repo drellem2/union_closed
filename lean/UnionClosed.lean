@@ -8,3 +8,7 @@ import UnionClosed.UC10.BundledLemmas
 import UnionClosed.UC12.Doubling
 import UnionClosed.UC12.Bridge
 import UnionClosed.UC12.UC10R
+import UnionClosed.UC14.R2
+import UnionClosed.UC14.R3
+import UnionClosed.UC13_PartB.LowerWalsh
+import UnionClosed.UC13_PartB.TopWalsh
