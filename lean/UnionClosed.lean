@@ -12,3 +12,9 @@ import UnionClosed.UC14.R2
 import UnionClosed.UC14.R3
 import UnionClosed.UC13_PartB.LowerWalsh
 import UnionClosed.UC13_PartB.TopWalsh
+import UnionClosed.UC11.Minimality
+import UnionClosed.UC11.TraceCover
+import UnionClosed.UC11.FObs
+import UnionClosed.UC11.Mismatch
+import UnionClosed.UC11.ObstructionClass
+import UnionClosed.UC11.NonVanishing
