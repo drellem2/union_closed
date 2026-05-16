@@ -1,0 +1,10 @@
+name = "union_closed"
+defaultTargets = ["UnionClosed"]
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+version = "git#v4.29.1"
+
+[[lean_lib]]
+name = "UnionClosed"
