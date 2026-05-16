@@ -1106,6 +1106,88 @@ See `docs/state-UC-Lean-per-x-closure.md` for the full cumulative ledger of mg-3
 
 ---
 
+## Lean-Session 20 — 2026-05-17 (polecat cat-mg-7413, ticket mg-7413, UC-Lean-mathlib-SS-scope) — DONE (GREEN scoping; X1–X6 decomposition pinned; paper-and-pencil only) — **Path A scoped end-to-end; no structural blocker found; recommend file X1 next**
+
+**Ticket:** mg-7413 — *UC-Lean-mathlib-SS-scope: scope the mathlib SpectralSequence infrastructure work needed to close the per-x cohomology-vanishing transport (Path A, Daniel-chosen)*. Path A from mg-36c3 RED verdict, Daniel-chosen 2026-05-16 23:12Z, override 23:23Z ("start now per the no waiting rule"). Mathlib-folder authorization scoped to SS-infrastructure for this arc (Daniel 17:47Z + 23:12Z directives).
+
+**Verdict:** **GREEN scoping complete + X1–X6 decomposition pinned + Phase D closure-ticket scope named.** The mathlib v4.29.1 audit shows all 6 SS infrastructure pieces (per mg-36c3 RED §Phase A) are buildable on the existing mathlib API surface; three are missing entirely (A.2 bicomplex SS, A.3 equivariant SS, A.6 abutment / `convergesTo` / E_∞ / graded filtration), two need specialisation (A.4 Schur-abelian, A.5 chain-homotopy-to-EInfty adapter), and one (A.1 general `Abelian.SpectralObject.spectralSequence` assembly, explicitly TODO in mathlib's own header) is routed around via the bicomplex pipeline. **No structural impossibility found.** The multi-month estimate reflects volume, not novelty.
+
+**Phase A audit summary table** (each piece classified GREEN/AMBER/RED for mathlib state + Yes/No/Conditional for upstream-PR-candidate):
+
+| # | Piece | Mathlib state | Critical path? | Upstream PR? |
+|---|---|---|---|---|
+| A.1 | `SpectralObject.spectralSequence` (general assembly) | AMBER (page primitives present; final assembly TODO) | No (routed around via A.2) | Yes (out of scope) |
+| A.2 | Bicomplex first-quadrant SS (`E_2 = H^p H^q ⇒ H^{p+q}(Tot)`) | RED (missing entirely) | Yes | Yes |
+| A.3 | G-equivariant SS (finite abelian G, isotype-graded) | RED (missing entirely) | Yes | Conditional |
+| A.4 | Schur-abelian + SS-page-isotype-preservation of differentials | AMBER (preadditive Schur present; abelian specialisation missing) | Yes | Yes |
+| A.5 | Chain-homotopy → cohomology-vanishing on isotype | AMBER (`Homotopy.homologyMap_eq` present; isotype-aware adapter missing) | Yes | Yes |
+| A.6 | `convergesTo` / `EInfty` / abutment-filtration / graded comparison | RED (missing entirely; the largest single piece) | Yes | Yes |
+
+**Phase B layout** — six files under `lean/UnionClosed/Mathlib/Algebra/Homology/SpectralSequence/`:
+
+- `Basic.lean` — module overview + re-exports.
+- `Bicomplex.lean` — tackles A.2; MATHLIB-PR-CANDIDATE yes.
+- `Convergence.lean` — tackles A.5 + A.6; MATHLIB-PR-CANDIDATE yes.
+- `Equivariant.lean` — tackles A.3; MATHLIB-PR-CANDIDATE conditional (split: abelian specialisation upstream; general G as follow-on).
+- `Schur.lean` — tackles A.4; MATHLIB-PR-CANDIDATE yes.
+- `EdgeMap.lean` — A.6 supplement (general edges upstream; union_closed-specific specialisation in-house).
+
+Per Daniel mathlib-folder-authorization (scoped to SS-infrastructure for this arc), each file's header declares `MATHLIB-PR-CANDIDATE: yes/no/conditional` plus a one-line rationale; mathlib-PR-clean files follow mathlib naming/docstring conventions so the eventual upstream PR is a clean cherry-pick.
+
+**Phase C sub-ticket decomposition** — six sub-tickets X1–X6 (X1–X5 execution + X6 closure):
+
+| Sub-ticket | Budget (k tokens) | Deps |
+|---|---|---|
+| X1 — Bicomplex SS | 350–400 | (none) |
+| X2 — Convergence + abutment | 300–400 | X1 |
+| X3 — Equivariant SS | 250–350 | X1, X2 |
+| X4 — Schur-abelian + SS lift | 150–200 | X3 |
+| X5 — Edge maps | 200–300 | X1, X2 |
+| X1–X5 subtotal | 1.25–1.65M | |
+| X6 — Per-x closure | 150–300 | X1–X5 |
+| **Arc total** | **1.40–1.95M** | |
+
+Inside the ticket's "~1–2M Lean budget" estimate. Critical path: **X1 → X2 → (X3 ∥ X5) → X4 → X6**. Each Xi single-session-capable.
+
+**Phase D closure-ticket scope** — `UC-Lean-SS-X6-PerXClosure`: uses X1–X5 to refactor `obstructionCohomClass` through the SS-abutment-derived cohomology and resolve the per-x sorry at `SSConvergence.lean:285`. Structure: build `BKBicomplex n` as a `HomologicalComplex₂` → wrap as `EquivariantBicomplex (Z/2)^n` via Walsh signs (X3) → apply X1 to get first-quadrant SS → apply X3 to extract per-χ_x isotype subcomplexes → feed `UC10_lowerWalshVanishing` as `Homotopy ψ 0` data into X2's `nullHomotopyOnIsotype_givesEInftyVanishing` adapter → derive `E_∞^{x, n-1-x}_{χ_x} = 0` → apply X2's `grEInftyIso` + X5's edge map to identify with the χ_x slice of `H^{n-1}(Tot)` → conclude `obstructionCohomClass F x = 0`. Under this refactor, the two mg-36c3 PROVEN collision theorems become *inapplicable* to the new object (they were about the *old* `chainToHomology0`-derived class); they remain in `lean/UnionClosed/UC11/CohomologyClass.lean` as historical record of the mg-36c3 diagnosis. Acceptance bar carries the full mg-c0d3 + mg-7f26 + mg-36c3 hard-constraint set (non-tautology preserved, n=3+n=4 non-vacuous, zero live sorrys, no axiom-cheat, no fake mathlib API, no defeq trick, Frankl_Holds_fullPowerset3/4 still close GREEN, mathlib-folder authorization scope respected).
+
+**Substantive deliverables (mg-7413)**:
+
+- `docs/UC-Lean-mathlib-SS-scope.md` (NEW, ~600 lines) — Phase A audit + Phase B layout + Phase C sub-ticket decomposition + Phase D closure-ticket scope, with cross-reference index, hard-constraint compliance audit, and open-question/risk section.
+- `docs/state-UC10.md` (this entry, Lean-Session 20).
+
+**Sorry count delta**: 0. Scoping-only ticket; no Lean code touched (paper-and-pencil per ticket directive).
+
+**Hard-constraint compliance audit (mg-7413 strict)**:
+
+- ✗ NOT factorial: G = (Z/2)^n is abelian throughout; no Specht modules; characters indexed by `Finset (Fin n)` via Walsh signs.
+- ✗ NOT functorial in the refinement sense: all proposed constructions native to bicomplex / `IntClosedFam n` / `Fin n` direct-sum; no `Pos_n` functor.
+- ✗ U1-dialect preserved: all SS-side adapters and abutment identifications are *additive* (no cup-product); the Θ-map of UC14 R1 is identity at the populated baseline.
+- ✗ Math-first: each Xi step aligns with a paper-side step in UC13 / UC14 / UC10 §§5.3–5.4 (file-by-file paper-side rationale in §2 of the scope doc).
+- ✗ Mathlib-folder authorization scoped to SS-infrastructure-needed-for-this-arc: all proposed files live under `lean/UnionClosed/Mathlib/Algebra/Homology/SpectralSequence/`; X6 closure touches only that folder + `lean/UnionClosed/UC11/SSConvergence.lean` (the existing sorry site) and optionally `lean/UnionClosed/UC11/CohomologyClass.lean` (for the `obstructionCohomClass` refactor).
+- ✗ Cumulative state doc: `docs/UC-Lean-mathlib-SS-scope.md` (NEW, arc-level) + this entry in `docs/state-UC10.md` (Lean-Session 20).
+- ✗ 350k paper-and-pencil budget: scope doc + state entry, no Lean execution.
+
+**Mathlib version-pin (audit reproducibility)**: mathlib `v4.29.1`, rev `5e932f97dd25535344f80f9dd8da3aab83df0fe6` (per `lean/lake-manifest.json`). Audit conducted by reading `Mathlib/Algebra/Homology/SpectralSequence/{Basic,ComplexShape}.lean`, `SpectralObject/{Basic,Cycles,Differentials,EpiMono,HasSpectralSequence,Homology,Page,SpectralSequence}.lean`, `HomologicalBicomplex.lean`, `TotalComplex.lean`, `Homotopy.lean`, `CategoryTheory/Preadditive/Schur.lean`, `RepresentationTheory/{Basic,Action,Rep/Basic,FinGroupCharZero,Maschke,Semisimple,Irreducible}.lean`.
+
+**Forward path (mg-7413 GREEN definitive)**: file **X1 (`UC-Lean-SS-X1-Bicomplex`) as the next execution ticket**. Budget 350–400k, single-session-capable, no internal deps, mathlib-PR-clean. Polecat: Lean-engineering + mathlib-architecture comfort (same profile as this scoping polecat). After X1 GREEN: file X2; X3/X5 in parallel after X2; X4 after X3; X6 after all of X1–X5.
+
+**Open questions / risks (named in scope doc §5)**:
+
+- §5.1 mathlib `SpectralObject.spectralSequence` TODO interaction (contingency sub-split X1 into X1a + X1b if direct-from-bicomplex route hits a snag; default plan does NOT need it).
+- §5.2 mathlib upstream-PR cadence (recommend deferring upstream submissions to a post-X6 cleanup pass).
+- §5.3 refactor of `obstructionCohomClass` and downstream call sites (X6 touches `Frankl.lean` and `UC11/CohomologyClass.lean`; non-vanishing argument switches from `topVertex_not_coboundary` to SS-abutment-based via `obstructionLanding` non-zero in χ_x isotype slice of E_2).
+- §5.4 compatibility with L2a/L2b/L3 populated baselines (risk assessment LOW; `walshScale n {x}` IS the χ_x-isotype projector by standard identification).
+- §5.5 `chainToHomology0` and `topVertex_not_coboundary` after X6 (remain PROVEN about the L2a baseline; decoupled from `obstructionCohomClass` after the refactor).
+
+**Frankl_Holds non-vacuous status**: unchanged (this session touches no Lean code). `Frankl_Holds_fullPowerset3`, `Frankl_Holds_fullPowerset4` close GREEN unconditionally; universal statement well-formed at every n; closure routes through the per-coord named sub-gap for hypothetical counterexample inputs. After X6 GREEN, the per-coord sub-gap closes via the new SS infrastructure and `Frankl_Holds` becomes the unconditional `Frankl.lean` theorem with zero live sorrys end-to-end (PROJECT-LIFE MILESTONE).
+
+See `docs/UC-Lean-mathlib-SS-scope.md` for the full scoping ledger of mg-7413 (Phase A audit + Phase B layout + Phase C sub-ticket decomposition + Phase D closure-ticket scope, ~600 lines).
+
+**The Lean tree's status after Lean-Session 20: RED structural blocker remains at per-x granularity (unchanged from Session 19), but the Path A execution arc is now fully scoped GREEN with X1–X6 decomposition + Phase D closure-ticket scope named.** No Lean code modified; scoping deliverable is `docs/UC-Lean-mathlib-SS-scope.md`. **Per the ticket's verdict structure: GREEN scoping complete; next operational step is to file X1 as the first execution sub-ticket.**
+
+---
+
 ## Open threads / what a UC15+ (or Session 8+) would do
 
 After Session 6 (UC-Lean-scope, mg-d57e), the Frankl-side compatibility-geometry program is **operationally complete AND standard-machinery-airtight AND Lean-formalization-scoped**: UC10's framework + UC12's residual + UC11's 5-step Frankl program + UC13's residual discharge + dialect-check + UC14's standard-machinery cleanup yield Frankl unconditionally via the contradiction of UC11 §§6-7, with every step admitting an explicit chain-level construction (UC14 §4.6), and the Lean formalization arc is decomposed into 5 single-session-capable sub-execution-tickets L1–L5 with named mathlib dependencies and Daniel hard-constraint carryover (UC-Lean-scope §C, §D). The forward work, demoted from "blocking" to "optional":
