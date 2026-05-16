@@ -225,6 +225,29 @@ theorem faceOff_faceOff_comm {k : ℕ} (c : CubeCell X (k+2)) {x y : Fin n}
   simp only [faceOff_dir]
   exact Finset.erase_right_comm
 
+/-- `faceOff_y ∘ faceOn_x = faceOn_x ∘ faceOff_y` for `x ≠ y` in `c.dir`. -/
+theorem faceOff_faceOn_swap {k : ℕ} (c : CubeCell X (k+2)) {x y : Fin n}
+    (hx : x ∈ c.dir) (hy : y ∈ c.dir) (hxy : x ≠ y) :
+    (c.faceOn hx).faceOff (by rw [faceOn_dir]; exact Finset.mem_erase.mpr ⟨Ne.symm hxy, hy⟩) =
+    (c.faceOff hy).faceOn (by rw [faceOff_dir]; exact Finset.mem_erase.mpr ⟨hxy, hx⟩) := by
+  refine CubeCell.ext ?_ ?_
+  · -- base: LHS = (c.faceOn hx).base = c.base ∪ {x}; RHS = (c.faceOff hy).base ∪ {x} = c.base ∪ {x}.
+    simp only [faceOn_base, faceOff_base]
+  · simp only [faceOn_dir, faceOff_dir]
+    exact Finset.erase_right_comm
+
+/-- `faceOn_y ∘ faceOn_x = faceOn_x ∘ faceOn_y` for `x ≠ y` in `c.dir`. -/
+theorem faceOn_faceOn_comm {k : ℕ} (c : CubeCell X (k+2)) {x y : Fin n}
+    (hx : x ∈ c.dir) (hy : y ∈ c.dir) (hxy : x ≠ y) :
+    (c.faceOn hx).faceOn (by rw [faceOn_dir]; exact Finset.mem_erase.mpr ⟨Ne.symm hxy, hy⟩) =
+    (c.faceOn hy).faceOn (by rw [faceOn_dir]; exact Finset.mem_erase.mpr ⟨hxy, hx⟩) := by
+  refine CubeCell.ext ?_ ?_
+  · -- base: (c.base ∪ {x}) ∪ {y} = (c.base ∪ {y}) ∪ {x}.
+    simp only [faceOn_base]
+    rw [Finset.union_assoc, Finset.union_assoc, Finset.union_comm ({x} : Finset (Fin n)) {y}]
+  · simp only [faceOn_dir]
+    exact Finset.erase_right_comm
+
 end CubeCell
 
 /-! ### §3.1 — Sign of a coordinate in a direction set -/
@@ -236,6 +259,67 @@ under the natural `Fin n`-ordering.
 -/
 noncomputable def faceSign (T : Finset (Fin n)) (x : Fin n) : ℚ :=
   (-1 : ℚ) ^ ((T.filter (· < x)).card)
+
+/--
+**Sign-cancellation identity** — the load-bearing combinatorial step in the
+∂² = 0 proof.
+
+For distinct `x, y ∈ T`:
+$$
+  \mathrm{faceSign}(T, x) \cdot \mathrm{faceSign}(T \setminus \{x\}, y) +
+  \mathrm{faceSign}(T, y) \cdot \mathrm{faceSign}(T \setminus \{y\}, x) = 0.
+$$
+
+Proof. WLOG `x < y`. Then in `(T \ {x}).filter (· < y)` we remove `x`
+(which lies in `T.filter (· < y)` since `x < y` and `x ∈ T`), so the
+cardinality drops by 1; in `(T \ {y}).filter (· < x)` we attempt to remove `y`
+but `y ∉ T.filter (· < x)` (since `y > x`), so the cardinality is unchanged.
+Setting `a := |T.filter (· < x)|` and `b := |T.filter (· < y)|`, the sum
+becomes `(-1)^a · (-1)^{b-1} + (-1)^b · (-1)^a = (-1)^a · ((-1)^{b-1} + (-1)^b) = 0`.
+-/
+theorem faceSign_swap_cancel (T : Finset (Fin n)) {x y : Fin n}
+    (hx : x ∈ T) (hy : y ∈ T) (hxy : x ≠ y) :
+    faceSign T x * faceSign (T.erase x) y +
+      faceSign T y * faceSign (T.erase y) x = 0 := by
+  rcases lt_or_gt_of_ne hxy with hxlty | hyltx
+  · -- Case: x < y.
+    have h_x_in_filt_y : x ∈ T.filter (· < y) := by
+      refine Finset.mem_filter.mpr ⟨hx, hxlty⟩
+    have h_y_notin_filt_x : y ∉ T.filter (· < x) := by
+      intro hyf; exact lt_asymm hxlty (Finset.mem_filter.mp hyf).2
+    -- (T.erase x).filter (· < y) = (T.filter (· < y)).erase x
+    have h1 : ((T.erase x).filter (· < y)).card = (T.filter (· < y)).card - 1 := by
+      rw [Finset.filter_erase, Finset.card_erase_of_mem h_x_in_filt_y]
+    -- (T.erase y).filter (· < x) = T.filter (· < x)  (since y ∉ filter)
+    have h2 : ((T.erase y).filter (· < x)).card = (T.filter (· < x)).card := by
+      rw [Finset.filter_erase, Finset.erase_eq_of_notMem h_y_notin_filt_x]
+    have hb1 : (T.filter (· < y)).card ≥ 1 :=
+      Finset.card_pos.mpr ⟨x, h_x_in_filt_y⟩
+    unfold faceSign
+    rw [h1, h2]
+    rcases Nat.exists_eq_succ_of_ne_zero (by omega : (T.filter (· < y)).card ≠ 0)
+      with ⟨b', hb_eq⟩
+    rw [hb_eq]
+    simp only [Nat.succ_sub_one, pow_succ]
+    ring
+  · -- Case: y < x. Symmetric.
+    have h_y_in_filt_x : y ∈ T.filter (· < x) := by
+      refine Finset.mem_filter.mpr ⟨hy, hyltx⟩
+    have h_x_notin_filt_y : x ∉ T.filter (· < y) := by
+      intro hxf; exact lt_asymm hyltx (Finset.mem_filter.mp hxf).2
+    have h1 : ((T.erase y).filter (· < x)).card = (T.filter (· < x)).card - 1 := by
+      rw [Finset.filter_erase, Finset.card_erase_of_mem h_y_in_filt_x]
+    have h2 : ((T.erase x).filter (· < y)).card = (T.filter (· < y)).card := by
+      rw [Finset.filter_erase, Finset.erase_eq_of_notMem h_x_notin_filt_y]
+    have ha1 : (T.filter (· < x)).card ≥ 1 :=
+      Finset.card_pos.mpr ⟨y, h_y_in_filt_x⟩
+    unfold faceSign
+    rw [h1, h2]
+    rcases Nat.exists_eq_succ_of_ne_zero (by omega : (T.filter (· < x)).card ≠ 0)
+      with ⟨a', ha_eq⟩
+    rw [ha_eq]
+    simp only [Nat.succ_sub_one, pow_succ]
+    ring
 
 /-! ### §3.1 — The cubical chain complex `singleFamilyComplex X` -/
 
@@ -280,49 +364,234 @@ noncomputable def singleFamilyBoundary (X : IntClosedFam n) (k : ℕ) :
   show Finsupp.linearCombination ℚ (boundaryOnGen X) (Finsupp.single c r) = _
   rw [Finsupp.linearCombination_single]
 
-/-! ### §3.1 — `∂² = 0` via face-pair cancellation -/
+/-! ### §3.1 — `∂² = 0` via face-pair cancellation
+
+The composite `∂_k ∘ ∂_{k+1}` applied to a generator `c` is a double sum over
+ordered pairs `(x, y) ∈ c.dir × (c.dir \\ {x})`. For each such ordered pair,
+the four-vertex pattern
+`(base, dir \\ {x,y}) − (base ∪ {x}, dir \\ {x,y}) − (base ∪ {y}, dir \\ {x,y}) + (base ∪ {x,y}, dir \\ {x,y})`
+appears with a sign. Swapping `(x, y) → (y, x)` produces the **same** four-vertex
+pattern (via `faceOff_faceOff_comm`, `faceOff_faceOn_swap`, `faceOn_faceOn_comm`)
+but with the **opposite** sign (by `faceSign_swap_cancel`), so each
+unordered pair contributes zero. -/
 
 /--
-The composite `∂_k ∘ ∂_{k+1}` applied to a generator `c` is a double sum over
-ordered pairs `(x, y) ∈ c.dir × (c.dir \ {x})`. For each such ordered pair,
-the four-vertex pattern
-`(base, dir \ {x,y}) − (base ∪ {x}, dir \ {x,y}) − (base ∪ {y}, dir \ {x,y}) + (base ∪ {x,y}, dir \ {x,y})`
-appears with a sign. Swapping `(x, y) → (y, x)` produces the **same** four-vertex
-pattern (since `f00`, `f11` are symmetric and `f01`, `f10` swap) but with the
-**opposite** sign (by the Fin-ordering computation in `faceSign`), so each
-unordered pair contributes zero.
+The per-pair contribution at `(x, y)` in the `∂² = 0` expansion: a `Finsupp`
+on `CubeCell X k` with support on the four "double-face" cells, weighted by
+the product of two `faceSign`s.
+-/
+private noncomputable def pairExpr {k : ℕ} (c : CubeCell X (k+2)) (x y : Fin n)
+    (hx : x ∈ c.dir) (hy_e : y ∈ c.dir.erase x) : CubeCell X k →₀ ℚ :=
+  (faceSign c.dir x * faceSign (c.dir.erase x) y) • (
+    Finsupp.single ((c.faceOff hx).faceOff
+        (by rw [CubeCell.faceOff_dir]; exact hy_e)) (1 : ℚ)
+    - Finsupp.single ((c.faceOff hx).faceOn
+        (by rw [CubeCell.faceOff_dir]; exact hy_e)) (1 : ℚ)
+    - Finsupp.single ((c.faceOn hx).faceOff
+        (by rw [CubeCell.faceOn_dir]; exact hy_e)) (1 : ℚ)
+    + Finsupp.single ((c.faceOn hx).faceOn
+        (by rw [CubeCell.faceOn_dir]; exact hy_e)) (1 : ℚ))
 
-L2a-residual closure: this is the load-bearing **concrete face-pair-cancellation
-proof**. The technical sign-swap lemma `faceSign_swap_cancel` is the key combinatorial
-step, deferred as a documented `sorry` (the sign computation is mechanical but
-substantial; ~80-120 lines of Lean for the full `Finset.filter`-on-`erase` algebra).
+/--
+**Swap-cancellation lemma**: the contribution of the ordered pair `(x, y)`
+and the swapped ordered pair `(y, x)` sum to zero.
 
-**The reduction is honest, not vacuous**: `boundaryOnGen X c` is a real
-non-zero alternating sum on `Finset.univ.attach`; the four-vertex pattern is
-explicitly constructed; only the final sign-arithmetic identity is deferred.
-This is **AMBER on a single named sub-gap** (the sign-cancellation identity),
-not a vacuous-boundary closure.
+By the four face-composition lemmas (`faceOff_faceOff_comm`, `faceOff_faceOn_swap`,
+`faceOn_faceOn_comm`), the four cells in `pairExpr c y x ...` coincide as
+`CubeCell`s with the four cells in `pairExpr c x y ...`; the inside expression
+is the same in both pair-orderings (`+00 - 01 - 10 + 11`); the outside scalar
+sums to zero by `faceSign_swap_cancel`.
+-/
+private lemma pairExpr_swap_add {k : ℕ} (c : CubeCell X (k+2)) (x y : Fin n)
+    (hx : x ∈ c.dir) (hy_e : y ∈ c.dir.erase x) :
+    pairExpr c x y hx hy_e
+    + pairExpr c y x
+        (Finset.mem_of_mem_erase hy_e)
+        (Finset.mem_erase.mpr
+          ⟨(Finset.ne_of_mem_erase hy_e).symm, hx⟩) = 0 := by
+  -- Set up the basic membership data.
+  have hy : y ∈ c.dir := Finset.mem_of_mem_erase hy_e
+  have hxy : x ≠ y := fun h => (Finset.ne_of_mem_erase hy_e) h.symm
+  -- The four cell identities (all proven by `CubeCell.ext` + face-comm lemmas).
+  -- Cell 00: (c.faceOff hx).faceOff = (c.faceOff hy).faceOff.
+  have e00 : ((c.faceOff hx).faceOff
+        (by rw [CubeCell.faceOff_dir]; exact hy_e)) =
+      ((c.faceOff hy).faceOff
+        (by rw [CubeCell.faceOff_dir];
+            exact Finset.mem_erase.mpr ⟨(Finset.ne_of_mem_erase hy_e).symm, hx⟩)) :=
+    CubeCell.faceOff_faceOff_comm c hx hy hxy
+  -- Cell 11: (c.faceOn hx).faceOn = (c.faceOn hy).faceOn.
+  have e11 : ((c.faceOn hx).faceOn
+        (by rw [CubeCell.faceOn_dir]; exact hy_e)) =
+      ((c.faceOn hy).faceOn
+        (by rw [CubeCell.faceOn_dir];
+            exact Finset.mem_erase.mpr ⟨(Finset.ne_of_mem_erase hy_e).symm, hx⟩)) :=
+    CubeCell.faceOn_faceOn_comm c hx hy hxy
+  -- Cell "(x,y)-10" = "(y,x)-01": (c.faceOn hx).faceOff = (c.faceOff hy).faceOn.
+  have e10_01 : ((c.faceOn hx).faceOff
+        (by rw [CubeCell.faceOn_dir]; exact hy_e)) =
+      ((c.faceOff hy).faceOn
+        (by rw [CubeCell.faceOff_dir];
+            exact Finset.mem_erase.mpr ⟨(Finset.ne_of_mem_erase hy_e).symm, hx⟩)) :=
+    CubeCell.faceOff_faceOn_swap c hx hy hxy
+  -- Cell "(x,y)-01" = "(y,x)-10": (c.faceOff hx).faceOn = (c.faceOn hy).faceOff.
+  have e01_10 : ((c.faceOff hx).faceOn
+        (by rw [CubeCell.faceOff_dir]; exact hy_e)) =
+      ((c.faceOn hy).faceOff
+        (by rw [CubeCell.faceOn_dir];
+            exact Finset.mem_erase.mpr ⟨(Finset.ne_of_mem_erase hy_e).symm, hx⟩)) :=
+    (CubeCell.faceOff_faceOn_swap c hy hx hxy.symm).symm
+  -- Unfold pairExpr on both sides, rewrite cells via the four lemmas, then
+  -- apply the sign-cancellation identity.
+  unfold pairExpr
+  rw [← e00, ← e11, ← e10_01, ← e01_10]
+  -- The two inside expressions differ only by `- 01 - 10` vs `- 10 - 01`;
+  -- normalize via `abel` after extracting the scalar.
+  set V₁ : CubeCell X k →₀ ℚ :=
+    Finsupp.single ((c.faceOff hx).faceOff
+        (by rw [CubeCell.faceOff_dir]; exact hy_e)) (1 : ℚ)
+    - Finsupp.single ((c.faceOff hx).faceOn
+        (by rw [CubeCell.faceOff_dir]; exact hy_e)) (1 : ℚ)
+    - Finsupp.single ((c.faceOn hx).faceOff
+        (by rw [CubeCell.faceOn_dir]; exact hy_e)) (1 : ℚ)
+    + Finsupp.single ((c.faceOn hx).faceOn
+        (by rw [CubeCell.faceOn_dir]; exact hy_e)) (1 : ℚ) with hV
+  have hV_perm :
+    Finsupp.single ((c.faceOff hx).faceOff
+        (by rw [CubeCell.faceOff_dir]; exact hy_e)) (1 : ℚ)
+    - Finsupp.single ((c.faceOn hx).faceOff
+        (by rw [CubeCell.faceOn_dir]; exact hy_e)) (1 : ℚ)
+    - Finsupp.single ((c.faceOff hx).faceOn
+        (by rw [CubeCell.faceOff_dir]; exact hy_e)) (1 : ℚ)
+    + Finsupp.single ((c.faceOn hx).faceOn
+        (by rw [CubeCell.faceOn_dir]; exact hy_e)) (1 : ℚ) = V₁ := by
+    rw [hV]; abel
+  rw [hV_perm]
+  -- Combine the scalars.
+  rw [← add_smul]
+  rw [faceSign_swap_cancel c.dir hx hy hxy]
+  exact zero_smul _ _
+
+/--
+The double-boundary on a single generator: it is the double sum over
+`(x, y) ∈ c.dir.attach × (c.dir.erase x).attach` of the `pairExpr`.
+-/
+private lemma boundaryOnGen_double {k : ℕ} (c : CubeCell X (k+2)) :
+    Finsupp.linearCombination ℚ (boundaryOnGen X) (boundaryOnGen X c) =
+      c.dir.attach.sum (fun x =>
+        (c.dir.erase x.val).attach.sum (fun y =>
+          pairExpr c x.val y.val x.prop y.prop)) := by
+  -- Expand `boundaryOnGen X c` and push linearCombination through the sum.
+  conv_lhs => rw [boundaryOnGen]
+  rw [map_sum]
+  refine Finset.sum_congr rfl ?_
+  rintro ⟨x, hx⟩ _
+  -- Pull the scalar `faceSign c.dir x` out and apply linearCombination to each single.
+  rw [LinearMap.map_smul, map_sub]
+  rw [Finsupp.linearCombination_single, Finsupp.linearCombination_single]
+  rw [one_smul, one_smul]
+  -- Goal: faceSign c.dir x • (boundaryOnGen X (c.faceOff hx) - boundaryOnGen X (c.faceOn hx))
+  --     = (c.dir.erase x).attach.sum (fun y => pairExpr c x y.val hx y.prop)
+  -- Use the definitional equality `(c.faceOff hx).dir = c.dir.erase x = (c.faceOn hx).dir`
+  -- by working on both sides at once via `show`.
+  show faceSign c.dir x •
+      ((c.dir.erase x).attach.sum (fun y =>
+          faceSign (c.dir.erase x) y.val •
+            (Finsupp.single ((c.faceOff hx).faceOff y.prop) (1 : ℚ)
+              - Finsupp.single ((c.faceOff hx).faceOn y.prop) (1 : ℚ)))
+        - (c.dir.erase x).attach.sum (fun y =>
+            faceSign (c.dir.erase x) y.val •
+              (Finsupp.single ((c.faceOn hx).faceOff y.prop) (1 : ℚ)
+                - Finsupp.single ((c.faceOn hx).faceOn y.prop) (1 : ℚ)))) =
+    (c.dir.erase x).attach.sum (fun y => pairExpr c x y.val hx y.prop)
+  -- Combine the two sums into one.
+  rw [← Finset.sum_sub_distrib, Finset.smul_sum]
+  refine Finset.sum_congr rfl ?_
+  rintro ⟨y, hy⟩ _
+  -- Per-term: faceSign c.dir x • (faceSign (c.dir.erase x) y • (single 00 - single 01)
+  --                              - faceSign (c.dir.erase x) y • (single 10 - single 11))
+  --   = (faceSign c.dir x * faceSign (c.dir.erase x) y) • (single 00 - single 01 - single 10 + single 11)
+  unfold pairExpr
+  rw [smul_sub]                -- distribute outer scalar over the (-): a•(B - B') = a•B - a•B'
+  rw [smul_smul, smul_smul]    -- combine each: a • (b • V) = (a*b) • V
+  rw [← smul_sub]              -- factor common scalar back out
+  congr 1
+  abel
+
+set_option maxHeartbeats 400000 in
+/--
+The double-boundary on a single generator vanishes: the double sum cancels
+via the swap `(x, y) ↔ (y, x)` involution and `pairExpr_swap_add`.
+
+The double sum re-indexes through `Finset.sigma` (so the swap becomes a true
+involution of a flat Finset), and `Finset.sum_involution` discharges the rest.
+
+Public-facing: re-used by `BousfieldKan.lean` to discharge `BKVertDiff_squared`
+per fiber.
+-/
+theorem boundaryOnGen_compose_zero {k : ℕ} (c : CubeCell X (k+2)) :
+    Finsupp.linearCombination ℚ (boundaryOnGen X) (boundaryOnGen X c) = 0 := by
+  rw [boundaryOnGen_double]
+  -- Re-index the iterated sum as a sum over the Sigma Finset.
+  rw [Finset.sum_sigma' c.dir.attach (fun x => (c.dir.erase x.val).attach)
+      (fun x y => pairExpr c x.val y.val x.prop y.prop)]
+  -- The swap involution: ⟨⟨x, hx⟩, ⟨y, hy_e⟩⟩ ↦ ⟨⟨y, hy⟩, ⟨x, hx_e⟩⟩.
+  refine Finset.sum_involution
+    (fun p _ =>
+      ⟨⟨p.2.val, Finset.mem_of_mem_erase p.2.prop⟩,
+       ⟨p.1.val,
+          Finset.mem_erase.mpr ⟨(Finset.ne_of_mem_erase p.2.prop).symm, p.1.prop⟩⟩⟩)
+    ?_ ?_ ?_ ?_
+  · -- Pairing cancels: pairExpr (x, y) + pairExpr (y, x) = 0.
+    rintro ⟨⟨x, hx⟩, ⟨y, hy_e⟩⟩ _
+    exact pairExpr_swap_add c x y hx hy_e
+  · -- For non-zero contributions, the swap is not the identity (x ≠ y).
+    rintro ⟨⟨x, hx⟩, ⟨y, hy_e⟩⟩ _ _
+    intro h
+    have hxy : x ≠ y := fun heq => (Finset.ne_of_mem_erase hy_e) heq.symm
+    -- h asserts the Sigma elements coincide; reading off first projection gives x = y.
+    have h1 : (⟨y, Finset.mem_of_mem_erase hy_e⟩ : {z // z ∈ c.dir}) = ⟨x, hx⟩ :=
+      congrArg Sigma.fst h
+    have : y = x := congrArg Subtype.val h1
+    exact hxy this.symm
+  · -- Image lies in the Sigma Finset.
+    rintro ⟨⟨x, hx⟩, ⟨y, hy_e⟩⟩ _
+    rw [Finset.mem_sigma]
+    exact ⟨Finset.mem_attach _ _, Finset.mem_attach _ _⟩
+  · -- The swap is an involution: applying twice returns the original.
+    rintro ⟨⟨x, hx⟩, ⟨y, hy_e⟩⟩ _
+    rfl
+
+/--
+**∂² = 0 for the cubical chain complex** — the load-bearing face-pair-cancellation
+identity, now proven in full.
+
+Strategy: reduce to per-generator (`Finsupp.lhom_ext`), pull out the scalar `r`,
+unfold the boundary as the double sum over `(x, y) ∈ c.dir × c.dir.erase x`
+(`boundaryOnGen_double`), then apply the swap involution `(x, y) ↔ (y, x)` with
+`Finset.sum_involution` (`boundaryOnGen_compose_zero`); each pair contributes
+zero by `pairExpr_swap_add` which combines the four face-composition lemmas
+and the `faceSign_swap_cancel` sign-arithmetic identity.
+
+L2a-residual-residual closure: replaces the L2a-residual `sorry` with a full
+proof. The four face-composition lemmas (`faceOff_faceOff_comm`,
+`faceOff_faceOn_swap`, `faceOn_faceOn_comm`) and the `faceSign_swap_cancel`
+sign-arithmetic lemma are the load-bearing pieces; both are proven above
+without any further `sorry`.
 -/
 theorem singleFamilyBoundary_squared (X : IntClosedFam n) (k : ℕ) :
     singleFamilyBoundary X (k + 1) ≫ singleFamilyBoundary X k = 0 := by
-  -- The per-generator statement reduces to a double sum over ordered pairs
-  -- in `c.dir × c.dir`, with cancellation via `(x, y) ↔ (y, x)` antisymmetry.
-  -- This is the load-bearing face-pair-cancellation step.
-  --
-  -- Strategy:
-  --   (1) Expand `boundaryOnGen X (k+1) c` as a sum over `x ∈ c.dir`.
-  --   (2) Apply `linearCombination ℚ (boundaryOnGen X k)` to each term;
-  --       by `linearCombination_single` this expands into another sum over
-  --       `y ∈ (c.faceOff/On x).dir = c.dir.erase x`.
-  --   (3) Reindex the double sum over `(x, y)` with `x ≠ y` in `c.dir`.
-  --   (4) For each unordered pair `{x, y}`, the contributions from `(x, y)`
-  --       and `(y, x)` cancel (sign-swap by Fin-ordering arithmetic).
-  --
-  -- The full unfolding-and-pairing proof is mechanical but substantial.
-  -- This `sorry` is the documented residual sub-gap; the surrounding
-  -- definitions (`boundaryOnGen`, `faceOff`, `faceOn`, `faceSign`) are all
-  -- concrete and non-vacuous.
-  sorry
+  apply ModuleCat.hom_ext
+  rw [ModuleCat.hom_comp, ModuleCat.hom_zero]
+  apply Finsupp.lhom_ext
+  intro c r
+  show (singleFamilyBoundary X k).hom
+        ((singleFamilyBoundary X (k+1)).hom (Finsupp.single c r)) = 0
+  rw [singleFamilyBoundary_single]
+  show Finsupp.linearCombination ℚ (boundaryOnGen X) (r • boundaryOnGen X c) = 0
+  rw [LinearMap.map_smul]
+  rw [boundaryOnGen_compose_zero]
+  exact smul_zero r
 
 /--
 The **cubical-Walsh-defect complex** `singleFamilyComplex X` of a single

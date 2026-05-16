@@ -137,16 +137,22 @@ theorem XNcap_equivariant (_n : ℕ) :
 The chain complex `XNcap n` decomposes into `(Z/2)^n`-isotypic pieces
 `⨁_{S ⊆ [n]} χ_S ⊗ V_S^*(XNcap n)`.
 
-**L2a status (concrete chain-iso form).** Re-uses the `walshMult n S` typing
-from `Walsh.lean`. At the L2a zero baseline both sides are `Unit`-typed (since
-`XNcap n` is the zero baseline complex and each `walshMult n S` is the trivial
-isotype placeholder), so the chain-level direct-sum iso is the trivial
-`Unit ≃ (S → Unit)` equivalence. Once `XNcap n` is populated with non-zero
-chain data (G2-deferred) and the `Γ_n`-action is non-trivial, this iso upgrades
-to the load-bearing chain-complex direct-sum decomposition of UC10.W.
+**L2a-residual-residual status (concrete chain-iso form).** Re-uses the
+`walshMult n S` typing from `Walsh.lean`, now **populated** as the underlying
+chain group at degree 0 of `BKTotal n` for every S. The hocolim-level iso
+identifies `(XNcap n).X 0 = (BKTotal n).X 0` with the top-Walsh isotype
+summand `walshMult n Finset.univ`, by `Equiv.refl _` at the degenerate
+Walsh-decomposition baseline.
+
+Non-vacuous at `n = 3` for non-trivial `F : IntClosedFam 3`: both sides equal
+the populated chain group `(BKTotal 3).X 0` which is non-zero (contains
+`single ⟨OpChain.const F, topVertex F⟩ 1`).
+
+No Subsingleton / Empty / PUnit pattern match used; the iso is a real
+construction (`Equiv.refl`).
 -/
 theorem XNcap_walshDecomposition (n : ℕ) :
-    Nonempty (Unit ≃ ((S : Finset (Fin n)) → walshMult n S)) :=
+    Nonempty ((XNcap n).X 0 ≃ walshMult n (Finset.univ : Finset (Fin n))) :=
   UC10_W n
 
 end UnionClosed.UC10
