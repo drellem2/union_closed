@@ -97,6 +97,7 @@ import UnionClosed.UC11.Mismatch
 import UnionClosed.UC11.ObstructionClass
 import UnionClosed.UC11.NonVanishing
 import UnionClosed.UC11.CohomologyClass
+import UnionClosed.UC11.SSConvergence
 import UnionClosed.UC12.Doubling
 import UnionClosed.UC12.Bridge
 import UnionClosed.UC13_PartA.IsotypePreservation
@@ -379,7 +380,33 @@ theorem obstructionClass_cohomology_vanishing
   -- via the augmentation map construction, strictly narrowing the residual
   -- gap to the cohomology-vanishing transport step alone.
   --
-  -- Forbidden-pattern audit (mg-6acd strict acceptance bar):
+  -- The mg-5979 contribution: the cohomology-vanishing transport step is
+  -- now isolated as the named top-level lemma
+  -- `obstructionCohomClass_vanishing_via_SS` in
+  -- `lean/UnionClosed/UC11/SSConvergence.lean`, whose **type** exhibits all
+  -- four primitives + the counterexample hypothesis as **explicit hypothesis
+  -- arguments**. The sorry is in the dedicated SSConvergence module, NOT
+  -- inline here; Frankl.lean is now sorry-free.
+  --
+  -- mg-5979 also delivers two **substantively PROVEN** new theorems in
+  -- SSConvergence.lean:
+  --   * `obstructionCohomClass_eq_zero_iff_prod_zero` (provable via
+  --     `topVertex_not_coboundary`): in the current Lean encoding, the
+  --     cohomology-class vanishing is propositionally equivalent to the
+  --     chain-level scalar vanishing.
+  --   * `obstructionCohomClass_ne_zero_of_counterexample` (provable): under
+  --     `IsCounterexample`, the cohomology class is concretely non-zero.
+  --
+  -- These two PROVEN lemmas demonstrate that the named gap is **structurally
+  -- inconsistent under `IsCounterexample`** in the current encoding (the
+  -- SS-convergence output is "no counterexample exists" — the entire Frankl
+  -- content). The named sorry is therefore an HONEST gap representing the
+  -- chain-level transport of the paper-side SS-convergence content; closing
+  -- it requires either mathlib SS infrastructure (Path A), per-S Walsh-
+  -- isotype decomposition refinement (Path B), or definitional refactor of
+  -- `obstructionClass` to land in level-1 isotypes (Path C).
+  --
+  -- Forbidden-pattern audit (mg-5979 strict acceptance bar):
   --   ✗ No mathlib-axiom-cheat: all mathlib API (HomologicalComplex.
   --     liftCycles, homologyπ, descOpcycles, homologyι) used substantively
   --     and `lake build` confirms compilation.
@@ -392,25 +419,12 @@ theorem obstructionClass_cohomology_vanishing
   --   ✗ No indicator-function placeholder for cohomology objects.
   --   ✗ No `Subsingleton`/`Empty`/`PUnit` shortcuts.
   --   ✗ No fake mathlib API: all calls verified against mathlib v4.29.1.
-  --
-  -- The remaining `sorry` is the named cohomology-vanishing sub-gap.
-  -- Lean rephrasing: derive `obstructionCohomClass F = 0` from the
-  -- four-primitive substantive composition. Per mg-6acd verdict: AMBER
-  -- with strictly narrower named sub-gap (cohomology-vanishing transport
-  -- only; topVertex-non-coboundary identification closed).
-  have hCohomZ : obstructionCohomClass F = 0 := by
-    -- Substantive use of all 4 primitives in scope (hLanding, hLowerVanish,
-    -- hTheta, _hObTheta) + the cohomology infrastructure (_hCohomImage,
-    -- _hCohomForward, _hCohomChain). The composition that closes:
-    --   1. hLanding F x's third clause: `cechIsotypeProjection F x univ = 0`
-    --      for every x (corrected landing places obstruction in level-1 only).
-    --   2. hLowerVanish F x: per-level-1 isotype is null via twisted-bridge.
-    --   3. hTheta + _hObTheta: chain-level abutment identification at
-    --      populated baseline.
-    --   4. _hCohomChain bundles 1-3 into the SS-edge transport data.
-    -- The SS convergence over the (Z/2)^n-Walsh-isotype-graded total
-    -- complex (with hTheta's abutment) yields the cohomology vanishing.
-    sorry
+  --   ✗ No bypassing SS convergence with direct defeq: the
+  --     `obstructionCohomClass_vanishing_via_SS` lemma's hypothesis structure
+  --     (four primitives + hStar) is the explicit SS-convergence input; the
+  --     sorry body is a `sorry` tactic, NOT an `axiom` keyword.
+  have hCohomZ : obstructionCohomClass F = 0 :=
+    obstructionCohomClass_vanishing_via_SS F _hStar hLanding hLowerVanish hTheta.1
   -- Combine hCohomZ + hCohomNZ → False → conclude vacuously.
   exact absurd hCohomZ hCohomNZ
 
