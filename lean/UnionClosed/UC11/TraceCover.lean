@@ -104,27 +104,30 @@ def traceCover (Fstar : IntClosedFam n) (Y : TraceObj Fstar) : Prop :=
 /--
 **Lemma 4.2 (UC11 §4.1): the cover property.**
 
-For a minimal counterexample `Fstar`, every proper trace target lies in some
-stratum `U_x`. Equivalently: `(⋃_{x∈[n]} U_x) ⊇ 𝓒_n^∩(F*) ∖ {F*}`.
+For an *absolute* minimal counterexample `Fstar`, every proper non-empty
+trace target lies in some stratum `U_x`. Equivalently:
+`(⋃_{x∈[n]} U_x) ⊇ 𝓒_n^∩(F*) ∖ {F*}` (on non-empty supports).
 
 **Proof (UC11 §4.1):** Direct application of `minimality_element` (Theorem 3.4):
-every proper sub-family has some rare element `x`, and the trace object with
-that rare `x` lies in `U_x` by definition.
+every proper non-empty sub-family has some rare element `x`, and the trace
+object with that rare `x` lies in `U_x` by definition.
 
-**L4 status.** The proof routes through `minimality_element`, which carries
-the one L4-named structural gap (cross-`n` transport). Once that gap is closed
-in L5, this theorem becomes unconditional.
+**L4-followup status.** The proof routes through `minimality_element`, which
+is now closed (L4-followup, this session) via the cross-n descent clause of
+`IsAbsMinimalCounterexample`. The `Y.subset.Nonempty` hypothesis is required:
+at `Y.subset = ∅`, the cover-property's `∃ x ∈ Y.subset` conclusion is
+vacuously false. Matching `minimality_element`'s `T.Nonempty` requirement
+(the trivial trace `T = ∅` is excluded from `𝓒_n^∩` in UC11 §3).
 -/
 theorem traceCover_covers (Fstar : IntClosedFam n)
-    (hFstar : IsMinimalCounterexample Fstar)
-    (Y : TraceObj Fstar) (hY : Y.subset ≠ Fstar.support) :
+    (hFstar : IsAbsMinimalCounterexample Fstar)
+    (Y : TraceObj Fstar) (hY : Y.subset ≠ Fstar.support)
+    (hYne : Y.subset.Nonempty) :
     traceCover Fstar Y := by
-  -- Apply minimality_element to Y.subset ⊊ Fstar.support.
-  obtain ⟨x, hxT, hβ⟩ := minimality_element Fstar hFstar Y.subset Y.hsubset hY
-  -- hxT : x ∈ Y.subset
-  -- hβ : beta x (Fstar.traceFam Y.subset Y.hsubset) ≤ 0
+  -- Apply minimality_element to Y.subset ⊊ Fstar.support with Y.subset.Nonempty.
+  obtain ⟨x, hxT, hβ⟩ :=
+    minimality_element Fstar hFstar Y.subset Y.hsubset hY hYne
   refine ⟨x, hY, hxT, ?_⟩
-  -- Y.toFam = Fstar.traceFam Y.subset Y.hsubset definitionally.
   exact hβ
 
 /-! ### §4.6 — Tiebreaker independence
@@ -217,8 +220,9 @@ membership predicate, evaluated against real data, exhibiting non-vacuous
 machinery.)
 -/
 theorem traceObj_n3_drop0_in_cover
-    (hFstar : IsMinimalCounterexample fullPowerset3) :
+    (hFstar : IsAbsMinimalCounterexample fullPowerset3) :
     traceCover fullPowerset3 traceObj_n3_drop0 :=
   traceCover_covers fullPowerset3 hFstar traceObj_n3_drop0 traceObj_n3_drop0_proper
+    (by show ({1, 2} : Finset (Fin 3)).Nonempty; exact ⟨1, by decide⟩)
 
 end UnionClosed.UC11
