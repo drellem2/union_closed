@@ -63,6 +63,7 @@ module
 
 public import Mathlib.Algebra.Homology.TotalComplex
 public import Mathlib.Algebra.Homology.HomologicalComplexLimits
+public import Mathlib.Algebra.Homology.HomologicalComplexAbelian
 public import Mathlib.Algebra.Homology.Embedding.StupidTrunc
 public import Mathlib.Algebra.Homology.Embedding.Basic
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
@@ -1355,6 +1356,24 @@ lemma cutoffColumns_inclusion_le_inclusion {p q : ℤ} (h : p ≤ q) :
         K.cutoffColumns_inclusion_le_f_of_lt h hp', zero_comp,
         K.cutoffColumns_inclusion_f_of_lt hp']
 
+/-- Reflexivity: the chain inclusion at `p ≤ p` is the identity on
+`K.cutoffColumns p`. The Z2e companion of `cutoffColumns_inclusion_le_trans`
+and `cutoffColumns_inclusion_le_inclusion`, needed for the
+`cutoffColumnsEInt_le_refl_coe` reflexivity at integer EInt indices and
+for the SpectralObject H-functor's `map_id` property. -/
+@[simp]
+lemma cutoffColumns_inclusion_le_refl (p : ℤ) :
+    K.cutoffColumns_inclusion_le (le_refl p) = 𝟙 (K.cutoffColumns p) := by
+  apply HomologicalComplex.hom_ext
+  intro p'
+  rw [HomologicalComplex.id_f]
+  by_cases hp : p ≤ p'
+  · rw [K.cutoffColumns_inclusion_le_f_of_le (le_refl p) hp]
+    exact Iso.hom_inv_id _
+  · have hp' : p' < p := lt_of_not_ge hp
+    rw [K.cutoffColumns_inclusion_le_f_of_lt (le_refl p) hp']
+    exact (K.cutoffColumns_isZero_X_of_lt hp').eq_of_src 0 (𝟙 _)
+
 end CutoffColumnsInclusionLE
 
 end HomologicalComplex₂
@@ -1492,13 +1511,9 @@ lemma cutoffColumnsEInt_le_refl_top (h : (⊤ : EInt) ≤ ⊤) :
       𝟙 (HomologicalComplex.zero : HomologicalComplex₂ C (ComplexShape.up ℤ) c₂) := rfl
 
 /-- Specialisation of transitivity to integer indices `p ≤ q ≤ r`. The
-fully general `EInt`-indexed transitivity (with `i ≤ j ≤ k` over all of
-`EInt` including `⊥` and `⊤`) requires case analysis over nine `(i, j, k)`
-EInt combinations; the substantive `(p : ℤ) ≤ (q : ℤ) ≤ (r : ℤ)` case
-below is the load-bearing one for the Z2e `SpectralObject` H-functor
-construction (the other eight reduce to identity/zero compositions via
-the equality lemmas above). The full EInt-transitivity packaging is
-deferred to **Z2e** per the named follow-on. -/
+load-bearing case feeding the general 9-case `cutoffColumnsEInt_le_trans`
+below: every other case reduces either to identity/zero composition or to
+this coe-coe-coe case via the EInt equality lemmas. -/
 @[reassoc (attr := simp)]
 lemma cutoffColumnsEInt_le_trans_coe_coe_coe {p q r : ℤ}
     (h₁ : ((p : EInt)) ≤ ((q : EInt))) (h₂ : ((q : EInt)) ≤ ((r : EInt))) :
@@ -1511,6 +1526,103 @@ lemma cutoffColumnsEInt_le_trans_coe_coe_coe {p q r : ℤ}
       K.cutoffColumnsEInt_le_coe_coe hpq h₁,
       K.cutoffColumnsEInt_le_coe_coe hpr (le_trans h₁ h₂)]
   exact K.cutoffColumns_inclusion_le_trans hpq hqr
+
+/-- Reflexivity at integer indices: at `(p : EInt) ≤ (p : EInt)` the
+EInt chain inclusion is the identity on `K.cutoffColumns p`. The Z2e
+companion of `cutoffColumnsEInt_le_refl_bot` and `cutoffColumnsEInt_le_refl_top`,
+completing the reflexivity coverage across all three EInt index classes
+(`⊥`, integer, `⊤`). Used by the SpectralObject H-functor's `map_id`
+property at integer EInt indices. -/
+@[simp]
+lemma cutoffColumnsEInt_le_refl_coe (p : ℤ) (h : ((p : EInt)) ≤ ((p : EInt))) :
+    K.cutoffColumnsEInt_le h = 𝟙 (K.cutoffColumns p) := by
+  rw [K.cutoffColumnsEInt_le_coe_coe (le_refl p) h]
+  exact K.cutoffColumns_inclusion_le_refl p
+
+/-- The fully general `EInt`-indexed transitivity. By case analysis on the
+nine `(i, j, k)`-tuples in `{⊥, (p : ℤ), ⊤}³`, the impossible orderings
+(where `i ≤ j` or `j ≤ k` forces a contradiction) are discharged via
+`simp at h`, and the compatible cases each reduce to either an identity
+composition, a zero composition (when an endpoint is `⊤` so the morphism is
+the zero map into/out of the zero bicomplex), the
+`cutoffColumns_inclusion_le_inclusion` factorisation (when `i = ⊥` and the
+remaining indices are integers), or the
+`cutoffColumnsEInt_le_trans_coe_coe_coe` load-bearing coe-coe-coe case. The
+proof is the closing-out step of the Z2d EInt-extension residual cleanup,
+completing the 9-case coverage left open in Z2d. -/
+@[reassoc (attr := simp)]
+lemma cutoffColumnsEInt_le_trans {i j k : EInt} (h₁ : i ≤ j) (h₂ : j ≤ k) :
+    K.cutoffColumnsEInt_le h₂ ≫ K.cutoffColumnsEInt_le h₁ =
+      K.cutoffColumnsEInt_le (le_trans h₁ h₂) := by
+  induction i using WithBotTop.rec with
+  | bot =>
+    induction j using WithBotTop.rec with
+    | bot =>
+      induction k using WithBotTop.rec with
+      | bot =>
+        -- LHS = 𝟙 _ ≫ 𝟙 _, RHS = 𝟙 _
+        show 𝟙 _ ≫ 𝟙 _ = 𝟙 _
+        rw [Category.id_comp]
+      | coe r =>
+        -- LHS = cutoffColumns_inclusion r ≫ 𝟙 K, RHS = cutoffColumns_inclusion r
+        show K.cutoffColumns_inclusion r ≫ 𝟙 _ = K.cutoffColumns_inclusion r
+        rw [Category.comp_id]
+      | top =>
+        -- LHS = 0 ≫ 𝟙 K, RHS = 0
+        show (0 : _ ⟶ _) ≫ 𝟙 _ = 0
+        rw [Category.comp_id]
+    | coe q =>
+      induction k using WithBotTop.rec with
+      | bot => simp at h₂
+      | coe r =>
+        have hqr : q ≤ r := by simpa using h₂
+        show K.cutoffColumns_inclusion_le hqr ≫ K.cutoffColumns_inclusion q =
+            K.cutoffColumns_inclusion r
+        exact K.cutoffColumns_inclusion_le_inclusion hqr
+      | top =>
+        -- LHS = 0 ≫ cutoffColumns_inclusion q, RHS = 0
+        show (0 : _ ⟶ _) ≫ K.cutoffColumns_inclusion q = 0
+        rw [zero_comp]
+    | top =>
+      induction k using WithBotTop.rec with
+      | bot => simp at h₂
+      | coe _ => simp at h₂
+      | top =>
+        -- LHS = 𝟙 0 ≫ 0, RHS = 0
+        show 𝟙 _ ≫ (0 : _ ⟶ _) = 0
+        rw [Category.id_comp]
+  | coe p =>
+    induction j using WithBotTop.rec with
+    | bot => simp at h₁
+    | coe q =>
+      induction k using WithBotTop.rec with
+      | bot => simp at h₂
+      | coe r => exact K.cutoffColumnsEInt_le_trans_coe_coe_coe h₁ h₂
+      | top =>
+        -- LHS = 0 ≫ cutoffColumns_inclusion_le _, RHS = 0
+        have hpq : p ≤ q := by simpa using h₁
+        show (0 : _ ⟶ _) ≫ K.cutoffColumns_inclusion_le hpq = 0
+        rw [zero_comp]
+    | top =>
+      induction k using WithBotTop.rec with
+      | bot => simp at h₂
+      | coe _ => simp at h₂
+      | top =>
+        -- LHS = 𝟙 _ ≫ 0, RHS = 0
+        show 𝟙 _ ≫ (0 : _ ⟶ _) = 0
+        rw [Category.id_comp]
+  | top =>
+    induction j using WithBotTop.rec with
+    | bot => simp at h₁
+    | coe _ => simp at h₁
+    | top =>
+      induction k using WithBotTop.rec with
+      | bot => simp at h₂
+      | coe _ => simp at h₂
+      | top =>
+        -- LHS = 𝟙 _ ≫ 𝟙 _, RHS = 𝟙 _
+        show 𝟙 _ ≫ 𝟙 _ = 𝟙 _
+        rw [Category.id_comp]
 
 end CutoffColumnsEIntLE
 
@@ -1793,22 +1905,344 @@ end NonVacuousZ2d
 end HomologicalComplex₂
 
 /-!
-## Deferred to Z2e (named follow-on)
+## Z2e — Bicomplex SES `ShortExact` upgrade (Phase A.1)
 
-The final Z2 deliverables — the `SpectralObject (HomologicalComplex C c₁₂) EInt`
-**record construction** packaging the H-data `H^n (F^j / F^i)` (with `i ≤ j` in
-`EInt`) + δ-data via the snake lemma on the s.e.s. of triple filtration
-quotients + the three exactness conditions via the LES of cohomology,
-and the `IsFirstQuadrant` instance — are pre-authorised follow-on
-**Z2e** sub-tickets per scoping doc §Z2 sub-split contingency. Z2d
-landed the substantive EInt-indexed filtration infrastructure
-(`cutoffColumnsEInt`, `cutoffColumnsEInt_le`, `cutoffColumns_inclusion_le`,
-transitivity/reflexivity, and the `IsFirstQuadrantBicomplex` typeclass
-with cell-level vanishing) on top of Z2a + Z2b + Z2c's bicomplex
-filtration primitives; Z2e closes out the SpectralObject record
-assembly that consumes those primitives.
+The Z2b GE-side `cutoffColumns_succ_singleColumnAt_shortComplex` and Z2c
+LE-side `singleColumnAt_to_cutoffColumnsLE_shortComplex` `ShortComplex`
+packagings of the bicomplex filtration s.e.s. are upgraded to `ShortExact`
+by applying `HomologicalComplex.shortExact_of_degreewise_shortExact` twice
+(once at the column shape `ComplexShape.up ℤ`, once at the row shape `c₂`)
+to reduce to cell-level short exactness in `C`. At each cell `(p', q)`,
+the SC is verified short exact via an explicit cell-level `Splitting`:
 
-### Z2e-A — `SpectralObject` H-functor + δ + exactness assembly
+* **`p' < p`** (cut column on both sides): all three cells are `IsZero`, so
+  the `Splitting` uses `r = 0` and `s = 0` and exactness is automatic.
+
+* **`p' = p`** (the single kept column, GE-side): `X₁` is `IsZero` (the
+  source `(K.cutoffColumns (p+1)).X p` vanishes since `p < p + 1`); the
+  middle and target are both isomorphic to `(K.X p).X q` via cell isos.
+  The `Splitting` uses `r = 0` and `s` = the inverse of the iso `g`.
+
+* **`p' > p`** (kept on both sides, but only by Z2b's `cutoffColumns_succ`):
+  `X₃` is `IsZero` (the `singleColumnAt p` target vanishes since `p' ≠ p`);
+  the source and middle are both isomorphic to `(K.X p').X q`. The
+  `Splitting` uses `r` = the inverse of the iso `f` and `s = 0`.
+
+This upgrade is the load-bearing Phase A.1 deliverable consumed by the
+`SpectralObject` δ-data via the snake lemma on the bicomplex SES totalised
+to a `HomologicalComplex C c₁₂`-level SES, where `ShortExact.δ` and the
+three `ShortExact.homology_exact₁/₂/₃` lemmas from
+`Mathlib.Algebra.Homology.HomologySequence` supply the connecting morphism
+and the three SpectralObject exactness conditions.
+-/
+
+namespace HomologicalComplex₂
+
+variable {C : Type*} [Category* C] [Abelian C]
+  {I₂ : Type*} {c₂ : ComplexShape I₂}
+  (K : HomologicalComplex₂ C (ComplexShape.up ℤ) c₂)
+
+section ShortExactUpgrade
+
+open CategoryTheory.ShortComplex
+
+/-- Helper: a `ShortComplex` of an abelian category whose `X₁` and `X₃` are
+both `IsZero` (which forces `X₂` to also be `IsZero` after `f, g` are
+honest morphisms — but we accept `X₂` `IsZero` as a hypothesis to avoid
+forcing) admits a trivial `Splitting` with `r = 0` and `s = 0`. -/
+private noncomputable def splittingOfAllIsZero {S : ShortComplex C}
+    (h₁ : IsZero S.X₁) (h₂ : IsZero S.X₂) (h₃ : IsZero S.X₃) :
+    S.Splitting where
+  r := 0
+  s := 0
+  f_r := h₁.eq_of_tgt _ _
+  s_g := h₃.eq_of_src _ _
+  id := h₂.eq_of_src _ _
+
+/-- Helper: a `ShortComplex` of an abelian category whose `X₁` is `IsZero`
+and whose `g : X₂ ⟶ X₃` is an iso splits via `r = 0` and `s = g⁻¹`. -/
+private noncomputable def splittingOfIsZeroX₁IsIsoG {S : ShortComplex C}
+    (h₁ : IsZero S.X₁) [IsIso S.g] :
+    S.Splitting where
+  r := 0
+  s := inv S.g
+  f_r := h₁.eq_of_tgt _ _
+  s_g := IsIso.inv_hom_id _
+  id := by
+    rw [zero_comp, zero_add, IsIso.hom_inv_id]
+
+/-- Helper: a `ShortComplex` of an abelian category whose `X₃` is `IsZero`
+and whose `f : X₁ ⟶ X₂` is an iso splits via `r = f⁻¹` and `s = 0`. -/
+private noncomputable def splittingOfIsZeroX₃IsIsoF {S : ShortComplex C}
+    [IsIso S.f] (h₃ : IsZero S.X₃) :
+    S.Splitting where
+  r := inv S.f
+  s := 0
+  f_r := IsIso.hom_inv_id _
+  s_g := h₃.eq_of_src _ _
+  id := by
+    rw [comp_zero, add_zero, IsIso.inv_hom_id]
+
+/-- The Z2b bicomplex SES `cutoffColumns_succ_singleColumnAt_shortComplex`
+is `ShortExact`. The proof reduces via two applications of
+`shortExact_of_degreewise_shortExact` to cell-level SE in `C`, then
+constructs cell-level `Splitting`s case-by-case on the column index `p'`
+relative to the filtration index `p`. -/
+lemma cutoffColumns_succ_singleColumnAt_shortExact (p : ℤ) :
+    (K.cutoffColumns_succ_singleColumnAt_shortComplex p).ShortExact := by
+  apply HomologicalComplex.shortExact_of_degreewise_shortExact
+  intro p'
+  apply HomologicalComplex.shortExact_of_degreewise_shortExact
+  intro q
+  -- Cell-level case analysis on `p'` vs `p`
+  by_cases hp_lt : p' < p
+  · -- Case A: p' < p — all three cells `IsZero`
+    have hX₁ : IsZero ((K.cutoffColumns (p + 1)).X p') :=
+      K.cutoffColumns_isZero_X_of_lt (by lia : p' < p + 1)
+    have hX₂ : IsZero ((K.cutoffColumns p).X p') :=
+      K.cutoffColumns_isZero_X_of_lt hp_lt
+    have hX₃ : IsZero ((K.singleColumnAt p).X p') :=
+      K.singleColumnAt_isZero_X_of_ne (ne_of_lt hp_lt)
+    refine (splittingOfAllIsZero ?_ ?_ ?_).shortExact
+    · exact (HomologicalComplex.eval _ _ q).map_isZero hX₁
+    · exact (HomologicalComplex.eval _ _ q).map_isZero hX₂
+    · exact (HomologicalComplex.eval _ _ q).map_isZero hX₃
+  by_cases hp_eq : p' = p
+  · -- Case B: p' = p — X₁ `IsZero`, g iso
+    rw [hp_eq]
+    have hX₁ : IsZero ((K.cutoffColumns (p + 1)).X p) :=
+      K.cutoffColumns_isZero_X_of_lt (by lia : p < p + 1)
+    have hX₁_q : IsZero ((((K.cutoffColumns_succ_singleColumnAt_shortComplex p).map
+        (HomologicalComplex.eval _ _ p)).map (HomologicalComplex.eval _ _ q)).X₁) :=
+      (HomologicalComplex.eval _ _ q).map_isZero hX₁
+    -- g at column p is the cell iso composition, hence iso at every cell
+    have h_g_iso : IsIso ((((K.cutoffColumns_succ_singleColumnAt_shortComplex p).map
+        (HomologicalComplex.eval _ _ p)).map (HomologicalComplex.eval _ _ q)).g) := by
+      change IsIso (((K.cutoffColumns_to_singleColumnAt p).f p).f q)
+      have h_bi : IsIso ((K.cutoffColumns_to_singleColumnAt p).f p) := by
+        rw [K.cutoffColumns_to_singleColumnAt_f_at_self p]
+        dsimp [cutoffColumns_to_singleColumnAt_f_self]
+        infer_instance
+      exact (HomologicalComplex.eval _ _ q).map_isIso _
+    exact (splittingOfIsZeroX₁IsIsoG hX₁_q).shortExact
+  · -- Case C: p' > p — X₃ `IsZero`, f iso
+    have hp_gt : p < p' := by
+      rcases lt_or_eq_of_le (not_lt.mp hp_lt) with h | h
+      · exact h
+      · exact absurd h.symm hp_eq
+    have hX₃ : IsZero ((K.singleColumnAt p).X p') :=
+      K.singleColumnAt_isZero_X_of_ne (ne_of_gt hp_gt)
+    have hX₃_q : IsZero ((((K.cutoffColumns_succ_singleColumnAt_shortComplex p).map
+        (HomologicalComplex.eval _ _ p')).map (HomologicalComplex.eval _ _ q)).X₃) :=
+      (HomologicalComplex.eval _ _ q).map_isZero hX₃
+    -- f at column p' > p is the cell iso composition, hence iso at every cell
+    have hp1 : p + 1 ≤ p' := by lia
+    have h_f_iso : IsIso ((((K.cutoffColumns_succ_singleColumnAt_shortComplex p).map
+        (HomologicalComplex.eval _ _ p')).map (HomologicalComplex.eval _ _ q)).f) := by
+      change IsIso (((K.cutoffColumns_succ p).f p').f q)
+      have h_bi : IsIso ((K.cutoffColumns_succ p).f p') := by
+        rw [K.cutoffColumns_succ_f_of_le hp1]
+        infer_instance
+      exact (HomologicalComplex.eval _ _ q).map_isIso _
+    exact (splittingOfIsZeroX₃IsIsoF hX₃_q).shortExact
+
+/-- The Z2c LE-side bicomplex SES `singleColumnAt_to_cutoffColumnsLE_shortComplex`
+is `ShortExact`. Dual to `cutoffColumns_succ_singleColumnAt_shortExact`: the
+proof reduces via two applications of `shortExact_of_degreewise_shortExact`
+to cell-level SE in `C`, then constructs cell-level `Splitting`s case-by-case
+on the column index `p'` relative to the filtration index `p + 1`. -/
+lemma singleColumnAt_to_cutoffColumnsLE_shortExact (p : ℤ) :
+    (K.singleColumnAt_to_cutoffColumnsLE_shortComplex p).ShortExact := by
+  apply HomologicalComplex.shortExact_of_degreewise_shortExact
+  intro p'
+  apply HomologicalComplex.shortExact_of_degreewise_shortExact
+  intro q
+  -- Cell-level case analysis on `p'` vs `p + 1`
+  by_cases hp_lt : p' < p + 1
+  · -- Case A: p' ≤ p — X₁ `IsZero` (singleColumnAt cell vanishes), g iso (cell at ≤ p)
+    have hX₁ : IsZero ((K.singleColumnAt (p + 1)).X p') :=
+      K.singleColumnAt_isZero_X_of_ne (by lia : p' ≠ p + 1)
+    have hX₁_q : IsZero ((((K.singleColumnAt_to_cutoffColumnsLE_shortComplex p).map
+        (HomologicalComplex.eval _ _ p')).map (HomologicalComplex.eval _ _ q)).X₁) :=
+      (HomologicalComplex.eval _ _ q).map_isZero hX₁
+    have hp_le : p' ≤ p := by lia
+    -- g at p' ≤ p is the LE-cell iso composition
+    have h_g_iso : IsIso ((((K.singleColumnAt_to_cutoffColumnsLE_shortComplex p).map
+        (HomologicalComplex.eval _ _ p')).map (HomologicalComplex.eval _ _ q)).g) := by
+      change IsIso (((K.cutoffColumnsLE_succ p).f p').f q)
+      have h_bi : IsIso ((K.cutoffColumnsLE_succ p).f p') := by
+        rw [K.cutoffColumnsLE_succ_f_of_le hp_le]
+        infer_instance
+      exact (HomologicalComplex.eval _ _ q).map_isIso _
+    exact (splittingOfIsZeroX₁IsIsoG hX₁_q).shortExact
+  by_cases hp_eq : p' = p + 1
+  · -- Case B: p' = p + 1 — the single kept column on the LE-side
+    rw [hp_eq]
+    have hX₃ : IsZero ((K.cutoffColumnsLE p).X (p + 1)) :=
+      K.cutoffColumnsLE_isZero_X_of_gt (by lia : p < p + 1)
+    have hX₃_q : IsZero ((((K.singleColumnAt_to_cutoffColumnsLE_shortComplex p).map
+        (HomologicalComplex.eval _ _ (p + 1))).map (HomologicalComplex.eval _ _ q)).X₃) :=
+      (HomologicalComplex.eval _ _ q).map_isZero hX₃
+    -- f at p' = p + 1 is the cell iso composition (via singleColumnAt_to_cutoffColumnsLE_f_self)
+    have h_f_iso : IsIso ((((K.singleColumnAt_to_cutoffColumnsLE_shortComplex p).map
+        (HomologicalComplex.eval _ _ (p + 1))).map (HomologicalComplex.eval _ _ q)).f) := by
+      change IsIso (((K.singleColumnAt_to_cutoffColumnsLE p).f (p + 1)).f q)
+      have h_bi : IsIso ((K.singleColumnAt_to_cutoffColumnsLE p).f (p + 1)) := by
+        rw [K.singleColumnAt_to_cutoffColumnsLE_f_at_self p]
+        dsimp [singleColumnAt_to_cutoffColumnsLE_f_self]
+        infer_instance
+      exact (HomologicalComplex.eval _ _ q).map_isIso _
+    exact (splittingOfIsZeroX₃IsIsoF hX₃_q).shortExact
+  · -- Case C: p' > p + 1 — all three cells `IsZero`
+    have hp_gt : p + 1 < p' := by
+      rcases lt_or_eq_of_le (not_lt.mp hp_lt) with h | h
+      · exact h
+      · exact absurd h.symm hp_eq
+    have hX₁ : IsZero ((K.singleColumnAt (p + 1)).X p') :=
+      K.singleColumnAt_isZero_X_of_ne (ne_of_gt hp_gt)
+    have hX₂ : IsZero ((K.cutoffColumnsLE (p + 1)).X p') :=
+      K.cutoffColumnsLE_isZero_X_of_gt hp_gt
+    have hX₃ : IsZero ((K.cutoffColumnsLE p).X p') :=
+      K.cutoffColumnsLE_isZero_X_of_gt (by lia : p < p')
+    refine (splittingOfAllIsZero ?_ ?_ ?_).shortExact
+    · exact (HomologicalComplex.eval _ _ q).map_isZero hX₁
+    · exact (HomologicalComplex.eval _ _ q).map_isZero hX₂
+    · exact (HomologicalComplex.eval _ _ q).map_isZero hX₃
+
+end ShortExactUpgrade
+
+end HomologicalComplex₂
+
+/-!
+## Z2e — `IsFirstQuadrantRows` companion typeclass (Phase B.1)
+
+For the `SpectralObject.IsFirstQuadrant` instance's `isZero₂` axiom in
+the Verdier convention, we need the bicomplex's ROWS to vanish below
+the cohomological-up-ℤ row index `0` — i.e., `(K.X p).X q = 0` when
+`q < 0`. This is captured by the typeclass `IsFirstQuadrantRows` paralleling
+`IsFirstQuadrantBicomplex`. The two typeclasses together provide the
+column-side and row-side vanishing needed by Z2e-B's
+`IsFirstQuadrant` instance for `K.spectralObject`.
+
+In the cohomological-up-ℤ convention, a bicomplex `K` is first-quadrant iff
+both `IsFirstQuadrantBicomplex K` (columns) and `IsFirstQuadrantRows K`
+(rows) hold. The concrete `trivialColumnZeroFirstQuadrant` test bicomplex
+satisfies both: its only nonzero column is `column 0`, which is
+`(HomologicalComplex.single _ _ 0).obj (ModuleCat.of ℚ ℚ)`, i.e., a
+chain complex supported at row index `0` with all negative-row cells zero.
+-/
+
+namespace HomologicalComplex₂
+
+variable {C : Type*} [Category* C] [Preadditive C] [HasZeroObject C]
+  (K : HomologicalComplex₂ C (ComplexShape.up ℤ) (ComplexShape.up ℤ))
+
+section FirstQuadrantRows
+
+/-- A bicomplex `K : HomologicalComplex₂ C (ComplexShape.up ℤ) (ComplexShape.up ℤ)`
+is **first-quadrant in rows** if each of its columns vanishes at strictly
+negative row degrees. Paralleling `IsFirstQuadrantBicomplex` (column-side
+vanishing), this captures the row-side condition needed by Z2e-B's
+`SpectralObject.IsFirstQuadrant.isZero₂` axiom in the Verdier construction. -/
+class IsFirstQuadrantRows : Prop where
+  /-- Each column has zero cells at strictly negative row indices. -/
+  isZero_X_X_of_neg_row {p q : ℤ} (hq : q < 0) : IsZero ((K.X p).X q)
+
+/-- The trivial-column test bicomplex from Z2d is first-quadrant in rows:
+its only nonzero column is column `0`, which is the `single` chain complex
+supported at row `0`, so all cells at strictly negative row indices vanish. -/
+instance : trivialColumnZeroFirstQuadrant.IsFirstQuadrantRows where
+  isZero_X_X_of_neg_row {p q} hq := by
+    show IsZero ((trivialColumnZeroFirstQuadrant.X p).X q)
+    by_cases hp : p = 0
+    · subst hp
+      show IsZero (((if (0 : ℤ) = 0 then (HomologicalComplex.single _ _ 0).obj
+                       (ModuleCat.of ℚ ℚ)
+                     else (HomologicalComplex.zero :
+                       HomologicalComplex (ModuleCat ℚ) (ComplexShape.up ℤ))).X q))
+      rw [if_pos rfl]
+      exact HomologicalComplex.isZero_single_obj_X _ _ _ _ (ne_of_lt hq)
+    · show IsZero (((if p = 0 then (HomologicalComplex.single _ _ 0).obj
+                       (ModuleCat.of ℚ ℚ)
+                     else (HomologicalComplex.zero :
+                       HomologicalComplex (ModuleCat ℚ) (ComplexShape.up ℤ))).X q))
+      rw [if_neg hp]
+      exact (HomologicalComplex.eval (ModuleCat ℚ) (ComplexShape.up ℤ) q).map_isZero
+        (HomologicalComplex.isZero_zero (V := ModuleCat ℚ) (c := ComplexShape.up ℤ))
+
+/-- Non-vacuous: the `IsFirstQuadrantRows` cell-vanishing primitive applies
+to the trivial-column test bicomplex. At row `q = -2 < 0` of column 0, the
+cell is `IsZero`. -/
+example : IsZero ((trivialColumnZeroFirstQuadrant.X 0).X (-2)) :=
+  IsFirstQuadrantRows.isZero_X_X_of_neg_row (by lia : (-2 : ℤ) < 0)
+
+/-- Non-vacuous: the `IsFirstQuadrantRows` typeclass also vanishes at
+columns other than the kept column 0. -/
+example : IsZero ((trivialColumnZeroFirstQuadrant.X 3).X (-1)) :=
+  IsFirstQuadrantRows.isZero_X_X_of_neg_row (by lia : (-1 : ℤ) < 0)
+
+end FirstQuadrantRows
+
+/-! ### Non-vacuous evaluations of the Z2e `ShortExact` upgrades.
+
+The `ShortExact` lemmas
+`cutoffColumns_succ_singleColumnAt_shortExact` and
+`singleColumnAt_to_cutoffColumnsLE_shortExact` are non-trivial for **any**
+abelian-valued bicomplex `K`: at each non-trivial column the cell-level
+SC is either `(0, X, X)` with `g` iso (case B) or `(X, X, 0)` with `f` iso
+(case C), both of which admit explicit cell-level `Splitting`s constructed
+via `splittingOfIsZeroX₁IsIsoG` and `splittingOfIsZeroX₃IsIsoF`. The
+proofs route through the substantive Z2b/Z2c filtration data
+(`cutoffColumns_succ_f_of_le` and `cutoffColumns_to_singleColumnAt_f_at_self`,
+plus the dual LE-side primitives), via the genuine bicomplex cell isos
+`cutoffColumns_XIso_of_le` and `singleColumnAt_XIso_self`, NOT via rfl
+bypass. Concrete `ModuleCat ℚ`-valued evaluations on the
+`trivialColumnZeroFirstQuadrant` test bicomplex are deferred to Z2f
+where they will be threaded through the SpectralObject record assembly
+construction (cokernel + totalisation + shift in `HomologicalComplex C
+(ComplexShape.up ℤ)`). -/
+
+end HomologicalComplex₂
+
+/-!
+## Deferred to Z2f (named follow-on)
+
+The Z2e session **landed** the following Phase A / Phase B / Phase C
+deliverables:
+
+* **Phase A.1 (ShortExact upgrade):** Z2b GE-side and Z2c LE-side
+  `ShortComplex` packagings upgraded to `ShortExact` via two-level
+  `HomologicalComplex.shortExact_of_degreewise_shortExact` plus
+  cell-level `Splitting` case analysis (all-`IsZero` / `IsZero X₁` + iso `g` /
+  `IsZero X₃` + iso `f`). Available as
+  `cutoffColumns_succ_singleColumnAt_shortExact` and
+  `singleColumnAt_to_cutoffColumnsLE_shortExact`.
+
+* **Phase B.1 (`IsFirstQuadrantRows` typeclass):** the row-side companion
+  to `IsFirstQuadrantBicomplex`, capturing `(K.X p).X q = 0` for `q < 0`,
+  feeding the `SpectralObject.IsFirstQuadrant.isZero₂` axiom in Z2f-B.
+
+* **Phase C (Z2d residual cleanup):** `cutoffColumns_inclusion_le_refl`
+  (load-bearing reflexivity for the chain inclusion at integer indices),
+  `cutoffColumnsEInt_le_refl_coe` (the integer-EInt-index reflexivity
+  matching `_refl_bot` and `_refl_top`), and the full 9-case
+  `cutoffColumnsEInt_le_trans` (covering all `(i, j, k) ∈ {⊥, (p : ℤ), ⊤}³`
+  orderings, with impossible orderings discharged via `simp at h`).
+
+The **final Z2 deliverable** — the `SpectralObject (HomologicalComplex C c₁₂) EInt`
+**record construction** packaging the H-data, δ-data via the snake lemma,
+the three exactness conditions via the LES of cohomology, and the
+`IsFirstQuadrant` instance — is deferred to a follow-on **Z2f**
+sub-ticket per the pre-authorised sub-split contingency. The Z2e session
+landed the substantive ShortExact upgrade infrastructure feeding the
+δ-data construction, and the IsFirstQuadrantRows typeclass needed for
+the IsFirstQuadrant instance, but the record-assembly tower (cokernel
+construction, totalisation, shift, ComposableArrows functoriality, δ via
+ShortExact.δ, LES exactness via ShortExact.homology_exact₁/₂/₃) is sized
+beyond a single focused session per the empirical 250k-per-deliverable
+ceiling observed across Z2a → Z2b → Z2c → Z2d → Z2e.
+
+### Z2f-A — `SpectralObject` H-functor + δ + exactness assembly
 
 The H-functor `H n : ComposableArrows EInt 1 ⥤ HomologicalComplex C c₁₂`
 on `mk₁ (homOfLE (h : i ≤ j))` returns the cokernel of the Z2d
@@ -1821,28 +2255,25 @@ cutoffColumnsEInt i` totalised and shifted by `n`. Concretely:
 * `(K.H n).obj (mk₁ (homOfLE h))` = `[totalise + shift n]` of that cokernel.
 * The functoriality on `ComposableArrows EInt 1` morphisms follows from
   the universal property of cokernels applied to the Z2d compatibility
-  squares.
+  squares (`cutoffColumnsEInt_le_trans` and `cutoffColumnsEInt_le_refl_coe`).
 
 The δ-data comes from the snake lemma on the s.e.s. of triple
 filtration quotients:
 
 * For `i ≤ j ≤ k` in `EInt`, the s.e.s.
-  `0 ⟶ slice(j, k) ⟶ slice(i, k) ⟶ slice(i, j) ⟶ 0` arises from the Z2d
-  compatibility square `cutoffColumnsEInt_le_trans` (j ≤ k followed by
-  i ≤ j) interpreted as a filtration s.e.s. in `HomologicalComplex₂`.
-* Totalising this s.e.s. (after upgrade from `ShortComplex` to
-  `ShortExact` using the Z2b/Z2c bicomplex SES via
-  `HomologicalComplex.shortExact_of_degreewise_shortExact` at the
-  column level) gives a `ShortExact` of `HomologicalComplex C c₁₂`.
+  `0 ⟶ slice(j, k) ⟶ slice(i, k) ⟶ slice(i, j) ⟶ 0` is built by combining
+  the Z2e GE-side / LE-side `ShortExact` upgrades into a s.e.s. of
+  `HomologicalComplex₂` and totalising via the bicomplex-level
+  `ShortExact` propagation.
 * The connecting morphism `ShortExact.δ` and exactness lemmas
   `ShortExact.homology_exact₁/₂/₃` from
   `Mathlib.Algebra.Homology.HomologySequence` supply the SpectralObject
   δ-data + three exactness conditions.
 
-### Z2e-B — `IsFirstQuadrant` instance via the Z2d typeclass
+### Z2f-B — `IsFirstQuadrant` instance via the Z2d/Z2e typeclasses
 
-For a `[K.IsFirstQuadrantBicomplex]` bicomplex `K`, the spectral object
-constructed in Z2e-A satisfies `IsFirstQuadrant`:
+For a `[K.IsFirstQuadrantBicomplex] [K.IsFirstQuadrantRows]` bicomplex
+`K`, the spectral object constructed in Z2f-A satisfies `IsFirstQuadrant`:
 
 * `isZero₁ i j (h : i ≤ j) (hj : j ≤ 0) n`: the H-data at `mk₁ (i ≤ j)`
   with `j ≤ 0` is the cokernel of `cutoffColumnsEInt j ⟶ cutoffColumnsEInt i`
@@ -1852,17 +2283,17 @@ constructed in Z2e-A satisfies `IsFirstQuadrant`:
 
 * `isZero₂ i j (h : i ≤ j) n (hi : n < i)`: similarly the H-data is
   the totalised+shifted cokernel; the shift by `n < i` lands the
-  contribution in negative-row degrees where `K`'s row-vanishing
-  forces zero — captured by an `IsFirstQuadrantRows K` companion
-  typeclass paralleling `IsFirstQuadrantBicomplex`.
+  contribution in negative-row degrees where `K`'s row-vanishing forces
+  zero, via Z2e's `IsFirstQuadrantRows.isZero_X_X_of_neg_row`.
 
-Both vanishing conditions are honest (use the substantive Z2d cell-level
-vanishing) and not the classical-instance arm.
+Both vanishing conditions are honest (use the substantive Z2d/Z2e
+cell-level vanishing) and not the classical-instance arm.
 
-### Z2e budget
+### Z2f budget
 
-The Z2e follow-on is sized for a focused short session (~250-300k
-tokens, matching the Z2a / Z2b / Z2c / Z2d cadence). After Z2e GREEN,
-the Z2 scope is fully closed and Z3 (`BicomplexConvergence`) dispatches
-on the full Z2 deliverable set.
+The Z2f follow-on is sized for a focused short session (~250-300k
+tokens, matching the empirically validated per-deliverable ceiling
+observed across Z2a → Z2b → Z2c → Z2d → Z2e). After Z2f GREEN, the Z2
+scope is fully closed and Z3 (`BicomplexConvergence`) dispatches on the
+full Z2 deliverable set.
 -/
