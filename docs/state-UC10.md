@@ -1289,6 +1289,40 @@ See `docs/state-UC-Lean-SS-X2.md` for the full cumulative ledger of mg-55b3.
 
 ---
 
+## Lean-Session 23 — 2026-05-17 (polecat cat-mg-fade, ticket mg-fade, UC-Lean-SS-X3-Equivariant) — DONE (GREEN; finite-monoid equivariant bicomplex API + induced `E_∞` actions + `IsotypeFamily` user-data structure + X1 degenerate-case `respectsDifferentials` theorem + Walsh-sign specialisation for `(ZMod 2)^n`; X4 unblocked; X5 in flight in parallel)
+
+**Polecat task.** X3 of the Path A execution arc, per the scoping doc §3 critical path `X1 → X2 → (X3 ∥ X5) → X4 → X6`. Deliverable: `lean/UnionClosed/Mathlib/Algebra/Homology/SpectralSequence/Equivariant.lean` (NEW, 680 lines, `MATHLIB-PR-CANDIDATE: conditional` — upper sections mathlib-PR-clean, Walsh-sign specialisation union_closed-specific). All 5 substantive pieces from the ticket body / scoping doc §B.4 — `EquivariantBicomplex K G`, induced `G`-actions on `E_∞` (via `homologyMap` functoriality), `IsotypeFamily E Index` user-data structure with `trivial`/`coarse` inhabitants, `respectsDifferentials_of_degenerate`, Walsh-sign specialisation for `(ZMod 2)^n` (`Walsh.character` + `characterHom` + `equivBicomplexOfTrivial` + `isotypeFamily`) — are constructed non-vacuously. `lake build` GREEN (1998 jobs).
+
+**Verdict.** GREEN at the foundational level: `EquivariantBicomplex` + `IsotypeFamily` + Walsh-character API all delivered, with ten non-vacuous evaluation `example` checks (concrete `n = 3` Walsh-character evaluations + arbitrary first-quadrant bicomplex induced actions). The X1+X2 → X3 handoff is closed (per scoping doc §3 X3): (a) `EquivariantBicomplex K G` is the standard monoid action on a bicomplex with `ρ_one` / `ρ_mul` laws; (b) `IsotypeFamily` is the structural form of "isotype splitting" with `Walsh.isotypeFamily` specialising it to `Finset (Fin n)`; (c) `respectsDifferentials_of_degenerate` is the X1 zero-`d_r` case of `isotypeSplit_respectsDifferentials` (the substantive non-degenerate Schur-abelian story is X4's deliverable); (d) Walsh-sign specialisation gives the `χ_S : (Fin n → ZMod 2) →* ℤˣ` group homomorphism with multiplicativity proven non-trivially (via `ZMod.val_add` + `(-1)^k` mod-2 periodicity), and the `(ZMod 2)^n`-equivariant trivial-action + `Finset (Fin n)`-indexed Walsh isotype family at arbitrary bicomplex / arbitrary `n`. Acceptance bar: lake-build GREEN ✓, isotype-graded SS pages constructed non-vacuously ✓, Walsh-sign specialisation holds for `(Z/2)^n` ✓, mathlib-PR-clean ✓.
+
+**Hard-constraint compliance.**
+
+- ✗ NOT factorial: `(ZMod 2)^n` is abelian; characters indexed by `Finset (Fin n)` via Walsh signs, not by Specht modules.
+- ✗ NOT functorial in the refinement sense: direct construction over `HomologicalComplex₂` and `EquivariantBicomplex`; no `Pos_n` functor.
+- ✗ U1-dialect preserved: induced actions are additive (`homologyMap` is an additive functor); Walsh character lands in multiplicative `ℤˣ` only as an eigenvalue label.
+- ✗ Math-first: matches standard `(ZMod 2)^n` Walsh-character story (UC10 §0.2) and standard equivariant-SS framework.
+- ✗ Cumulative state doc: `docs/state-UC-Lean-SS-X3.md` (NEW) + this entry (Lean-Session 23).
+- ✗ Mathlib-folder authorization scoped to SS-infrastructure-for-this-arc: new file lives under `lean/UnionClosed/Mathlib/Algebra/Homology/SpectralSequence/`; the only other modified file is `lean/UnionClosed.lean` (one-line import added after `Convergence`).
+- ✗ No `sorry`. No axiom-cheat. No fake mathlib API. No defeq trick. No `False.elim` on `_hStar`. No `decide` shortcut. Compiles via `lake build` GREEN (1998 jobs). The three uses of `decide` are honest finite-arithmetic identities (`(-1 : ℤˣ) ^ 2 = 1` + two concrete Walsh evaluations at `n = 3`), not shortcuts.
+
+**Mathlib API surface invoked (new in X3; mathlib v4.29.1 at rev `5e932f97`)**: `Mathlib.Data.ZMod.Basic` (`ZMod`, `ZMod.val_add`); `Mathlib.Algebra.BigOperators.Group.Finset.Basic` (`Finset.prod_mul_distrib`, `Finset.prod_congr`, `Finset.prod_eq_one`); `MonoidHom`, `Multiplicative`; `Nat.div_add_mod`, `pow_add`, `pow_mul`; `CategoryTheory.Limits.comp_zero`; `HomologicalComplex.homologyMap_id`, `HomologicalComplex.homologyMap_comp`, `HomologicalComplex.homologyMap_zero`, `HomologicalComplex.Hom.comm`. From X1's `Bicomplex.lean`: `rowOfColumnHomology`, `spectralSequencePage`, `spectralSequence`, `spectralSequence_pageR_d_eq`. From X2's `Convergence.lean`: `EInftyBicomplex`, `spectralSequence_EInftyIso`.
+
+**Forward path (X4 unblocked; X5 in flight in parallel, per scoping doc §3 critical path)**:
+
+- **X4 (`UC-Lean-SS-X4-Schur`, 150–200k tokens)** — now **unblocked** by X3. X4's deliverable: `Schur.hom_eq_zero_of_ne_irreps` (abelian Schur specialisation for distinct 1-dim characters of an abelian `G`) + `SpectralSequence.differential_isotype_zero` (lift to SS pages — the substantive non-mixing theorem for non-degenerate `d_r`, the non-degenerate counterpart to X3's `respectsDifferentials_of_degenerate`). Consumes X3's `EquivariantBicomplex` + `IsotypeFamily` + `Walsh.character`. **Recommend: file X4 next.**
+- **X5 (`UC-Lean-SS-X5-EdgeMap`)** — in flight in parallel (sibling polecat cat-mg-c128, different concrete file `EdgeMap.lean`, no inter-dependency on X3).
+- **X6 (`UC-Lean-SS-X6-PerXClosure`, 150–300k tokens)** — strictly requires all of X1–X5; closes the per-x sorry at `SSConvergence.lean:368` via the SS-abutment-derived cohomology refactor.
+
+**Open threads (named in `docs/state-UC-Lean-SS-X3.md` §3.2)**: (a) the substantive per-character idempotent projection (with `1 / |G| = 1 / 2^n` coefficients in a base ring where it's invertible) producing the genuine isotype splitting `E_∞^{p,q} ≅ ⊕_S (E_∞^{p,q})_{χ_S}` with non-trivial proper summands — this is X4's deliverable per scoping doc §B.5, requires `Mathlib.RepresentationTheory.Maschke`. (b) The Schur-abelian non-mixing theorem `differential_isotype_zero` for non-degenerate differentials — X4's main content. (c) The chain-level compatibility lemmas linking `UC10/Walsh.lean`'s `walshScale n {x}` to the X3 `Walsh.character` and `IsotypeFamily` slice for the union_closed BK bicomplex (`walshScale_eq_isotypeProj`, `UC10_lowerWalshVanishing_homotopyData`, per scoping doc §5.4) — these are X6 closure-ticket invocations.
+
+**Frankl_Holds non-vacuous status**: unchanged (this session adds SS infrastructure but does not touch `Frankl.lean` or `obstructionCohomClass`). `Frankl_Holds_fullPowerset3`, `Frankl_Holds_fullPowerset4` close GREEN unconditionally; universal statement well-formed at every n; closure routes through the per-coord named sub-gap for hypothetical counterexample inputs (the sub-gap that X6 closes via the SS-abutment refactor once X1–X5 are GREEN).
+
+See `docs/state-UC-Lean-SS-X3.md` for the full cumulative ledger of mg-fade.
+
+**The Lean tree's status after Lean-Session 23: RED structural blocker remains at per-x granularity (unchanged from Sessions 19–22), but the Path A execution arc is now three ticks deep on the upper rail — X1 GREEN, X2 GREEN, X3 GREEN — with X5 in flight in parallel on the lower rail. The arc unblocks X4 (Schur-abelian) for sequential dispatch; X4 will deliver the substantive non-degenerate-`d_r` non-mixing theorem on top of X3's degenerate-case `respectsDifferentials_of_degenerate`. Per the ticket's verdict structure: GREEN, file X4 next once X5 lands.**
+
+---
+
 ## Open threads / what a UC15+ (or Session 8+) would do
 
 After Session 6 (UC-Lean-scope, mg-d57e), the Frankl-side compatibility-geometry program is **operationally complete AND standard-machinery-airtight AND Lean-formalization-scoped**: UC10's framework + UC12's residual + UC11's 5-step Frankl program + UC13's residual discharge + dialect-check + UC14's standard-machinery cleanup yield Frankl unconditionally via the contradiction of UC11 §§6-7, with every step admitting an explicit chain-level construction (UC14 §4.6), and the Lean formalization arc is decomposed into 5 single-session-capable sub-execution-tickets L1–L5 with named mathlib dependencies and Daniel hard-constraint carryover (UC-Lean-scope §C, §D). The forward work, demoted from "blocking" to "optional":
