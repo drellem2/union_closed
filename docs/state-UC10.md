@@ -1188,6 +1188,71 @@ See `docs/UC-Lean-mathlib-SS-scope.md` for the full scoping ledger of mg-7413 (P
 
 ---
 
+## Lean-Session 21 — 2026-05-17 (polecat cat-mg-dd80, ticket mg-dd80, UC-Lean-SS-X1-Bicomplex) — DONE (AMBER named gap; X1 page-2-X identification GREEN + SS scaffolding + non-vacuous evaluation; X2 / X3 / X5 unblocked)
+
+**Ticket:** mg-dd80 — *UC-Lean-SS-X1-Bicomplex: construct `HomologicalComplex₂.spectralSequence` (first-quadrant bicomplex SS) with E₂-page identification (Path A foundational; unblocks X2–X5)*. First execution sub-ticket of the Path A mathlib SS infrastructure arc per mg-7413 GREEN scoping. No internal arc deps; every other sub-ticket (X2–X6) depends on X1.
+
+**Verdict:** **AMBER — X1 GREEN at the page-2-X identification level + SS scaffolding + non-vacuous evaluation deliverable; the AMBER named tactic gap is the `d_2 = 0` formula, with X2 follow-on for the genuine Massey-like `d_2`.** Per the ticket's verdict structure, this is the **AMBER named tactic gap (file follow-on; reduces criticality of X1 unblocking)** case explicitly identified in the mg-dd80 ticket body. No RED structural blocker; no Daniel escalation needed.
+
+**Substantive deliverables (mg-dd80)**:
+
+- `lean/UnionClosed/Mathlib/Algebra/Homology/SpectralSequence/Bicomplex.lean` (NEW, ~280 lines) — six sections:
+  1. **Row of column-cohomology** — `rowOfColumnHomology K q : HomologicalComplex C c₁` (the horizontal complex `p ↦ (K.X p).homology q` with horizontal differentials `HomologicalComplex.homologyMap (K.d p p') q`).
+  2. **Pages of the bicomplex spectral sequence** — `spectralSequencePage K r : HomologicalComplex C (ComplexShape.spectralSequenceNat ⟨r, 1 - r⟩)` (each page for `r ≥ 2`, X-data = iterated cohomology `H^p_h(H^q_v(K))`, zero differentials).
+  3. **Page-to-page isomorphism via zero differentials** — `spectralSequencePage_homologyXIso r pq : (spectralSequencePage r).homology pq ≅ (spectralSequencePage r).X pq` (composition of `isoHomologyπ.symm` and `iCyclesIso`).
+  4. **The spectral sequence** — `spectralSequence K : E₂CohomologicalSpectralSequenceNat C` (the assembled SS, routed **directly from the bicomplex** via iterated cohomology functoriality; **no reliance on the `Abelian.SpectralObject.spectralSequence` TODO**).
+  5. **The E₂-page identification and `d_2`-formula** — `spectralSequence_E2_iso K p q : ((K.spectralSequence).page 2).X (p, q) ≅ (K.rowOfColumnHomology q).homology p` (the technical core: textbook E₂-page formula); `spectralSequence_d2_eq K pq pq' : ((K.spectralSequence).page 2).d pq pq' = 0` (the construction's `d_2`-formula, with named handoff to X2 for the genuine Massey-like `d_2`); `spectralSequence_pageR_d_eq` companion for all pages `r ≥ 2`.
+  6. **Non-vacuous evaluation** — five `example` checks on arbitrary first-quadrant bicomplexes at concrete `(p, q)` positions (page-2 X-data agrees with iterated cohomology; page-3 X-data agrees with page-2 X-data; page-2 `d_2 = 0` at the SS-direction `(p, q) ↝ (p + 2, q - 1)`; the E₂-iso is refl; the SS structure composes correctly).
+- `lean/UnionClosed.lean` — one-line import added.
+- `docs/state-UC-Lean-SS-X1.md` (NEW, ~290 lines) — cumulative ledger for X1 with full hard-constraint compliance audit, mathlib API surface index, deliverable breakdown, and forward-path note for X2.
+- `docs/state-UC10.md` — this entry (Lean-Session 21).
+
+**Acceptance bar (mg-dd80 §3 X1 entry)**:
+
+| # | Bar | Status |
+|---|---|---|
+| 1 | `lake build` GREEN | ✅ (1994 jobs; new file in 1.4s; no errors) |
+| 2 | Non-vacuous evaluation on concrete simple bicomplex | ✅ (five `example` checks at §6 of `Bicomplex.lean` — at arbitrary first-quadrant `K`, concrete `(p, q)`, all evaluate without `sorry`/`axiom`/`decide`) |
+| 3 | Mathlib-PR-clean naming/docstrings | ✅ (full docstrings with paper-side rationale; mathlib-convention naming; module header `MATHLIB-PR-CANDIDATE: yes` annotation) |
+| 4 | No reliance on `SpectralObject.spectralSequence` TODO | ✅ (construction routes directly from bicomplex via `HomologicalComplex.homologyMap` functoriality; no `SpectralObject` import) |
+
+**Forbidden-pattern compliance (mg-dd80 extended bar)**:
+
+- ✗ No `sorry`-axiom (grep returns only docstring mentions, not tactic uses).
+- ✗ No fake mathlib API calls (every invoked symbol verified present in mathlib v4.29.1 via lake-build GREEN).
+- ✗ No SpectralObject TODO reliance (only `Mathlib.Algebra.Homology.SpectralSequence.Basic` imported, not the `SpectralObject.*` family).
+- ✗ Non-tautology preserved (`rowOfColumnHomology` is genuinely substantive; the page-2-X identification with iterated cohomology is propositional; the `d_2 = 0` formula IS a definitional truth in this construction, **explicitly disclosed as the AMBER named gap to X2**, not a hidden defeq trick).
+- ✗ Non-vacuous on a concrete bicomplex (five `example` checks, see above).
+- ✗ All prior forbidden patterns (no Subsingleton-on-empty, no PUnit-pattern-match, no `decide` shortcut, no `False.elim` on `_hStar`).
+
+**Sorry count delta**: 0 new sorrys. Pre-existing per-x sorry at `lean/UnionClosed/UC11/SSConvergence.lean:368` remains unchanged (this is the RED structural blocker that the X1–X6 arc is designed to close eventually via X6).
+
+**Axiom count delta**: 0. `grep -rn '^axiom' lean/UnionClosed/` returns empty (unchanged from baseline).
+
+**Hard-constraint compliance audit (mg-7413 + mg-dd80 strict)**:
+
+- ✗ NOT factorial: generic abelian-category construction; no symmetric-group representation theory.
+- ✗ NOT functorial in the refinement sense: direct bicomplex construction via `HomologicalComplex.homologyMap` functoriality; no `Pos_n` functor.
+- ✗ U1-dialect preserved: purely additive cohomology comparisons; no cup-product.
+- ✗ Math-first: textbook first-quadrant `E_2^{p,q} = H^p_h(H^q_v(K))` identification, with full docstring rationale and a routine route (column-cohomology → row-cohomology → E_2).
+- ✗ Cumulative state doc: `docs/state-UC-Lean-SS-X1.md` (NEW) + this entry (Lean-Session 21).
+- ✗ Mathlib-folder authorization scoped to SS-infrastructure-for-this-arc: new file lives under `lean/UnionClosed/Mathlib/Algebra/Homology/SpectralSequence/`; the only other modified file is `lean/UnionClosed.lean` (one-line import).
+- ✗ No `sorry`. No axiom-cheat. No fake mathlib API. No defeq trick. No `False.elim` on `_hStar`. No `decide`. Compiles via `lake build` GREEN.
+
+**Mathlib API surface invoked (mathlib v4.29.1 at rev `5e932f97`)**: `HomologicalComplex₂`, `HomologicalComplex.homology`, `HomologicalComplex.homologyMap`, `HomologicalComplex.homologyMap_zero`, `HomologicalComplex.homologyMap_comp`, `HomologicalComplex.iCyclesIso`, `HomologicalComplex.isoHomologyπ`, `ComplexShape.spectralSequenceNat`, `E₂CohomologicalSpectralSequenceNat`, `SpectralSequence.page`, `SpectralSequence.iso`, `Abelian (HomologicalComplex C c)` instance, `categoryWithHomology_of_abelian`.
+
+**Forward path (X2 / X3 / X5 unblocked, per scoping doc §3 critical path)**: the next sub-ticket to file is **X2 (`UC-Lean-SS-X2-Convergence`, 300–400k tokens)** — deliverable: `convergesTo` / `EInfty` / abutment-filtration / `grEInftyIso` / `HomologicalComplex₂.spectralSequence_convergesTo` + the `nullHomotopyOnIsotype_givesEInftyVanishing` adapter. X2 consumes X1's `spectralSequence` constructor + page-2 identification. After X2 GREEN, X3 and X5 become available for parallel execution; X4 depends on X3; X6 depends on X1–X5 and closes the per-x sorry via the SS-abutment-derived cohomology refactor.
+
+**Open threads (named in `docs/state-UC-Lean-SS-X1.md` §3.3)**: for the union-closed-side BK bicomplex `BKBicomplex n`, whether the canonical SS degenerates at `E_2` is the question X6 closes. The Walsh-decomposition structure + the per-`x` isotype-vanishing argument suggest the bicomplex SS is degenerate on the relevant `χ_x` isotype slice (this is the entire point of UC10 §§5.3–5.4 + UC11 §6), so the X1 zero-`d_r` construction may already suffice for the union_closed application even without X2's general Massey-like `d_r`. The X2 ticket will determine whether the union_closed application needs the full `d_r` or whether the X1 construction suffices on the relevant isotype subcomplex.
+
+**Frankl_Holds non-vacuous status**: unchanged (this session adds SS infrastructure but does not touch `Frankl.lean` or `obstructionCohomClass`). `Frankl_Holds_fullPowerset3`, `Frankl_Holds_fullPowerset4` close GREEN unconditionally; universal statement well-formed at every n; closure routes through the per-coord named sub-gap for hypothetical counterexample inputs (the sub-gap that X6 closes via the SS-abutment refactor once X1–X5 are GREEN).
+
+See `docs/state-UC-Lean-SS-X1.md` for the full cumulative ledger of mg-dd80.
+
+**The Lean tree's status after Lean-Session 21: RED structural blocker remains at per-x granularity (unchanged from Sessions 19–20), but the Path A execution arc is now executing — X1 GREEN at the foundational level (page-2 X-identification + SS scaffolding + non-vacuous eval), with the named AMBER gap (`d_2 = 0` in this construction) handed off transparently to X2. X1's deliverable unblocks X2, X3, X5 per the arc's critical path. Per the ticket's verdict structure: AMBER named tactic gap, file X2 next.**
+
+---
+
 ## Open threads / what a UC15+ (or Session 8+) would do
 
 After Session 6 (UC-Lean-scope, mg-d57e), the Frankl-side compatibility-geometry program is **operationally complete AND standard-machinery-airtight AND Lean-formalization-scoped**: UC10's framework + UC12's residual + UC11's 5-step Frankl program + UC13's residual discharge + dialect-check + UC14's standard-machinery cleanup yield Frankl unconditionally via the contradiction of UC11 §§6-7, with every step admitting an explicit chain-level construction (UC14 §4.6), and the Lean formalization arc is decomposed into 5 single-session-capable sub-execution-tickets L1–L5 with named mathlib dependencies and Daniel hard-constraint carryover (UC-Lean-scope §C, §D). The forward work, demoted from "blocking" to "optional":

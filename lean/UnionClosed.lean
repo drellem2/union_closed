@@ -1,3 +1,4 @@
+import UnionClosed.Mathlib.Algebra.Homology.SpectralSequence.Bicomplex
 import UnionClosed.UC10.IntClosedFam
 import UnionClosed.UC10.Walsh
 import UnionClosed.UC10.CubicalDefect
