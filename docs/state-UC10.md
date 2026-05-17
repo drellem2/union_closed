@@ -1652,6 +1652,71 @@ See `docs/state-UC-Lean-PathB-Y1b.md` for the full cumulative ledger of mg-ba0f.
 
 ---
 
+## Lean-Session 30 — 2026-05-17 (polecat cat-mg-f5b4, ticket mg-f5b4, UC-Lean-PathB-Y2-WalshEquivariant) — DONE (GREEN; all six pieces non-vacuous; Walsh-equivariant lift on BKBicomplexHC₂ + per-S Maschke isotype projector + X3/X4 integration on BK isotype pages)
+
+**Polecat task.** Y2 sub-ticket of Path B (mg-e1b8 scoping). Parallel with Y1b (cat-mg-ba0f). Construct the Walsh-equivariant structure on `BKBicomplexHC₂ F` of Y1 (mg-17dc): per-generator `(ZMod 2)^n` action, X3 `EquivariantBicomplex` inhabitant, per-S Maschke isotype projector, chain-level χ_S-isotype, X3 `IsotypeFamily` strict inhabitant, and X3/X4 integration on the BK bicomplex E_∞ pages. Single-session; budget 400k tokens.
+
+**Verdict.** **GREEN — all six substantive pieces landed non-vacuously.**
+
+**Substantive new content (mg-f5b4).**
+
+1. **`lean/UnionClosed/UC10/BKWalshEquivariant.lean`** (NEW, ~740 lines). Six pieces:
+   - **`chainScalarAt n μ q`** (helper) — generic chain-only scalar action on `BKBicomplex n p q`. Both BKToggleActionAt and walshIsotypeProjAt are instances. Includes `chainScalarAt_mapDomain`, `chainScalarAt_comm_vert`, `chainScalarAt_comm_horiz_zero`. ~50 lines.
+   - **`BKToggleActionAt n σ p q`** + **`BKToggleAction n F σ`** — the per-generator (ZMod 2)^n-action via per-cell scalar `walshChar n c.tail.support (toggleSupport σ)`, packaged as a true `HomologicalComplex₂` morphism via `HomologicalComplex₂.homMk`. Group law `ρ(σ+τ) = ρ(σ) ≫ ρ(τ)` via `BKToggleAction_add`. ~100 lines. Piece 1.
+   - **`BKEquivBicomplex n F`** — X3 `EquivariantBicomplex` inhabitant for `G = Multiplicative (Fin n → ZMod 2)`. `ρ_one`, `ρ_mul` via additive group commutativity. ~40 lines. Piece 2.
+   - **`walshIsotypeScalar n S c`** (collapsed form) + **`walshIsotypeProjAt n S p q`** + **`walshIsotypeProj n S F`** (HC₂ morphism) — per-character S projector. ~50 lines.
+   - **`walshMaschkeScalar n S c`** + **`walshChar_sum_toggle`** (Walsh orthogonality via Finset.sum_involution pairing) + **`walshMaschkeScalar_eq_isotypeScalar`** — the "via abelian Maschke" attribution: the Maschke sum `(1/2^n) Σ_σ χ_S(σ) • ρ(σ)` collapses to the per-cell indicator `[S = c.tail.support]`. ~80 lines. Piece 3.
+   - **`BKIsotypeAt n S p q`** + **`BKIsotypeInclAt n S p q`** — the chain-level χ_S-isotype as the sub-Finsupp on basis cells with `c.tail.support = S`. ~12 lines. Piece 4.
+   - **`BKWalshIsotypeFamily n F`** — strict X3 `IsotypeFamily` inhabitant on the BK bicomplex E_∞ pages. **Non-uniform inclusion** (identity at S = ∅, zero otherwise) — strictly tighter than X3's `coarse` baseline. ~35 lines. Piece 5.
+   - **`BKWalshIsotypeFamily_respects_differentials`** (X3 integration) + **`BKWalshIsotype_differential_zero_n3`** (X4 integration) — wrappers consuming `IsotypeFamily.respectsDifferentials_of_degenerate` and `HomologicalComplex₂.differential_isotype_zero` at the BK bicomplex layer. ~35 lines. Piece 6.
+   - Plus auxiliary `BKToggleActionAt_intertwines_walshIsotypeProjAt_apply` (per-basis intertwining) and `walshIsotypeProjAt_idem` (idempotency).
+   - **Eleven non-vacuous evaluation examples at n = 3** on the canonical basis cell `⟨OpChain.const fullPowerset3, CubeCell.topVertex fullPowerset3⟩`: toggle action identity at σ=0, projector preservation at S=univ, projector vanishing at S=∅, idempotency, group composition law, BKEquivBicomplex ρ(1) = 𝟙, IsotypeFamily inclusion non-uniform (identity at ∅, zero at {0}), X3 respectsDifferentials_of_degenerate invocation, Maschke ↔ collapsed equivalence on a concrete chain, per-basis intertwining for the canonical basis cell.
+
+2. **`lean/UnionClosed.lean`** — added `import UnionClosed.UC10.BKWalshEquivariant`.
+
+3. **`docs/state-UC-Lean-PathB-Y2.md`** (NEW) — cumulative ledger for this sub-ticket. Hard-constraint compliance, acceptance bar audit, engineering choices (per-cell scalar action vs base-toggle, strict IsotypeFamily inhabitant via non-uniform inclusion, Maschke ↔ collapsed form equivalence), what unblocks (Y3).
+
+4. **This Lean-Session 30 entry** — append-only.
+
+**Engineering note.** The "genuine" Walsh action (toggling base coordinates) is **partial** on `IntClosedFam` because `σ · A` may not lie in `X.family`. Y2 uses the **per-cell scalar action** `BKToggleAction σ ⟨c, x⟩ = walshChar n c.tail.support (toggleSupport σ) • ⟨c, x⟩`, which is well-defined regardless of family-toggle-stability and commutes with both bicomplex differentials: `BKVertDiff` acts within a single c-fiber (scalar constant); `BKHorizDiff_full n 0 q = BKFace_0` drops the head with `c.dropHead.tail = c.tail` (scalar preserved). The action is **non-trivial**: different chains with different `c.tail.support`s get different scalars at the same σ.
+
+**Acceptance bar audit.**
+
+| # | Bar | Status |
+|---|---|---|
+| 1 | `lake build` GREEN | ✅ (2003 jobs; baseline 2002 + 1 new file) |
+| 2 | Non-vacuous evaluation at n=3 with concrete Walsh-isotype projector | ✅ (`walshIsotypeProjAt 3 univ` preserves canonical cell; `walshIsotypeProjAt 3 ∅` vanishes) |
+| 3 | (ZMod 2)^n-equivariance verified | ✅ (per-basis intertwining + group composition law) |
+| 4 | X3 IsotypeFamily strict-inhabitant evaluated | ✅ (`BKWalshIsotypeFamily`; non-uniform per-S inclusion) |
+| 5 | X4 differential-vanishing applies on BK isotype pages | ✅ (`BKWalshIsotype_differential_zero_n3`) |
+| 6 | Hard-constraint set respected | ✅ (no `sorry`, no axiom, no fake mathlib API, no defeq trick, no `False.elim`, no `decide` shortcut beyond Fin 3 concrete-arithmetic; NOT factorial / NOT functorial in the refinement sense; non-tautology preserved) |
+
+**Hard-constraint check.**
+- ✗ NOT factorial: only abelian `(ZMod 2)^n` characters; no Specht modules.
+- ✗ NOT functorial in the refinement sense: `BKToggleAction` built from `walshChar` data directly.
+- ✗ U1-dialect preserved: additive cohomology only.
+- ✗ Math-first: aligns with UC10 §0.2 (Walsh characters, eigenvalue action) + UC13 §§2–3 (isotype decomposition).
+- ✗ Cumulative state doc: `docs/state-UC-Lean-PathB-Y2.md` + this entry.
+- ✗ Mathlib-folder authorization respected: new file under `lean/UnionClosed/UC10/` (union_closed-internal); no new files under `lean/UnionClosed/Mathlib/`.
+- ✗ No new `sorry`. No axiom-cheat. No fake mathlib API. No defeq trick. No `False.elim`. **`grep -rn 'sorry' lean/UnionClosed/UC10/BKWalshEquivariant.lean` shows only docstring references.** Total live sorry count unchanged: 1 (the pre-existing `SSConvergence.lean:308` per-x AMBER from mg-b26c, NOT affected by Y2).
+- ✗ Non-tautology preservation: the toggle action `BKToggleAction n F σ` is genuinely non-trivial (different chains' `c.tail.support`s give different scalars at the same σ). The projector `walshIsotypeProjAt 3 univ 0 0` preserves the canonical basis cell while `walshIsotypeProjAt 3 ∅ 0 0` vanishes on it — propositionally distinct outcomes.
+
+**What unblocks.** Y3 (`UC-Lean-PathB-Y3-HomotopyBridge`) consumes `BKEquivBicomplex F` and `walshIsotypeProj n {x} F` from this Y2. Y3 constructs the chain `Homotopy (𝟙 ((BKBicomplexHC₂ F).column-at-x).χ_{x}-isotype) 0` from `UC10_lowerWalshVanishing F x`.
+
+**Forward operational step.** After Y2 GREEN merge (and parallel Y1b merge), file **Y3 (`UC-Lean-PathB-Y3-HomotopyBridge`)** as the next sequential sub-ticket. Y3 is the load-bearing single bridge of Path B per scoping doc §3 C.1.
+
+**Frankl_Holds non-vacuous status**: unchanged (Y2 lands new equivariant infrastructure but does NOT touch `Frankl_Holds`, `obstructionCohomClass`, or the per-x sorry closure path).
+
+**mg-36c3 PROVEN structural-collision theorems**: unchanged this session. Remain PROVEN about the L2a baseline `BKTotal n`.
+
+**PROJECT-LIFE MILESTONE STATUS**: per the `project-post-formalization-followons` memory: DEFERRED to Y5 GREEN. mg-f5b4 ships GREEN Y2 deliverable — strictly tighter than mg-17dc Y1 (now the Walsh-equivariant scaffolding sits cleanly on top of the BKBicomplexHC₂).
+
+See `docs/state-UC-Lean-PathB-Y2.md` for the full cumulative ledger of mg-f5b4 and `docs/UC-Lean-PathB-BKBicomplex-scope.md` for the arc-level scoping doc.
+
+**The Lean tree's status after Lean-Session 30: GREEN Y2 deliverable on top of Y1+Y1b. The Walsh-equivariant structure on BKBicomplexHC₂ has landed in full — non-trivial (ZMod 2)^n-action, per-S Maschke isotype projector with abelian Maschke orthogonality proven, X3 IsotypeFamily strict inhabitant (non-uniform per-S inclusion), X3 differential-respecting + X4 Schur-non-mixing wrappers at the BK bicomplex layer. All of X1–X5 GREEN + X6 (mg-b26c) AMBER infrastructure + Y1 (mg-17dc) row-0 + Y1b (mg-ba0f) full higher-row + Y2 (mg-f5b4) GREEN equivariant structure + the single live sorry at per-x granularity preserved. Forward path: Y3 (Homotopy bridge) as the next sequential sub-ticket; Y5 = PROJECT-LIFE MILESTONE "zero live sorrys end-to-end" trigger.**
+
+---
+
 ## Open threads / what a UC15+ (or Session 8+) would do
 
 After Session 6 (UC-Lean-scope, mg-d57e), the Frankl-side compatibility-geometry program is **operationally complete AND standard-machinery-airtight AND Lean-formalization-scoped**: UC10's framework + UC12's residual + UC11's 5-step Frankl program + UC13's residual discharge + dialect-check + UC14's standard-machinery cleanup yield Frankl unconditionally via the contradiction of UC11 §§6-7, with every step admitting an explicit chain-level construction (UC14 §4.6), and the Lean formalization arc is decomposed into 5 single-session-capable sub-execution-tickets L1–L5 with named mathlib dependencies and Daniel hard-constraint carryover (UC-Lean-scope §C, §D). The forward work, demoted from "blocking" to "optional":
