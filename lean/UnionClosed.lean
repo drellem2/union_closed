@@ -2,6 +2,7 @@ import UnionClosed.Mathlib.Algebra.Homology.SpectralSequence.Bicomplex
 import UnionClosed.Mathlib.Algebra.Homology.SpectralSequence.Convergence
 import UnionClosed.Mathlib.Algebra.Homology.SpectralSequence.EdgeMap
 import UnionClosed.Mathlib.Algebra.Homology.SpectralSequence.Equivariant
+import UnionClosed.Mathlib.Algebra.Homology.SpectralSequence.Schur
 import UnionClosed.UC10.IntClosedFam
 import UnionClosed.UC10.Walsh
 import UnionClosed.UC10.CubicalDefect
