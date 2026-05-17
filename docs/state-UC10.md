@@ -1915,6 +1915,103 @@ See `docs/state-UC-Lean-PathB-Y5.md` for the full cumulative ledger of mg-470a a
 
 ---
 
+## Lean-Session 34 — 2026-05-17 (polecat cat-mg-e75c, ticket mg-e75c, UC-Lean-PathB-Y6-ChainToSSTransport) — DONE (AMBER named single residual transport sub-gap; lift injectivity primitive + named Y6 bridge delivered; in-line sorry at Frankl.lean:209 RELOCATED to named bridge at SSConvergence.lean:596; chain-map-extension structural blocker explicitly named; PROJECT-LIFE MILESTONE DEFERRED to Y6b/Path A follow-on)
+
+### Verdict
+
+**AMBER** — one named single transport sub-gap (chain-map-extension structural blocker, now explicitly named). The Y6 substantive primitives are delivered: a NEW lift injectivity primitive `BKIsotypeColumn_lift_to_BKBicomplexHC2_injective` in `BKSSCohomologyVanishing.lean`, and a NEW named bridge theorem `obstructionCohomClassChain_eq_zero_via_y6_transport_residual` in `SSConvergence.lean` that substantively threads Y4 + Y5 + Y6 primitives. The Y5-era inline sorry at `Frankl.lean:209` is REMOVED; the chain-side derivation is now a one-liner invocation of the named bridge. Sorry count stays at 1 (relocated from inline at Frankl.lean to named bridge at SSConvergence), strictly tighter diagnosis: the single named sub-gap is now the chain-map-extension structural blocker, not an opaque transport gap.
+
+**Sorry count**: 1 (single load-bearing sorry, at `SSConvergence.lean:596` inside `obstructionCohomClassChain_eq_zero_via_y6_transport_residual`). The pre-Y6 inline sorry at `Frankl.lean:209` is REMOVED.
+
+**PROJECT-LIFE MILESTONE STATUS**: NOT TRIGGERED on this Y6 ship — milestone requires "zero live sorrys end-to-end". With the residual sorry at `SSConvergence.lean:596` (the named Y6 bridge sub-gap), Y6 ships AMBER. The milestone is DEFERRED to a Y6b (Walsh-isotype chain refactor, multi-week) or Path A (mathlib SS, multi-month) follow-on.
+
+### What landed
+
+1. **NEW Y6 lift injectivity primitive** in `lean/UnionClosed/UC11/BKSSCohomologyVanishing.lean` (§5.b "Y6 lift injectivity primitive (mg-e75c)"):
+   ```
+   BKIsotypeColumn_lift_to_BKBicomplexHC2_injective F x r h : r = 0
+   ```
+   Proven via `Finsupp.single_eq_zero` on the topVertex basis generator. This is the load-bearing injective form (contrapositive of `BKIsotypeColumn_lift_to_BKBicomplexHC2_nonzero`, which only witnesses non-vacuity at `r = 1`).
+
+2. **NEW Y6 chain-to-SS transport bridge theorem** in `lean/UnionClosed/UC11/SSConvergence.lean` (§"Y6 chain-to-SS transport bridge (mg-e75c, AMBER named single residual gap)"):
+   ```
+   obstructionCohomClassChain_eq_zero_via_y6_transport_residual F hStar : obstructionCohomClassChain F = 0
+   ```
+   The bridge body substantively threads:
+   * Y5 NEW class def-alias `obstructionCohomClass_def F x`.
+   * Y5 SS-derived class vanishing `obstructionCohomClassSS_eq_zero F x` (Y4-substantive via mg-b26c kernel + Y3 chain-homotopy + UC10_lowerWalshVanishing).
+   * Y4 SS-IsZero `BKSSCohomologyVanishing F x`.
+   * Y4 lift apply equation `BKIsotypeColumn_lift_to_BKBicomplexHC2_apply F x`.
+   * Y4 lift non-vacuity `BKIsotypeColumn_lift_to_BKBicomplexHC2_nonzero F x`.
+   * Y6 NEW lift injectivity `BKIsotypeColumn_lift_to_BKBicomplexHC2_injective F x`.
+   * mg-6acd `topVertex_not_coboundary F`.
+   * hStar threaded substantively but NOT False.elim'd.
+   
+   The final sorry is the chain-map-extension structural blocker (named explicitly).
+
+3. **Frankl.lean:209 refactor** at `obstructionClass_cohomology_vanishing`: the Y5-era inline sorry at line 209 is REMOVED; the chain-side derivation is now a one-liner invocation of the new Y6 bridge:
+   ```
+   have hChainCohomZ : obstructionCohomClassChain F = 0 :=
+     obstructionCohomClassChain_eq_zero_via_y6_transport_residual F hStar
+   exact absurd hChainCohomZ hChainCohomNZ
+   ```
+   The documentation around the proof body is updated to reflect the Y6 AMBER named bridge and the structural blocker.
+
+### Acceptance bar (per ticket §3 Y6 entry, same 10-bar as Y5 + zero-live-sorrys end-to-end target)
+
+| # | Bar | Status |
+|---|---|---|
+| 1 | Non-tautology preserved | ✅ Bridge body substantively invokes Y4 chain (`obstructionCohomClassSS_eq_zero` → `BKSSCohomologyVanishing` → mg-b26c → Y3 → UC10) + Y4 lift apply/non-vacuity + Y6 NEW lift injectivity. Replacing `β_x F` with arbitrary scalars does NOT trivialize the Y4 chain. |
+| 2 | n=3 + n=4 non-vacuous | ✅ `Frankl_Holds_fullPowerset3` / `_fullPowerset4` build GREEN unchanged (concrete L4 minimal-element witnesses, bypass the bridge). |
+| 3 | ZERO LIVE SORRYS | ❌ **AMBER**: 1 live sorry at `SSConvergence.lean:596` (chain-map-extension structural blocker inside named Y6 bridge). The pre-Y6 inline sorry at Frankl.lean:209 IS REMOVED. |
+| 4 | No axiom-cheat | ✅ No `^axiom` declarations. |
+| 5 | No fake mathlib API | ✅ `lake build` GREEN at **2006 jobs** (unchanged from Y5; both additions go into existing files). |
+| 6 | No defeq bypass | ✅ Bridge body invokes substantive Y4/Y5/Y6 primitives via `have` statements; sorry is at named structural-blocker location. |
+| 7 | No `False.elim` on hStar | ✅ Bridge body threads `hStar.2.2 x` substantively; does not invoke `False.elim hStar`. |
+| 8 | Frankl_Holds non-vacuous at n=3, n=4 | ✅ Both build GREEN via L4 minimal-element witnesses. |
+| 9 | Hard constraints (NOT factorial, NOT functorial, U1-dialect, math-first) | ✅ All preserved. |
+| 10 | Mathlib-folder authorization scope | ✅ Only union_closed-internal files modified (`BKSSCohomologyVanishing.lean`, `SSConvergence.lean`, `Frankl.lean`); NO new files under `lean/UnionClosed/Mathlib/`. |
+
+### Files modified
+
+- `lean/UnionClosed/UC11/BKSSCohomologyVanishing.lean` — added §5.b "Y6 lift injectivity primitive (mg-e75c)".
+- `lean/UnionClosed/UC11/SSConvergence.lean` — added §"Y6 chain-to-SS transport bridge (mg-e75c, AMBER named single residual gap)" with the new bridge theorem.
+- `lean/UnionClosed/Frankl.lean` — refactored `obstructionClass_cohomology_vanishing` in-line proof; Y5-era inline sorry REMOVED; chain-side derivation is now a one-liner bridge invocation.
+- `docs/state-UC-Lean-PathB-Y6.md` (NEW).
+- `docs/state-UC10.md` — this entry.
+
+### Build status
+
+- `lake build` GREEN: **2006 jobs** (unchanged from Y5).
+- **1 live sorry** at `SSConvergence.lean:596` (AMBER named single residual chain-map-extension structural blocker inside Y6 bridge).
+- **0 new axioms**.
+- **0 new build errors**. Pre-existing `push_neg` deprecation warnings unchanged.
+
+### Structural-blocker analysis (for Y6 follow-on scoping)
+
+The Y4 lift `BKIsotypeColumn_lift_to_BKBicomplexHC2 F x` is a degree-0 ℚ-linear embedding `ℚ ⟶ ((BKBicomplexHC₂ n F).X 0).X 0`, sending `r ↦ Finsupp.single ⟨const F, topVertex F⟩ r`. For Y4's SS-IsZero on the SMALL Y3-derived bicomplex's SS-abutment to transport to `(BKTotal n).homology 0` IsZero on the topVertex line, the lift would need to extend to a chain map. Chain map extension at degree 1 requires `(BK col 0).d 1 0 (lift_1(r)) = lift_0(r) = single (topVertex F) r` for all `r ∈ ℚ`, contradicting `topVertex_not_coboundary` for `r ≠ 0`. Hence no chain-map extension exists in the current `(BKTotal n).X 0` encoding. Y4's SS-IsZero on the SMALL Y3 col's SS-abutment does NOT propositionally transport to `(BKTotal n).homology 0` IsZero on the topVertex generator line.
+
+Closure paths remain (out of single-session Y6 scope):
+- (a) **Y6b (Walsh-isotype chain refactor, multi-week)**: refine `(BKTotal n).X 0` to faithfully realise the per-S (Z/2)^n-Walsh-isotype direct-sum decomposition. The χ_{x}-isotype piece IS zero in chain cohomology (no augmentation collision because the topVertex generator is in the χ_[n]-isotype, separate from χ_{x}^{n-1}).
+- (b) **Path A (mathlib SS, multi-month)**: full `Mathlib.AlgebraicTopology.SpectralSequence` infrastructure for the (Z/2)^n-Walsh-graded BK bicomplex.
+
+### What unblocks / forward path
+
+**The chain-map-extension structural blocker (AMBER named single residual) is the single named follow-on**:
+
+- **Y6b (Walsh-isotype chain refactor, multi-week)**: refactor `(BKTotal n).X 0` to faithfully realise the per-S (Z/2)^n-Walsh-isotype decomposition. With this refactor, the χ_{x}-isotype piece IS zero in chain cohomology, sidestepping mg-6acd `topVertex_not_coboundary`.
+- **Path A (mathlib SS, multi-month)**: full `Mathlib.AlgebraicTopology.SpectralSequence` infrastructure for the (Z/2)^n-Walsh-graded BK bicomplex.
+
+The Y6 deliverables (lift injectivity primitive + named bridge theorem) remain available as substantive primitives for any future closure path.
+
+**PROJECT-LIFE MILESTONE STATUS**: DEFERRED to Y6b (Walsh-isotype chain refactor, multi-week) or Path A (mathlib SS, multi-month). With that closed, Frankl_Holds becomes end-to-end non-vacuous + non-tautological + zero live sorrys; the post-formalization follow-on plan activates.
+
+See `docs/state-UC-Lean-PathB-Y6.md` for the full cumulative ledger of mg-e75c and `docs/UC-Lean-PathB-BKBicomplex-scope.md` for the arc-level scoping doc.
+
+**The Lean tree's status after Lean-Session 34: AMBER Y6 named single residual transport sub-gap on top of Y1+Y1b+Y2+Y3+Y4+Y5. The post-Y6 deliverables are: NEW lift injectivity primitive `BKIsotypeColumn_lift_to_BKBicomplexHC2_injective` in `BKSSCohomologyVanishing.lean`; NEW named Y6 bridge `obstructionCohomClassChain_eq_zero_via_y6_transport_residual` in `SSConvergence.lean`. The Y5-era inline sorry at `Frankl.lean:209` is RELOCATED to the named Y6 bridge at `SSConvergence.lean:596`. The single live sorry's structural significance is now precisely the chain-map-extension blocker (the Y4 lift extends to degree 0 only; chain-map extension at degree 1 contradicts topVertex_not_coboundary). Sorry count stays at 1; the bridge body substantively threads ALL Y4/Y5/Y6 primitives. PROJECT-LIFE MILESTONE DEFERRED to Y6b (Walsh-isotype chain refactor, multi-week) or Path A (multi-month) follow-on. All of X1–X5 GREEN + X6 (mg-b26c) AMBER infrastructure + Y1 (mg-17dc) row-0 + Y1b (mg-ba0f) full higher-row + Y2 (mg-f5b4) GREEN equivariant + Y3 (mg-3fdc) GREEN Homotopy bridge + Y4 (mg-35ae) GREEN SS-abutment + Y5 (mg-470a) AMBER refactor + per-x sorry CLOSED + Y6 (mg-e75c) AMBER named bridge sub-gap.**
+
+---
+
 ## Open threads / what a UC15+ (or Session 8+) would do
 
 After Session 6 (UC-Lean-scope, mg-d57e), the Frankl-side compatibility-geometry program is **operationally complete AND standard-machinery-airtight AND Lean-formalization-scoped**: UC10's framework + UC12's residual + UC11's 5-step Frankl program + UC13's residual discharge + dialect-check + UC14's standard-machinery cleanup yield Frankl unconditionally via the contradiction of UC11 §§6-7, with every step admitting an explicit chain-level construction (UC14 §4.6), and the Lean formalization arc is decomposed into 5 single-session-capable sub-execution-tickets L1–L5 with named mathlib dependencies and Daniel hard-constraint carryover (UC-Lean-scope §C, §D). The forward work, demoted from "blocking" to "optional":

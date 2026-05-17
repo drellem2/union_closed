@@ -291,6 +291,30 @@ theorem BKIsotypeColumn_lift_to_BKBicomplexHC2_nonzero (F : IntClosedFam n) (x :
         (Σ c : OpChain n 0, CubeCell c.tail 0) →₀ ℚ) ≠ 0
   exact Finsupp.single_ne_zero.mpr one_ne_zero
 
+/-! ### §5.b — Y6 lift injectivity primitive (mg-e75c)
+
+The Y6 substantive primitive: the lift
+`BKIsotypeColumn_lift_to_BKBicomplexHC2 F x` is ℚ-linearly injective. For
+any `r : ℚ`, if the lift sends `r` to `0` in the actual `BKBicomplexHC₂` chain
+group, then `r = 0`. Proven via `Finsupp.single_eq_zero` on the `topVertex`
+basis generator. -/
+
+/-- **Y6 lift injectivity (mg-e75c)**: the Y4 lift
+`BKIsotypeColumn_lift_to_BKBicomplexHC2 F x` is ℚ-linearly injective.
+If the lift of `r : ℚ` is the zero element of `((BKBicomplexHC₂ n F).X 0).X 0`,
+then `r = 0`. Proven via `Finsupp.single_eq_zero` (the topVertex basis is
+faithful for `Finsupp.lsingle`). This is the Y6 substantive primitive used
+by the chain-to-SS transport bridge in `SSConvergence.lean`. -/
+theorem BKIsotypeColumn_lift_to_BKBicomplexHC2_injective
+    (F : IntClosedFam n) (x : Fin n) (r : ℚ)
+    (h : (BKIsotypeColumn_lift_to_BKBicomplexHC2 F x).hom r = 0) :
+    r = 0 := by
+  rw [BKIsotypeColumn_lift_to_BKBicomplexHC2_apply] at h
+  -- h : Finsupp.single (BKIsotypeLiftTargetGen F x) r = 0
+  have h' : (Finsupp.single (BKIsotypeLiftTargetGen F x) r :
+      (Σ c : OpChain n 0, CubeCell c.tail 0) →₀ ℚ) = 0 := h
+  exact (Finsupp.single_eq_zero (a := BKIsotypeLiftTargetGen F x) (b := r)).mp h'
+
 /-! ### §6 — Explicit chain assembly (no defeq shortcut)
 
 Per acceptance bar §3: `EXPLICIT chain Y3.h → SSAbutment kernel → X5 edge map →

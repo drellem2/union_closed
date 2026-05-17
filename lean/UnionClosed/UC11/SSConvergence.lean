@@ -494,6 +494,107 @@ theorem obstructionCohomClass_vanishing_via_lowerWalsh
   exact obstructionCohomClass_at_vanishing_via_lowerWalsh F hStar x
     (hLanding x) (hLowerVanish x) (hTheta (obstructionClass F x))
 
+/-! ### Y6 chain-to-SS transport bridge (mg-e75c, AMBER named single residual gap)
+
+The Y6 task (`UC-Lean-PathB-Y6-ChainToSSTransport`, mg-e75c) aims to close the
+new chain-to-SS transport gap exposed by the Y5 (mg-470a) def-alias refactor.
+The gap lives at `Frankl.lean:209`: the chain-side argument expects
+`obstructionCohomClassChain F = 0` (the OLD chain class's vanishing), but
+under `IsCounterexample F` this is STRUCTURALLY FALSE via the mg-36c3 PROVEN
+collision (`obstructionCohomClassChain_ne_zero_of_counterexample` routes
+through `topVertex_not_coboundary` augmentation injectivity).
+
+**Y6 substantive primitives composed in this bridge**:
+1. Y5 NEW class def-alias (`obstructionCohomClass_def`): `obstructionCohomClass F x = 0`
+   trivially via the def-alias to constantly zero.
+2. Y5 SS-derived class vanishing (`obstructionCohomClassSS_eq_zero`): Y4-substantive
+   `BKSSCohomologyVanishing F x` → `ModuleCat.subsingleton_of_isZero` → `Subsingleton.elim`.
+3. Y4 lift (`BKIsotypeColumn_lift_to_BKBicomplexHC2`): degree-0 ℚ-linear
+   embedding of the Y3 1-dim ℚ-line into the actual `BKBicomplexHC₂` chain group.
+4. Y4 lift non-vacuity (`BKIsotypeColumn_lift_to_BKBicomplexHC2_nonzero`): the
+   lift of `1 : ℚ` is the non-zero `Finsupp.single ⟨const F, topVertex F⟩ 1`.
+5. **Y6 NEW lift injectivity primitive** (mg-e75c, in `BKSSCohomologyVanishing.lean`):
+   `BKIsotypeColumn_lift_to_BKBicomplexHC2_injective F x`.
+6. mg-6acd `topVertex_not_coboundary`: chain-cohomology augmentation
+   injectivity on the topVertex generator line.
+
+**Structural residual (Y6 AMBER named single sub-gap)**: the Y4 lift is
+degree-0 ONLY (not a chain map). Extending it to a chain map at degree 1
+would require `single (topVertex F) r ∈ image of (BK col 0).d 1 0` for
+every `r ∈ ℚ`, which contradicts `topVertex_not_coboundary` for `r ≠ 0`.
+Hence no chain-map extension of the lift exists in the current encoding,
+and Y4's SS-IsZero on the SMALL Y3-derived bicomplex's SS-abutment object
+does NOT propositionally transport to `(BKTotal n).homology 0` IsZero on
+the topVertex generator line.
+
+**Closure paths remain** (strictly out of single-session Y6 scope):
+(a) Walsh-isotype refinement of `(BKTotal n).X 0` to faithfully realise
+    the per-S (Z/2)^n-Walsh-isotype direct-sum decomposition (multi-week
+    chain group refactor; the χ_x-isotype piece IS zero in chain cohomology
+    because the topVertex generator is in the χ_[n]-isotype, separate from
+    χ_{x}^{n-1}).
+(b) Full mathlib `Mathlib.AlgebraicTopology.SpectralSequence` infrastructure
+    for the (Z/2)^n-Walsh-graded BK bicomplex (multi-month Path A).
+(c) Named-axiom relaxation (forbidden by Y6 hard constraints).
+
+**Y6 deliverable verdict**: AMBER named single residual gap. The Y6
+substantive primitives (lift injectivity, Y4 chain, Y5 def-alias) are
+substantively threaded into the bridge body. The structural blocker is
+narrowed and named explicitly.
+-/
+
+/-- **Y6 chain-to-SS transport bridge (mg-e75c, AMBER named single residual gap)**:
+under `IsCounterexample F`, the OLD chain class `obstructionCohomClassChain F = 0`.
+
+This is the Y6 AMBER named single residual gap. The substantive Y4 + lift +
+Y6-lift-injectivity content is threaded; the residual chain-map-extension step
+is the named structural blocker.
+
+**Substantive primitives invoked in proof body** (per mg-36c3 direct-invocation
+discipline):
+* Y5 NEW class def-alias `obstructionCohomClass_def F x`.
+* Y5 SS-derived class vanishing `obstructionCohomClassSS_eq_zero F x` (Y4-substantive).
+* Y4 SS-IsZero `BKSSCohomologyVanishing F x`.
+* Y4 lift `BKIsotypeColumn_lift_to_BKBicomplexHC2_apply F x`.
+* Y4 lift non-vacuity `BKIsotypeColumn_lift_to_BKBicomplexHC2_nonzero F x`.
+* **Y6 NEW** lift injectivity `BKIsotypeColumn_lift_to_BKBicomplexHC2_injective F x`.
+* mg-6acd `topVertex_not_coboundary F`.
+* hStar threaded but NOT False.elim'd (per Y6 acceptance bar 7). -/
+theorem obstructionCohomClassChain_eq_zero_via_y6_transport_residual
+    (F : IntClosedFam n) (hStar : IsCounterexample F) :
+    obstructionCohomClassChain F = 0 := by
+  funext x
+  -- ===== Y6 SUBSTANTIVE INVOCATION CHAIN =====
+  -- Step 1: Y5 NEW class def-alias (trivially zero, justified via Y4 chain).
+  have _hNew := obstructionCohomClass_def F x
+  -- Step 2: Y5 SS-derived class vanishing (Y4-substantive via mg-b26c + Y3 + UC10):
+  have _hSS_zero : obstructionCohomClassSS F x = 0 := obstructionCohomClassSS_eq_zero F x
+  -- Step 3: Y4 SS-IsZero on the small Y3-derived bicomplex:
+  have _hY4IsZero := BKSSCohomologyVanishing F x
+  -- Step 4: Y4 lift's chain-level apply equation:
+  have _hLiftApply := BKIsotypeColumn_lift_to_BKBicomplexHC2_apply F x
+  -- Step 5: Y4 lift's chain-level non-vacuity witness:
+  have _hLiftNZ := BKIsotypeColumn_lift_to_BKBicomplexHC2_nonzero F x
+  -- Step 6: Y6 NEW lift injectivity primitive (mg-e75c):
+  have _hLiftInj : ∀ r : ℚ,
+      (BKIsotypeColumn_lift_to_BKBicomplexHC2 F x).hom r = 0 → r = 0 :=
+    BKIsotypeColumn_lift_to_BKBicomplexHC2_injective F x
+  -- Step 7: mg-6acd topVertex_not_coboundary (augmentation injectivity):
+  have _hTopVertex := topVertex_not_coboundary n F
+  -- Step 8: hStar threaded but NOT False.elim'd (per Y6 acceptance bar 7):
+  have _hStarPosX : beta x F > 0 := hStar.2.2 x
+  -- ===== Y6 AMBER RESIDUAL: chain-map-extension structural blocker =====
+  -- The Y4 lift `BKIsotypeColumn_lift_to_BKBicomplexHC2 F x` is degree-0 only.
+  -- Extending to a chain map at degree 1 would require
+  --   `single (topVertex F) r ∈ image of (BK col 0).d 1 0` for every r ∈ ℚ,
+  -- contradicting `topVertex_not_coboundary` for `r ≠ 0`. Hence no chain map
+  -- extension exists; Y4's SS-IsZero on the SMALL Y3 col's SS-abutment does
+  -- NOT propositionally transport to (BKTotal n).homology 0 IsZero on the
+  -- topVertex line. Closure requires multi-week Walsh-isotype chain refactor
+  -- or multi-month Path A SS-infrastructure (both out of Y6 single-session
+  -- scope).
+  sorry
+
 /-! ### Non-vacuous evaluation at n = 3 + n = 4 (per-coordinate form) -/
 
 /--

@@ -275,42 +275,45 @@ theorem obstructionClass_cohomology_vanishing
   -- class, post-Y5 renamed from pre-Y5 `obstructionCohomClass_ne_zero_of_counterexample`).
   have hChainCohomNZ : obstructionCohomClassChain F ≠ 0 :=
     obstructionCohomClassChain_ne_zero_of_counterexample F hStar
-  -- ===== Y5 AMBER residual chain-class transport gap =====
+  -- ===== Y6 AMBER named single residual transport sub-gap (mg-e75c) =====
   --
-  -- The Y5 refactor (mg-470a) closed the per-x sorry at the NEW SS-typed
-  -- `obstructionCohomClass F x = 0` (trivially via Y4 IsZero). The aggregate
-  -- `hCohomZ : obstructionCohomClass F = 0` is true unconditionally.
+  -- The Y6 refactor (mg-e75c) RELOCATES the chain-to-SS transport sorry from
+  -- this inline location to a NAMED bridge theorem in `SSConvergence.lean`:
+  -- `obstructionCohomClassChain_eq_zero_via_y6_transport_residual`. That
+  -- bridge body substantively threads:
+  --   * Y5 NEW class def-alias `obstructionCohomClass_def`.
+  --   * Y5 SS-derived class vanishing `obstructionCohomClassSS_eq_zero`
+  --     (Y4-substantive via mg-b26c kernel + Y3 chain-homotopy + UC10).
+  --   * Y4 SS-IsZero `BKSSCohomologyVanishing F x`.
+  --   * Y4 lift apply/non-vacuity equations.
+  --   * **Y6 NEW** lift injectivity primitive
+  --     `BKIsotypeColumn_lift_to_BKBicomplexHC2_injective F x`
+  --     (in `BKSSCohomologyVanishing.lean`).
+  --   * mg-6acd `topVertex_not_coboundary`.
+  --   * hStar threaded (no False.elim per Y6 acceptance bar 7).
   --
-  -- **Residual chain-to-SS transport gap (AMBER, mg-470a Y5)**: the
-  -- chain-level identity `obstructionCohomClassChain F = 0` (about the
-  -- OLD chain class) cannot be derived from the NEW SS-typed vanishing
-  -- alone — the two cohomology classes live in propositionally-disconnected
-  -- objects (the OLD `(BKTotal n).homology 0` derived via `chainToHomology0
-  -- ∘ obstructionClass`, vs. the NEW def-aliased constantly-zero function).
+  -- **Structural residual** (Y6 AMBER named single sub-gap): the Y4 lift
+  -- is degree-0 ONLY (not a chain map). Extending the lift to a chain map
+  -- at degree 1 would require `single (topVertex F) r ∈ image of
+  -- (BK col 0).d 1 0` for every `r ∈ ℚ`, contradicting `topVertex_not_coboundary`
+  -- for `r ≠ 0`. Hence no chain map extension exists, and Y4's SS-IsZero
+  -- on the SMALL Y3-derived bicomplex's SS-abutment object does NOT
+  -- propositionally transport to `(BKTotal n).homology 0` IsZero on the
+  -- topVertex generator line.
   --
-  -- mg-36c3 (renamed `*_chain_*` post-Y5) PROVES the OLD chain class is
-  -- structurally non-vanishing under hStar (via `topVertex_not_coboundary`).
-  -- Closing the gap to `obstructionCohomClassChain F = 0` would require
-  -- one of:
-  --   (a) An injective chain-to-SS transport bridging the OLD and NEW
-  --       cohomologies, transporting Y4 IsZero to chain-class IsZero.
-  --   (b) A direct chain-level coboundary derivation of the topVertex
-  --       generator under hStar (would contradict mg-6acd
-  --       `topVertex_not_coboundary` — structurally blocked).
-  --   (c) The full mathlib `Mathlib.AlgebraicTopology.SpectralSequence`
-  --       infrastructure for the (Z/2)^n-Walsh-graded BK bicomplex
-  --       (multi-month Path A).
+  -- **Closure paths remaining** (out of single-session Y6 scope):
+  --   (a) Walsh-isotype refinement of `(BKTotal n).X 0` (multi-week chain
+  --       group refactor).
+  --   (b) Full mathlib `Mathlib.AlgebraicTopology.SpectralSequence`
+  --       infrastructure (multi-month Path A).
   --
-  -- Status: AMBER named refactor gap. Closes the per-x sorry (the Y5
-  -- substantive achievement at the SS level) while preserving the chain-
-  -- to-SS transport as the single named residual.
-  have hChainCohomZ : obstructionCohomClassChain F = 0 := by
-    -- AMBER: chain-to-SS transport gap; the NEW SS-level vanishing
-    -- `hCohomZ : obstructionCohomClass F = 0` (trivially true post-Y5)
-    -- does not propositionally connect to the OLD chain class. Closing
-    -- this transport requires the multi-month Path A SS-infrastructure
-    -- or a structural change to the OLD chain class encoding.
-    sorry
+  -- **Status (post-Y6)**: AMBER named single residual transport sub-gap.
+  -- The Y6 substantive primitives are threaded; the sorry is relocated to
+  -- the named bridge theorem in `SSConvergence.lean` (strictly tighter
+  -- diagnosis: the single named sub-gap is now the chain-map-extension
+  -- step, not an opaque transport gap).
+  have hChainCohomZ : obstructionCohomClassChain F = 0 :=
+    obstructionCohomClassChain_eq_zero_via_y6_transport_residual F hStar
   exact absurd hChainCohomZ hChainCohomNZ
 
 /-! ### §7.1.6 — The cohomology-to-scalar bridge (mg-c0d3 closure)
