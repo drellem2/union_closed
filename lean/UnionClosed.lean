@@ -1,5 +1,6 @@
 import UnionClosed.Mathlib.Algebra.Homology.SpectralSequence.Bicomplex
 import UnionClosed.Mathlib.Algebra.Homology.SpectralSequence.Convergence
+import UnionClosed.Mathlib.Algebra.Homology.SpectralSequence.EdgeMap
 import UnionClosed.Mathlib.Algebra.Homology.SpectralSequence.Equivariant
 import UnionClosed.UC10.IntClosedFam
 import UnionClosed.UC10.Walsh
@@ -22,6 +23,7 @@ import UnionClosed.UC11.Mismatch
 import UnionClosed.UC11.ObstructionClass
 import UnionClosed.UC11.NonVanishing
 import UnionClosed.UC11.CohomologyClass
+import UnionClosed.UC11.SSEdgeIdentification
 import UnionClosed.UC11.SSConvergence
 import UnionClosed.UC13_PartA.IsotypePreservation
 import UnionClosed.UC13_PartA.CorrectedLanding
