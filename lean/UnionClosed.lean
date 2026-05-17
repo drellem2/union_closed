@@ -1,3 +1,4 @@
+import UnionClosed.Mathlib.Algebra.Homology.SpectralObject.Bicomplex
 import UnionClosed.Mathlib.Algebra.Homology.SpectralObject.SpectralSequenceAssembly
 import UnionClosed.Mathlib.Algebra.Homology.SpectralSequence.Bicomplex
 import UnionClosed.Mathlib.Algebra.Homology.SpectralSequence.Convergence
