@@ -1614,6 +1614,44 @@ See `docs/state-UC-Lean-PathB-Y1.md` for the full cumulative ledger of mg-17dc a
 
 ---
 
+## Lean-Session 29 — 2026-05-17 (polecat cat-mg-ba0f, ticket mg-ba0f, UC-Lean-PathB-Y1b-HigherRowBarResolution) — DONE (GREEN higher-row deliverable; full `Fin.succAbove` bar-resolution faces + simplicial d²=0 + H/V commute across all rows; closes the Y1 AMBER row-0-only gap)
+
+### Bundle (mg-ba0f Y1b polecat — GREEN higher-row faces + d²=0 + H/V commute)
+
+Single-session polecat closure of the Y1 (mg-17dc) AMBER named gap on higher-row faces. Extended `lean/UnionClosed/UC10/BKBicomplexHC2.lean` (~660 new lines, §11–§18) with:
+
+1. **`OpChain.face` for general `i : Fin (p+2)`** via case analysis on `faceMor` (use single mor or compose two across the gap when `i.val = k.val + 1`).
+2. **`OpChain.face_face` simplicial identity** via `OpChain.ext_of_obj` (Subsingleton on TraceMor) + `Fin.succAbove_succAbove_succAbove_predAbove`.
+3. **`BKFaceI n p q i`** uniform per-face definition using `tailFaceMor c i` (identity TraceMor for `i ≠ Fin.last`, `c.mor (Fin.last p)` for `i = Fin.last`) + `linearCombination` of `restrictGen`.
+4. **`BKHorizDiff_alt n p q := Σ_{i : Fin (p+2)} (-1)^i.val • BKFaceI n p q i`** — the genuine alternating-sum bar-resolution differential, replacing Y1's truncated-to-zero higher rows.
+5. **`BKHorizDiff_alt_squared`** — d² = 0 across all rows via `Finset.sum_involution` with the simplicial swap `(j, i) ↦ (j.succAbove i, i.predAbove j)` (involutive, fixed-point-free, sign-reversing). Combines `BKFaceI_simplicial` (compositions agree) with `simplicialSwap_sign` (parity flips).
+6. **`BKHoriz_Vert_commute` (`BKFaceI_comm_BKVertDiff` + `BKHV_commute_alt`)** — per-face H/V commute reducing to Y1's `traceRestrict_comm` chain-map property lifted across the Sigma.
+7. **`BKBicomplexHC₂_full` assembly** — full `HomologicalComplex₂ (ModuleCat ℚ) (.down ℕ) (.down ℕ)` with the new horizontal differential.
+8. **`BKBicomplexHC₂_full_n3_nonzero_at_2_1`** — non-vacuous higher-row evaluation: non-zero basis vector at `(p, q) = (2, 1)`.
+
+Key supporting lemmas:
+- **`restrictGen_compose`**: composition of `restrictGen`s equals `restrictGen` of the composed `TraceMor`. Load-bearing for `BKFaceI_compose_apply`.
+- **`BKFaceI_compose_apply_general`**: abstracted form using `subst h_OC` to unify dependent types, then `Subsingleton (TraceMor S T)` resolves the trace equality automatically.
+
+`lake build` GREEN (2002 jobs, unchanged from baseline). Zero new sorrys, zero new axioms, no fake API, no defeq tricks, no `False.elim`. The Y1 `BKBicomplexHC₂` assembly (truncated horizontal) and all Y1 lemmas (`TraceChainMap`, `traceRestrict_comm`, `BKFace_0`, etc.) remain intact and unchanged — Y1b is purely additive.
+
+**Hard-constraint compliance (re-checked):** NOT factorial / NOT functorial / U1-dialect / math-first (UC10 §3.3 + UC11 §2) / mathlib-folder respected (only one existing file modified, no new files under `lean/UnionClosed/Mathlib/`). Sorry-axioms specifically banned per ticket forbidden set — none introduced.
+
+**Verdict**: GREEN. All three Y1b acceptance bars satisfied:
+- ✅ `lake build` GREEN
+- ✅ Non-vacuous evaluation at `n = 3` with non-zero cell at `(p, q) ≥ 1` for higher rows (`BKBicomplexHC₂_full_n3_nonzero_at_2_1`)
+- ✅ d² = 0 proven for each row (`BKHorizDiff_alt_squared` uniform across all rows)
+
+Y1b strictly tighter than Y1: where Y1 had `BKHorizDiff_full n (p+1) q = 0` (zero baseline at higher rows), Y1b has `BKHorizDiff_alt n (p+1) q = Σ_{i : Fin (p+3)} (-1)^i • BKFaceI n (p+1) q i` (genuine simplicial alternating sum with cell transport via `restrictGen`).
+
+**Unblocks**: Y3 (`HomotopyBridge`) chain Homotopy construction now has the bar-resolution structure across all rows. Y2 (`WalshEquivariant`, sibling polecat cat-mg-f5b4) is independent of Y1b (Walsh-equivariant lift applies per-row uniformly).
+
+See `docs/state-UC-Lean-PathB-Y1b.md` for the full cumulative ledger of mg-ba0f.
+
+**The Lean tree's status after Lean-Session 29: GREEN Y1b higher-row deliverable. The BKBicomplexHC₂_full mathlib HomologicalComplex₂ has landed with the genuine `Fin.succAbove`-based simplicial bar-resolution differential across all rows, plus d²=0, plus H/V commute. Y1 row-0 AMBER closed by Y1b higher-row GREEN. All of X1–X5 GREEN + X6 (mg-b26c) AMBER infrastructure + Y1 (mg-17dc) row-0 + Y1b (mg-ba0f) full higher-row + the single live sorry at per-x granularity preserved. Forward path: Y3 (HomotopyBridge) → Y4 (SSAbutmentVanishing) → Y5 (PerXClosure = PROJECT-LIFE MILESTONE "zero live sorrys end-to-end" trigger).**
+
+---
+
 ## Open threads / what a UC15+ (or Session 8+) would do
 
 After Session 6 (UC-Lean-scope, mg-d57e), the Frankl-side compatibility-geometry program is **operationally complete AND standard-machinery-airtight AND Lean-formalization-scoped**: UC10's framework + UC12's residual + UC11's 5-step Frankl program + UC13's residual discharge + dialect-check + UC14's standard-machinery cleanup yield Frankl unconditionally via the contradiction of UC11 §§6-7, with every step admitting an explicit chain-level construction (UC14 §4.6), and the Lean formalization arc is decomposed into 5 single-session-capable sub-execution-tickets L1–L5 with named mathlib dependencies and Daniel hard-constraint carryover (UC-Lean-scope §C, §D). The forward work, demoted from "blocking" to "optional":
