@@ -2012,6 +2012,98 @@ See `docs/state-UC-Lean-PathB-Y6.md` for the full cumulative ledger of mg-e75c a
 
 ---
 
+## Lean-Session 35 — 2026-05-17 (polecat cat-mg-103f, ticket mg-103f, UC-Lean-MathlibSS-Full-scope) — DONE (GREEN scoping; Z1–Z10 decomposition pinned; Phase D mathlib-PR coordination plan named; multi-month proper-infrastructure replacement for L+X+Y workaround chain per Daniel 12:47Z directive "full mathlib infrastructure imo, don't pursue shortcuts")
+
+### Verdict
+
+**GREEN scoping complete + Z1–Z10 decomposition pinned + Phase D mathlib-PR coordination plan named.**
+
+Paper-and-pencil scoping polecat per Daniel directive 2026-05-17 12:47Z verbatim: *"full mathlib infrastructure imo. I don't want to hit yet another roadblock because we put off doing things the right way and kept pursuing shortcuts."*
+
+The Z arc is the **proper-infrastructure replacement** for the L+X+Y workaround chain. It closes mathlib's own explicit `SpectralObject.spectralSequence` TODO + builds the missing `HomologicalComplex₂ → SpectralObject` bridge + lifts the X3+X4 equivariant/Schur work + the X5 edge maps to the proper SpectralObject-derived pages + refactors Y1+Y2+Y3 (chain-level baselines) onto the proper path + introduces a new `obstructionCohomClassZ F x` (Z9) living in `(BKBicomplexHC₂ F).abutmentFiltration_gr x ((n-1)-x)` — sidestepping the Y6 chain-map-extension structural blocker by encoding choice. Z10 is the PROJECT-LIFE MILESTONE closure ticket (Frankl_Holds end-to-end with zero live sorrys via proper mathlib SS infrastructure).
+
+### Phase A audit summary
+
+12 audit items mapped against mathlib v4.29.1 (pinned rev `5e932f97dd25535344f80f9dd8da3aab83df0fe6`). Three RED pieces require new construction (A.7 `HomologicalComplex₂ → SpectralObject` bridge; A.8 equivariant SpectralObject lift; A.9 SpectralObject edge maps); two AMBER pieces require completion or adaptation (A.3 SpectralObject SS assembly — Joël Riou's three explicit TODOs `Abelian.SpectralObject.spectralSequence` + `SpectralObject.SpectralSequence.homologyData` + `SpectralObject.spectralSequenceHomologyData`; A.10 chain-Homotopy → SpectralObject gr_p adapter); everything else GREEN. **No structural impossibility found.** The multi-month estimate reflects volume not novelty.
+
+### Phase B refactor plan summary
+
+Per-file SURVIVES/PARTIALLY-SURVIVES/REPLACED classification:
+
+- **SURVIVES** (mathlib-PR-clean standalone, no rewrite): X1 (mg-dd80) `Bicomplex.lean` direct-iterated-cohomology SS; X3 (mg-fade) `Equivariant.lean` general `EquivariantBicomplex G` + `IsotypeFamily`; X4 (mg-9822) `Schur.lean` Schur-abelian + degenerate-page differential vanishing; Y1 (mg-17dc) + Y1b (mg-ba0f) `BKBicomplexHC2.lean` BK bicomplex object; Y2 (mg-f5b4) `BKWalshEquivariant.lean` (Z/2)^n action + Maschke isotype projector.
+- **PARTIALLY SURVIVES**: X2 (mg-55b3) `Convergence.lean` (§1 `IsDegenerate` + §6 `DifferentialsFamily` halves PR upstream; §§2-5 shadowed by Z3 proper); X5 (mg-c128) `EdgeMap.lean` (generic `WithEdgeMaps` survives, union_closed-specific composite REPLACED by Z5+Z9); Y3 (mg-3fdc) `BKWalshHomotopyBridge.lean` (Y3 chain-level form survives as input to Z8, but Y3's 1-dim ℚ-line abstraction is NOT what Z8 uses — Z8 uses the χ_x-isotype slice of the actual `(BKBicomplexHC₂ F).total`).
+- **REPLACED**: Y4 (mg-35ae) `BKSSCohomologyVanishing.lean` (replaced by Z8 SpectralObject-derived abutment vanishing on the actual bicomplex); Y5 (mg-470a) + Y6 (mg-e75c) `obstructionCohomClass` def-alias chain + Y6 bridge with named structural-blocker sorry (replaced by Z9's `obstructionCohomClassZ` in different cohomology object); Y6 bridge sorry at `SSConvergence.lean:596` DELETED at Z9.
+
+The Y6 chain-map-extension structural blocker is sidestepped because Z9's new `obstructionCohomClassZ F x` lives in `(BKBicomplexHC₂ F).abutmentFiltration_gr x ((n-1)-x)`, NOT in `(BKTotal n).homology 0`. The χ_x-isotype graded piece of `H^{n-1}(Tot)` is genuinely zero (the `topVertex` chain generator is in the χ_∅-isotype, not the χ_x-isotype, so projection kills it at chain level before cohomology). `topVertex_not_coboundary F` remains a true statement about the χ_∅-isotype, decoupled from the per-x vanishing.
+
+### Phase C decomposition summary
+
+Ten sub-tickets Z1–Z10. Stage 1 + 2 = mathlib-PR infrastructure (Z1–Z5, 1.75–2.30M); Stage 3 = union_closed-side refactor + PROJECT-LIFE MILESTONE closure (Z6–Z10, 1.25–1.75M). Total **3.40–4.60M tokens, multi-month per Daniel directive**.
+
+| Z-i | Title | Budget (k) | Deps | mathlib-PR? |
+|---|---|---|---|---|
+| Z1 | SpectralObjectAssembly (close mathlib's 3 TODOs) | 450–600 | — | Yes (definitive) |
+| Z2 | BicomplexSpectralObject (bicomplex bridge) | 400–550 | Z1 | Yes (definitive) |
+| Z3 | BicomplexConvergence + chain-Homotopy adapter | 350–450 | Z1, Z2 | Yes (definitive) |
+| Z4 | EquivariantSpectralObject + isotype splitting | 300–400 | Z1, Z2, Z3 + X3, X4 | Conditional |
+| Z5 | SpectralObjectEdgeMap | 250–300 | Z1, Z2, Z3 | Yes (general), No (UC-specific) |
+| Z6 | BKBicomplex proper path | 200–300 | Z1, Z2, Z3 + Y1, Y1b | No |
+| Z7 | WalshEquivariant proper path | 250–350 | Z4, Z6 + Y2 | No |
+| Z8 | HomotopyBridge proper path | 350–450 | Z3, Z4, Z7 + Y3 | No |
+| Z9 | obstructionCohomClass refactor | 250–350 | Z3, Z4, Z5, Z8 | No |
+| Z10 | Frankl_Holds end-to-end closure | 200–300 | Z1–Z9 | No |
+
+Critical path: Z1 → Z2 → Z3 → (Z4 ∥ Z5) → Z6 → Z7 → Z8 → Z9 → Z10. Sub-split fallbacks pre-authorised for Z1, Z2, Z3, Z8. Cohort parallelism: Z6 ∥ Z2; Z7 ∥ Z4 (after their structural deps land). Realistic wall-clock 7–10 polecat-sessions strict-serial; multi-week / multi-month with mathlib-PR review cycles.
+
+Hard-constraint preservation: all §0 constraints (NOT factorial, NOT functorial, U1-dialect, math-first, mathlib-folder authorization, no axiom-cheat, no fake mathlib API, no defeq trick, no False.elim, no `^axiom`) carried into every Z-i acceptance bar. Three new Z-specific bars introduced to prevent re-introducing the X+Y workaround chain: (11) no `IsDegenerate` workaround at the BK bicomplex SS; (12) no chain-side encoding of cohomology vanishing for the BK bicomplex's χ_x slice; (13) no chain-map-extension on `topVertex` invoked at any Z-i. Bar (14) = PROJECT-LIFE MILESTONE trigger at Z10.
+
+### Phase D mathlib-PR coordination plan summary
+
+Daniel decisions needed before filing Z1:
+1. **Accept Z1–Z10 decomposition** vs file additional sub-arcs vs revise budget vs accept Y6b alternative (multi-week Walsh-isotype chain refactor — explicitly the kind of shortcut Daniel rejected at 12:47Z).
+2. **Choose PR cadence** — recommended **Option B (deferred bundle Z1+Z2+Z3 PR)** to avoid X1-style "built then realised it needed restructuring" risk; separate PRs for Z4 (finite-abelian first) and Z5 (general edge maps). X1–X5 wait for Z arc bundle.
+3. **Choose Zulip engagement plan** — recommended three-touchpoint: pre-Z1 RFC + mid-arc PR + post-Z10 milestone announcement. Daniel likely takes Zulip lead personally given 23:12Z "publishing on Zulip" framing.
+4. **Authorise broadened mathlib-folder scope** — Z arc touches both `lean/UnionClosed/Mathlib/Algebra/Homology/SpectralObject/` (new files Z1–Z5) and (preserved) `lean/UnionClosed/Mathlib/Algebra/Homology/SpectralSequence/` (X1–X5 files survive with thin updates).
+5. **Authorise multi-month arc** as a multi-month investment (implicit per ticket framing but explicit GREEN-light desirable before filing Z1).
+
+Author attribution: Z1–Z3 effectively co-authored with Joël Riou (he architected SpectralObject; we close the TODO). PR description credits both. Risk D.4 (Joël ships TODO closure independently) mitigated by pre-Z1 Zulip RFC.
+
+### Files modified
+
+- `docs/UC-Lean-MathlibSS-Full-scope.md` (NEW, ~1500 lines) — the scoping doc covering Phase A audit + Phase B refactor plan + Phase C Z1–Z10 decomposition + Phase D PR-coordination plan + open questions + risks.
+- `docs/state-UC10.md` — this Lean-Session 35 entry.
+
+NO Lean files modified (paper-and-pencil only). `lake build` status preserved (GREEN at 2006 jobs per Lean-Session 34 baseline).
+
+### Build status
+
+- `lake build`: GREEN at 2006 jobs (unchanged from Lean-Session 34; no Lean files modified).
+- Sorry count: unchanged (1 live sorry at `SSConvergence.lean:596` inside the Y6 bridge — to be DELETED at Z9 per Phase C plan).
+- 0 new axioms.
+- 0 new build errors.
+
+### What unblocks / forward path
+
+**Daniel decision-blocked.** The next operational step depends on Daniel D.1–D.5 decisions enumerated in `docs/UC-Lean-MathlibSS-Full-scope.md` §D.3:
+
+1. Accept Z1–Z10 decomposition vs alternatives.
+2. Choose PR cadence (D.1.a–D.1.c).
+3. Choose Zulip engagement plan (D.1.d).
+4. Authorise broadened mathlib-folder scope.
+5. Authorise multi-month arc.
+
+After Daniel GREENs the above, **file Z1 (`UC-Lean-Z1-SpectralObjectAssembly`)** as the next sequential execution ticket. Budget 450–600k with Z1a/Z1b sub-split contingency authorised in advance. Polecat profile: Lean-engineering + mathlib homological-algebra architecture (Joël Riou's SpectralObject style) + mathlib-PR-coordination comfort.
+
+**The cumulative L+X+Y arc:** sums to ~7.3M tokens across L1–L5 (mg-c0d3 family) + X1–X6 (mg-dd80→mg-b26c family) + Y1–Y6 (mg-17dc→mg-e75c family) per Daniel's reading of "asymptotic-AMBER convergence pattern: each sub-ticket strictly tighter than the prior but milestone keeps deferring". The Z arc is the **root-cause replacement** for the workaround chain, projected to add ~3.4–4.6M more tokens for the proper mathlib SS infrastructure + PROJECT-LIFE MILESTONE closure. Total project budget at Z10 GREEN: ~10.7–11.9M tokens for full Frankl formalization via proper mathlib infrastructure. This is the cost of "doing things the right way" per Daniel's 12:47Z directive.
+
+**PROJECT-LIFE MILESTONE STATUS**: deferred to Z10. Trigger conditions per `docs/UC-Lean-MathlibSS-Full-scope.md` bar (14): `grep -rn 'sorry' lean/UnionClosed/` returns empty + Frankl_Holds end-to-end non-vacuous + non-tautological. With Z10 GREEN, the 3-step post-formalization plan activates per `project-post-formalization-followons` memory (UC-Lean-audit + UC-paper-draft + UC-publishing-doc).
+
+See `docs/UC-Lean-MathlibSS-Full-scope.md` for the full cumulative scoping doc; `docs/UC-Lean-mathlib-SS-scope.md` (mg-7413) and `docs/UC-Lean-PathB-BKBicomplex-scope.md` (mg-e1b8) for the L+X+Y arc-level scoping context; `docs/state-UC-Lean-PathB-Y6.md` (mg-e75c) for the chain-map-extension structural blocker diagnosis that the Z arc sidesteps by encoding choice.
+
+**The Lean tree's status after Lean-Session 35: unchanged at the Lean-build level (no files modified). GREEN scoping verdict on the Z arc as the multi-month proper-infrastructure replacement for the L+X+Y workaround chain. Z1–Z10 decomposition pinned with 3.40–4.60M budget envelope; mathlib-PR coordination plan named with Daniel decisions blocked at D.1–D.5; forward operational step is Daniel review + Z1 filing.**
+
+---
+
 ## Open threads / what a UC15+ (or Session 8+) would do
 
 After Session 6 (UC-Lean-scope, mg-d57e), the Frankl-side compatibility-geometry program is **operationally complete AND standard-machinery-airtight AND Lean-formalization-scoped**: UC10's framework + UC12's residual + UC11's 5-step Frankl program + UC13's residual discharge + dialect-check + UC14's standard-machinery cleanup yield Frankl unconditionally via the contradiction of UC11 §§6-7, with every step admitting an explicit chain-level construction (UC14 §4.6), and the Lean formalization arc is decomposed into 5 single-session-capable sub-execution-tickets L1–L5 with named mathlib dependencies and Daniel hard-constraint carryover (UC-Lean-scope §C, §D). The forward work, demoted from "blocking" to "optional":
