@@ -2,7 +2,8 @@
 Copyright (c) 2026 Union-Closed Polecat Authors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Union-Closed Polecat (cat-mg-3ff1 Z2a + cat-mg-0611 Z2b +
-cat-mg-ce0c Z2c, of UC-Lean-MathlibSS-Full-scope).
+cat-mg-ce0c Z2c + cat-mg-7b40 Z2d + cat-mg-b823 Z2e + cat-mg-165d Z2f,
+of UC-Lean-MathlibSS-Full-scope).
 
 This file extends `Mathlib.Algebra.Homology.HomologicalBicomplex` and
 `Mathlib.Algebra.Homology.TotalComplex` (authored by Kim Morrison and
@@ -68,6 +69,7 @@ public import Mathlib.Algebra.Homology.Embedding.StupidTrunc
 public import Mathlib.Algebra.Homology.Embedding.Basic
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.Algebra.Category.ModuleCat.Abelian
 public import Mathlib.Order.WithBotTop
 
 /-!
@@ -2183,117 +2185,360 @@ example : IsZero ((trivialColumnZeroFirstQuadrant.X 3).X (-1)) :=
 
 end FirstQuadrantRows
 
-/-! ### Non-vacuous evaluations of the Z2e `ShortExact` upgrades.
+end HomologicalComplex₂
 
-The `ShortExact` lemmas
-`cutoffColumns_succ_singleColumnAt_shortExact` and
+/-! ## The spectral-object slice bicomplex (Z2f Phase A.1)
+
+For `i ≤ j` in `EInt`, the **spectral-object slice** of `K` is the bicomplex
+quotient `F^i / F^j` realised as the cokernel of the Z2d filtration inclusion
+`K.cutoffColumnsEInt_le h : cutoffColumnsEInt j ⟶ cutoffColumnsEInt i`. This
+is the substantive bicomplex-level input that the final `SpectralObject`
+record assembly will totalise + shift to obtain `(K.spectralObject).H n`. -/
+
+namespace HomologicalComplex₂
+
+variable {C : Type*} [Category* C] [Preadditive C] [HasZeroObject C] [Abelian C]
+  {I₂ : Type*} {c₂ : ComplexShape I₂}
+  (K : HomologicalComplex₂ C (ComplexShape.up ℤ) c₂)
+
+section SpectralObjectSlice
+
+/-- The **spectral-object slice** `K.spectralObjectSlice h` of a bicomplex `K`
+at indices `i ≤ j` in `EInt` is the cokernel of the Z2d filtration inclusion
+`K.cutoffColumnsEInt_le h`, i.e., the bicomplex quotient `F^i / F^j` in the
+standard cohomological Verdier convention. Cell-wise at column `p'`, the
+slice is the cokernel of `(K.cutoffColumnsEInt_le h).f p'`.
+
+This is the substantive bicomplex-level input that the final `SpectralObject`
+record assembly in Z2g will totalise via `HomologicalComplex₂.totalFunctor c₁₂`
+and shift by `n : ℤ` to obtain `(K.spectralObject).H n` on
+`mk₁ (homOfLE h) : ComposableArrows EInt 1`. -/
+noncomputable def spectralObjectSlice {i j : EInt} (h : i ≤ j) :
+    HomologicalComplex₂ C (ComplexShape.up ℤ) c₂ :=
+  cokernel (K.cutoffColumnsEInt_le h)
+
+/-- The canonical projection `cutoffColumnsEInt i ⟶ spectralObjectSlice h`
+witnessing the slice as a cokernel. -/
+noncomputable def spectralObjectSlice_π {i j : EInt} (h : i ≤ j) :
+    K.cutoffColumnsEInt i ⟶ K.spectralObjectSlice h :=
+  cokernel.π _
+
+@[reassoc (attr := simp)]
+lemma cutoffColumnsEInt_le_spectralObjectSlice_π {i j : EInt} (h : i ≤ j) :
+    K.cutoffColumnsEInt_le h ≫ K.spectralObjectSlice_π h = 0 :=
+  cokernel.condition _
+
+/-- The bicomplex-level short complex `cutoffColumnsEInt j ⟶ cutoffColumnsEInt i
+⟶ spectralObjectSlice h` packaging the cokernel SES of the spectral-object
+slice. -/
+noncomputable def spectralObjectSlice_shortComplex {i j : EInt} (h : i ≤ j) :
+    ShortComplex (HomologicalComplex₂ C (ComplexShape.up ℤ) c₂) :=
+  ShortComplex.mk (K.cutoffColumnsEInt_le h) (K.spectralObjectSlice_π h)
+    (K.cutoffColumnsEInt_le_spectralObjectSlice_π h)
+
+/-- The spectral-object slice at `i = j = (p : EInt)` is `IsZero`: the slice
+of an identity map is the cokernel of an iso, hence `IsZero`. -/
+lemma spectralObjectSlice_isZero_of_refl_coe (p : ℤ)
+    (h : ((p : EInt)) ≤ ((p : EInt))) :
+    IsZero (K.spectralObjectSlice h) := by
+  have hIso : IsIso (K.cutoffColumnsEInt_le h) := by
+    rw [K.cutoffColumnsEInt_le_refl_coe p h]; exact CategoryTheory.IsIso.id _
+  have hEpi : Epi (K.cutoffColumnsEInt_le h) := IsIso.epi_of_iso _
+  exact isZero_cokernel_of_epi _
+
+/-- The spectral-object slice at `i = j = ⊥` is `IsZero`. -/
+lemma spectralObjectSlice_isZero_of_refl_bot (h : (⊥ : EInt) ≤ ⊥) :
+    IsZero (K.spectralObjectSlice h) := by
+  have hIso : IsIso (K.cutoffColumnsEInt_le h) := by
+    rw [K.cutoffColumnsEInt_le_refl_bot h]; exact CategoryTheory.IsIso.id _
+  have hEpi : Epi (K.cutoffColumnsEInt_le h) := IsIso.epi_of_iso _
+  exact isZero_cokernel_of_epi _
+
+/-- The spectral-object slice at `i = j = ⊤` is `IsZero`. -/
+lemma spectralObjectSlice_isZero_of_refl_top (h : (⊤ : EInt) ≤ ⊤) :
+    IsZero (K.spectralObjectSlice h) := by
+  have hIso : IsIso (K.cutoffColumnsEInt_le h) := by
+    rw [K.cutoffColumnsEInt_le_refl_top h]; exact CategoryTheory.IsIso.id _
+  have hEpi : Epi (K.cutoffColumnsEInt_le h) := IsIso.epi_of_iso _
+  exact isZero_cokernel_of_epi _
+
+end SpectralObjectSlice
+
+section TripleFiltrationSES
+
+/-- For a triple `i ≤ j ≤ k` in `EInt`, the canonical morphism
+`spectralObjectSlice (h_jk) ⟶ spectralObjectSlice (h_ik)` realising
+`F^j/F^k ⟶ F^i/F^k` (i.e., the first map in the triple-filtration SES).
+Defined via the universal property of `cokernel` applied to
+`cutoffColumnsEInt_le h_ij ≫ spectralObjectSlice_π h_ik`. -/
+noncomputable def spectralObjectSlice_first {i j k : EInt}
+    (h_ij : i ≤ j) (h_jk : j ≤ k) (h_ik : i ≤ k) :
+    K.spectralObjectSlice h_jk ⟶ K.spectralObjectSlice h_ik :=
+  cokernel.desc _
+    (K.cutoffColumnsEInt_le h_ij ≫ K.spectralObjectSlice_π h_ik)
+    (by
+      rw [← Category.assoc, K.cutoffColumnsEInt_le_trans h_ij h_jk]
+      exact K.cutoffColumnsEInt_le_spectralObjectSlice_π h_ik)
+
+/-- For a triple `i ≤ j ≤ k` in `EInt`, the canonical morphism
+`spectralObjectSlice (h_ik) ⟶ spectralObjectSlice (h_ij)` realising
+`F^i/F^k ⟶ F^i/F^j` (i.e., the second map in the triple-filtration SES).
+Defined via the universal property of `cokernel` applied to
+`spectralObjectSlice_π h_ij`. -/
+noncomputable def spectralObjectSlice_second {i j k : EInt}
+    (h_ij : i ≤ j) (h_jk : j ≤ k) (h_ik : i ≤ k) :
+    K.spectralObjectSlice h_ik ⟶ K.spectralObjectSlice h_ij :=
+  cokernel.desc _ (K.spectralObjectSlice_π h_ij) (by
+    rw [← K.cutoffColumnsEInt_le_trans h_ij h_jk, Category.assoc,
+      K.cutoffColumnsEInt_le_spectralObjectSlice_π, comp_zero])
+
+@[reassoc (attr := simp)]
+lemma spectralObjectSlice_π_first {i j k : EInt}
+    (h_ij : i ≤ j) (h_jk : j ≤ k) (h_ik : i ≤ k) :
+    K.spectralObjectSlice_π h_jk ≫ K.spectralObjectSlice_first h_ij h_jk h_ik =
+      K.cutoffColumnsEInt_le h_ij ≫ K.spectralObjectSlice_π h_ik :=
+  cokernel.π_desc _ _ _
+
+@[reassoc (attr := simp)]
+lemma spectralObjectSlice_π_second {i j k : EInt}
+    (h_ij : i ≤ j) (h_jk : j ≤ k) (h_ik : i ≤ k) :
+    K.spectralObjectSlice_π h_ik ≫ K.spectralObjectSlice_second h_ij h_jk h_ik =
+      K.spectralObjectSlice_π h_ij :=
+  cokernel.π_desc _ _ _
+
+/-- The composition `first ≫ second` on slices is zero — the load-bearing
+identity for the triple-filtration SES to be a short complex. -/
+@[reassoc (attr := simp)]
+lemma spectralObjectSlice_first_second {i j k : EInt}
+    (h_ij : i ≤ j) (h_jk : j ≤ k) (h_ik : i ≤ k) :
+    K.spectralObjectSlice_first h_ij h_jk h_ik ≫
+      K.spectralObjectSlice_second h_ij h_jk h_ik = 0 := by
+  have hEpi : Epi (K.spectralObjectSlice_π h_jk) :=
+    coequalizer.π_epi
+  apply (cancel_epi (K.spectralObjectSlice_π h_jk)).mp
+  rw [comp_zero, ← Category.assoc, spectralObjectSlice_π_first,
+    Category.assoc, spectralObjectSlice_π_second,
+    K.cutoffColumnsEInt_le_spectralObjectSlice_π]
+
+/-- The triple-filtration short complex `slice(j ≤ k) ⟶ slice(i ≤ k) ⟶
+slice(i ≤ j)` in the bicomplex category. This is the snake-lemma input
+that the final Z2g SpectralObject δ assembly will totalise + shift + run
+`ShortExact.δ` against to obtain the SpectralObject connecting map. -/
+noncomputable def spectralObjectSlice_tripleShortComplex {i j k : EInt}
+    (h_ij : i ≤ j) (h_jk : j ≤ k) (h_ik : i ≤ k) :
+    ShortComplex (HomologicalComplex₂ C (ComplexShape.up ℤ) c₂) :=
+  ShortComplex.mk
+    (K.spectralObjectSlice_first h_ij h_jk h_ik)
+    (K.spectralObjectSlice_second h_ij h_jk h_ik)
+    (K.spectralObjectSlice_first_second h_ij h_jk h_ik)
+
+end TripleFiltrationSES
+
+end HomologicalComplex₂
+
+/-! ## Non-vacuous evaluations of the spectral-object slice on the
+`trivialColumnZeroFirstQuadrant` test bicomplex (Z2f Phase A.1 + Z2e ShortExact).
+
+The Z2e `ShortExact` lemmas `cutoffColumns_succ_singleColumnAt_shortExact` and
 `singleColumnAt_to_cutoffColumnsLE_shortExact` are non-trivial for **any**
-abelian-valued bicomplex `K`: at each non-trivial column the cell-level
-SC is either `(0, X, X)` with `g` iso (case B) or `(X, X, 0)` with `f` iso
-(case C), both of which admit explicit cell-level `Splitting`s constructed
-via `splittingOfIsZeroX₁IsIsoG` and `splittingOfIsZeroX₃IsIsoF`. The
-proofs route through the substantive Z2b/Z2c filtration data
+abelian-valued bicomplex `K`: at each non-trivial column the cell-level SC is
+either `(0, X, X)` with `g` iso (case B) or `(X, X, 0)` with `f` iso (case C),
+both of which admit explicit cell-level `Splitting`s constructed via the
+Z2e helpers. The proofs route through the substantive Z2b/Z2c filtration data
 (`cutoffColumns_succ_f_of_le` and `cutoffColumns_to_singleColumnAt_f_at_self`,
 plus the dual LE-side primitives), via the genuine bicomplex cell isos
-`cutoffColumns_XIso_of_le` and `singleColumnAt_XIso_self`, NOT via rfl
-bypass. Concrete `ModuleCat ℚ`-valued evaluations on the
-`trivialColumnZeroFirstQuadrant` test bicomplex are deferred to Z2f
-where they will be threaded through the SpectralObject record assembly
-construction (cokernel + totalisation + shift in `HomologicalComplex C
-(ComplexShape.up ℤ)`). -/
+`cutoffColumns_XIso_of_le` and `singleColumnAt_XIso_self`, NOT via rfl bypass.
+
+The Z2f Phase A.1 spectral-object slice composes the Z2d EInt-indexed
+filtration with mathlib's bicomplex-level `cokernel`, giving the explicit
+`F^i / F^j` quotient as a bicomplex. Below we evaluate the slice and the
+Z2e ShortExact upgrades concretely on the `trivialColumnZeroFirstQuadrant`
+test bicomplex from Z2d. -/
+
+namespace HomologicalComplex₂
+
+namespace NonVacuousZ2f
+
+/-- Non-vacuous: the spectral-object slice at `i = j = (0 : EInt)` on the
+trivial test bicomplex is `IsZero` (reflexivity-induced vanishing). -/
+example : IsZero (trivialColumnZeroFirstQuadrant.spectralObjectSlice
+    (le_refl ((0 : ℤ) : EInt))) :=
+  trivialColumnZeroFirstQuadrant.spectralObjectSlice_isZero_of_refl_coe 0
+    (le_refl _)
+
+/-- Non-vacuous: the spectral-object slice at `i = j = ⊥` on the trivial test
+bicomplex is `IsZero` (reflexivity at `⊥` is the identity on `K`). -/
+example : IsZero (trivialColumnZeroFirstQuadrant.spectralObjectSlice
+    (le_refl (⊥ : EInt))) :=
+  trivialColumnZeroFirstQuadrant.spectralObjectSlice_isZero_of_refl_bot
+    (le_refl _)
+
+/-- Non-vacuous: the spectral-object slice at `i = j = ⊤` on the trivial test
+bicomplex is `IsZero` (reflexivity at `⊤`; the underlying objects are also
+zero, but the slice vanishing comes from the reflexivity case). -/
+example : IsZero (trivialColumnZeroFirstQuadrant.spectralObjectSlice
+    (le_refl (⊤ : EInt))) :=
+  trivialColumnZeroFirstQuadrant.spectralObjectSlice_isZero_of_refl_top
+    (le_refl _)
+
+/-- Non-vacuous: the Z2e GE-side `ShortExact` upgrade applies concretely to
+the trivial test bicomplex at filtration index `p = 0`. -/
+example : (trivialColumnZeroFirstQuadrant.cutoffColumns_succ_singleColumnAt_shortComplex
+    0).ShortExact :=
+  trivialColumnZeroFirstQuadrant.cutoffColumns_succ_singleColumnAt_shortExact 0
+
+/-- Non-vacuous: the Z2e GE-side `ShortExact` upgrade applies to the trivial
+test bicomplex at a strictly-negative filtration index `p = -1`. -/
+example : (trivialColumnZeroFirstQuadrant.cutoffColumns_succ_singleColumnAt_shortComplex
+    (-1)).ShortExact :=
+  trivialColumnZeroFirstQuadrant.cutoffColumns_succ_singleColumnAt_shortExact (-1)
+
+/-- Non-vacuous: the Z2e LE-side `ShortExact` upgrade applies concretely to
+the trivial test bicomplex at filtration index `p = 0`. -/
+example : (trivialColumnZeroFirstQuadrant.singleColumnAt_to_cutoffColumnsLE_shortComplex
+    0).ShortExact :=
+  trivialColumnZeroFirstQuadrant.singleColumnAt_to_cutoffColumnsLE_shortExact 0
+
+/-- Non-vacuous: the Z2e LE-side `ShortExact` upgrade applies to the trivial
+test bicomplex at a positive filtration index `p = 2`. -/
+example : (trivialColumnZeroFirstQuadrant.singleColumnAt_to_cutoffColumnsLE_shortComplex
+    2).ShortExact :=
+  trivialColumnZeroFirstQuadrant.singleColumnAt_to_cutoffColumnsLE_shortExact 2
+
+/-- Non-vacuous: the triple-filtration `first ≫ second` composition at
+`i = j = k = (0 : EInt)` on the trivial test bicomplex is zero, as expected
+from the load-bearing `spectralObjectSlice_first_second` identity. -/
+example : trivialColumnZeroFirstQuadrant.spectralObjectSlice_first
+    (le_refl ((0 : ℤ) : EInt)) (le_refl _) (le_refl _) ≫
+      trivialColumnZeroFirstQuadrant.spectralObjectSlice_second
+        (le_refl ((0 : ℤ) : EInt)) (le_refl _) (le_refl _) = 0 :=
+  trivialColumnZeroFirstQuadrant.spectralObjectSlice_first_second _ _ _
+
+/-- Non-vacuous: the triple-filtration short complex at `i = j = k = (0 : EInt)`
+on the trivial test bicomplex is a well-formed `ShortComplex`. -/
+noncomputable example : ShortComplex
+    (HomologicalComplex₂ (ModuleCat ℚ) (ComplexShape.up ℤ) (ComplexShape.up ℤ)) :=
+  trivialColumnZeroFirstQuadrant.spectralObjectSlice_tripleShortComplex
+    (le_refl ((0 : ℤ) : EInt)) (le_refl _) (le_refl _)
+
+end NonVacuousZ2f
 
 end HomologicalComplex₂
 
 /-!
-## Deferred to Z2f (named follow-on)
+## Deferred to Z2g (named follow-on)
 
-The Z2e session **landed** the following Phase A / Phase B / Phase C
-deliverables:
+The Z2f session **landed** the following Phase A.1 deliverables on top of
+the Z2e Phase A.1 / Phase B.1 / Phase C ShortExact + IsFirstQuadrantRows +
+EInt residual machinery:
 
-* **Phase A.1 (ShortExact upgrade):** Z2b GE-side and Z2c LE-side
-  `ShortComplex` packagings upgraded to `ShortExact` via two-level
-  `HomologicalComplex.shortExact_of_degreewise_shortExact` plus
-  cell-level `Splitting` case analysis (all-`IsZero` / `IsZero X₁` + iso `g` /
-  `IsZero X₃` + iso `f`). Available as
-  `cutoffColumns_succ_singleColumnAt_shortExact` and
-  `singleColumnAt_to_cutoffColumnsLE_shortExact`.
+* **Phase A.1 (`spectralObjectSlice`):** the bicomplex-level slice
+  `K.spectralObjectSlice (h : i ≤ j) := cokernel (K.cutoffColumnsEInt_le h)`
+  realising `F^i / F^j` in the standard cohomological Verdier convention,
+  the canonical projection `K.spectralObjectSlice_π h : cutoffColumnsEInt i
+  ⟶ spectralObjectSlice h`, the projection vanishing
+  `cutoffColumnsEInt_le_spectralObjectSlice_π`, the bicomplex-level cokernel
+  short complex `spectralObjectSlice_shortComplex`, and the three
+  reflexivity-induced `IsZero` lemmas
+  `spectralObjectSlice_isZero_of_refl_{bot,coe,top}` covering the three
+  EInt cases `⊥/(p : ℤ)/⊤`.
 
-* **Phase B.1 (`IsFirstQuadrantRows` typeclass):** the row-side companion
-  to `IsFirstQuadrantBicomplex`, capturing `(K.X p).X q = 0` for `q < 0`,
-  feeding the `SpectralObject.IsFirstQuadrant.isZero₂` axiom in Z2f-B.
+* **Phase A.1 (triple-filtration `ShortComplex`):** for a triple `i ≤ j ≤ k`
+  in `EInt`, the canonical `spectralObjectSlice_first h_ij h_jk h_ik :
+  spectralObjectSlice h_jk ⟶ spectralObjectSlice h_ik` (universal-property
+  factorisation through `cutoffColumnsEInt_le h_ij ≫ spectralObjectSlice_π h_ik`),
+  the `spectralObjectSlice_second h_ij h_jk h_ik : spectralObjectSlice h_ik
+  ⟶ spectralObjectSlice h_ij` (universal-property factorisation through
+  `spectralObjectSlice_π h_ij`), the projection compatibility lemmas
+  `spectralObjectSlice_π_first`, `spectralObjectSlice_π_second`, the
+  load-bearing composition-zero identity
+  `spectralObjectSlice_first_second` (via `cancel_epi` against
+  `coequalizer.π_epi`), and the bundled
+  `spectralObjectSlice_tripleShortComplex` packaging the s.e.s.
+  `slice(j ≤ k) ⟶ slice(i ≤ k) ⟶ slice(i ≤ j)` at the bicomplex level.
 
-* **Phase C (Z2d residual cleanup):** `cutoffColumns_inclusion_le_refl`
-  (load-bearing reflexivity for the chain inclusion at integer indices),
-  `cutoffColumnsEInt_le_refl_coe` (the integer-EInt-index reflexivity
-  matching `_refl_bot` and `_refl_top`), and the full 9-case
-  `cutoffColumnsEInt_le_trans` (covering all `(i, j, k) ∈ {⊥, (p : ℤ), ⊤}³`
-  orderings, with impossible orderings discharged via `simp at h`).
+* Plus 8 non-vacuous evaluations on the `trivialColumnZeroFirstQuadrant`
+  test bicomplex from Z2d: three reflexivity-induced `IsZero` slice
+  vanishings (at `(0 : EInt)`, `⊥`, `⊤`), four Z2e `ShortExact` upgrade
+  evaluations (GE/LE at filtration indices `p = 0`, `-1`, `2`), and the
+  triple-filtration `first ≫ second = 0` composition-zero check.
 
-The **final Z2 deliverable** — the `SpectralObject (HomologicalComplex C c₁₂) EInt`
-**record construction** packaging the H-data, δ-data via the snake lemma,
-the three exactness conditions via the LES of cohomology, and the
-`IsFirstQuadrant` instance — is deferred to a follow-on **Z2f**
-sub-ticket per the pre-authorised sub-split contingency. The Z2e session
-landed the substantive ShortExact upgrade infrastructure feeding the
-δ-data construction, and the IsFirstQuadrantRows typeclass needed for
-the IsFirstQuadrant instance, but the record-assembly tower (cokernel
-construction, totalisation, shift, ComposableArrows functoriality, δ via
-ShortExact.δ, LES exactness via ShortExact.homology_exact₁/₂/₃) is sized
-beyond a single focused session per the empirical 250k-per-deliverable
-ceiling observed across Z2a → Z2b → Z2c → Z2d → Z2e.
+The **final Z2 deliverables** — the `SpectralObject (HomologicalComplex
+C c₁₂) EInt` **record construction** packaging the H-data, δ-data via the
+snake lemma, the three exactness conditions via the LES of cohomology, and
+the `IsFirstQuadrant` instance — are deferred to a follow-on **Z2g**
+sub-ticket per the pre-authorised sub-split contingency. Z2f landed the
+substantive bicomplex-level `spectralObjectSlice` + triple-filtration
+`ShortComplex` infrastructure feeding the H + δ assembly, but the
+record-assembly tower (totalisation, shift on `HomologicalComplex C
+(ComplexShape.up ℤ)`, `ComposableArrows` functoriality, cokernel-of-cokernel
++ snake-lemma-derived δ via `ShortExact.δ`, three LES exactness conditions
+via `ShortExact.homology_exact₁/₂/₃`, `IsFirstQuadrant` instance via
+totalised + shifted Z2d/Z2e cell-vanishing) is sized beyond a single focused
+session per the empirical 250k-per-deliverable ceiling observed across
+Z2a → Z2b → Z2c → Z2d → Z2e → Z2f.
 
-### Z2f-A — `SpectralObject` H-functor + δ + exactness assembly
+### Z2g-A — `SpectralObject` H-functor + δ + exactness assembly
 
 The H-functor `H n : ComposableArrows EInt 1 ⥤ HomologicalComplex C c₁₂`
-on `mk₁ (homOfLE (h : i ≤ j))` returns the cokernel of the Z2d
-filtration inclusion `K.cutoffColumnsEInt_le h : cutoffColumnsEInt j ⟶
-cutoffColumnsEInt i` totalised and shifted by `n`. Concretely:
+on `mk₁ (homOfLE (h : i ≤ j))` returns `[totalise + shift n]` of
+`K.spectralObjectSlice h` (= `cokernel(K.cutoffColumnsEInt_le h)` per Z2f).
+Concretely:
 
-* The CELL-LEVEL slice is the cokernel of `cutoffColumnsEInt_le h` —
-  this is exactly the EInt-extended slice `F^i / F^j` in the standard
-  Verdier convention.
-* `(K.H n).obj (mk₁ (homOfLE h))` = `[totalise + shift n]` of that cokernel.
+* The CELL-LEVEL slice is the Z2f `K.spectralObjectSlice h` — directly
+  the cokernel of `cutoffColumnsEInt_le h` in the bicomplex category,
+  realising the EInt-extended slice `F^i / F^j` in the standard Verdier
+  convention.
+* `(K.H n).obj (mk₁ (homOfLE h))` = `(K.spectralObjectSlice h).total c₁₂` shifted by `n`.
 * The functoriality on `ComposableArrows EInt 1` morphisms follows from
-  the universal property of cokernels applied to the Z2d compatibility
+  the universal property of cokernels applied to the Z2e EInt compatibility
   squares (`cutoffColumnsEInt_le_trans` and `cutoffColumnsEInt_le_refl_coe`).
 
-The δ-data comes from the snake lemma on the s.e.s. of triple
-filtration quotients:
+The δ-data comes from the snake lemma applied to the totalisation of the
+Z2f triple-filtration short complex:
 
-* For `i ≤ j ≤ k` in `EInt`, the s.e.s.
-  `0 ⟶ slice(j, k) ⟶ slice(i, k) ⟶ slice(i, j) ⟶ 0` is built by combining
-  the Z2e GE-side / LE-side `ShortExact` upgrades into a s.e.s. of
-  `HomologicalComplex₂` and totalising via the bicomplex-level
-  `ShortExact` propagation.
+* For `i ≤ j ≤ k` in `EInt`, the Z2f
+  `K.spectralObjectSlice_tripleShortComplex h_ij h_jk h_ik` is a
+  bicomplex-level short complex (composition-zero proven). The remaining
+  Z2g step is to upgrade this to `ShortExact` (mono `first`, epi `second`,
+  exact middle) via either (a) direct cell-level `Splitting` analysis
+  mirroring the Z2e GE/LE patterns or (b) the standard "quotient by a
+  quotient" identification (`Iso.refl` of double-cokernel adjunction).
+* Totalising the bicomplex-level `ShortExact` to a `ShortExact` of
+  complexes via the bicomplex-level `total` functor's exactness.
 * The connecting morphism `ShortExact.δ` and exactness lemmas
   `ShortExact.homology_exact₁/₂/₃` from
   `Mathlib.Algebra.Homology.HomologySequence` supply the SpectralObject
   δ-data + three exactness conditions.
 
-### Z2f-B — `IsFirstQuadrant` instance via the Z2d/Z2e typeclasses
+### Z2g-B — `IsFirstQuadrant` instance via the Z2d/Z2e typeclasses
 
 For a `[K.IsFirstQuadrantBicomplex] [K.IsFirstQuadrantRows]` bicomplex
-`K`, the spectral object constructed in Z2f-A satisfies `IsFirstQuadrant`:
+`K`, the spectral object constructed in Z2g-A satisfies `IsFirstQuadrant`:
 
 * `isZero₁ i j (h : i ≤ j) (hj : j ≤ 0) n`: the H-data at `mk₁ (i ≤ j)`
-  with `j ≤ 0` is the cokernel of `cutoffColumnsEInt j ⟶ cutoffColumnsEInt i`
-  whose source and target are both supported in columns `≤ 0`, hence
-  in columns where `K` vanishes by Z2d's
+  with `j ≤ 0` is the totalised + shifted slice; the slice is a quotient
+  of `cutoffColumnsEInt i` whose source and target are both supported in
+  columns `≤ 0`, hence in columns where `K` vanishes by Z2d's
   `cutoffColumnsEInt_isZero_X_of_neg_col`. Totalisation preserves IsZero.
 
-* `isZero₂ i j (h : i ≤ j) n (hi : n < i)`: similarly the H-data is
-  the totalised+shifted cokernel; the shift by `n < i` lands the
-  contribution in negative-row degrees where `K`'s row-vanishing forces
-  zero, via Z2e's `IsFirstQuadrantRows.isZero_X_X_of_neg_row`.
+* `isZero₂ i j (h : i ≤ j) n (hi : n < i)`: similarly the H-data is the
+  totalised + shifted slice; the shift by `n < i` lands the contribution
+  in negative-row degrees where `K`'s row-vanishing forces zero, via
+  Z2e's `IsFirstQuadrantRows.isZero_X_X_of_neg_row`.
 
 Both vanishing conditions are honest (use the substantive Z2d/Z2e
 cell-level vanishing) and not the classical-instance arm.
 
-### Z2f budget
+### Z2g budget
 
-The Z2f follow-on is sized for a focused short session (~250-300k
-tokens, matching the empirically validated per-deliverable ceiling
-observed across Z2a → Z2b → Z2c → Z2d → Z2e). After Z2f GREEN, the Z2
-scope is fully closed and Z3 (`BicomplexConvergence`) dispatches on the
-full Z2 deliverable set.
+The Z2g follow-on is sized for a focused short session (~250-300k tokens,
+matching the empirically validated per-deliverable ceiling observed
+across Z2a → Z2b → Z2c → Z2d → Z2e → Z2f). After Z2g GREEN, the Z2 scope
+is fully closed and Z3 (`BicomplexConvergence`) dispatches on the full
+Z2 deliverable set. This is the **seventh** Z2 sub-split (Z2 → Z2a →
+Z2b → Z2c → Z2d → Z2e → Z2f → Z2g); the cumulative substantive content
+landed Z2a–Z2f covers the entire bicomplex-side `SpectralObject`
+**infrastructure**, with only the record-assembly + IsFirstQuadrant
+instance remaining as honest Joel-Riou-style packaging.
 -/
