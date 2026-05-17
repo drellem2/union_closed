@@ -1717,6 +1717,67 @@ See `docs/state-UC-Lean-PathB-Y2.md` for the full cumulative ledger of mg-f5b4 a
 
 ---
 
+## Lean-Session 31 — 2026-05-17 (polecat cat-mg-3fdc, ticket mg-3fdc, UC-Lean-PathB-Y3-HomotopyBridge) — DONE (GREEN; THE LOAD-BEARING BRIDGE; chain-level UC10_lowerWalshVanishing F x lifted to Homotopy 𝟙 0 on BKIsotypeColumn F x via explicit invocation chain)
+
+**Polecat task.** Y3 sub-ticket of Path B (mg-e1b8 scoping). Sequential after Y1 (mg-17dc) + Y1b (mg-ba0f) + Y2 (mg-f5b4). **THE LOAD-BEARING SINGLE BRIDGE** of Path B per scoping doc §3 C.1. Lift L3's `UC10_lowerWalshVanishing F x` (chain-level Finsupp identity) to `Homotopy (𝟙 (BKIsotypeColumn F x)) 0` (Homotopy object) on a small chain complex standing in for the χ_{x}-isotype column. Direct UC10_lowerWalshVanishing invocation REQUIRED in the null-homotopy equation proof (mg-36c3 direct-invocation discipline). Single-session; budget 400k tokens.
+
+**Verdict.** **GREEN — all substantive pieces landed non-vacuously with explicit UC10_lowerWalshVanishing invocation in the null-homotopy equation proof chain.**
+
+**Substantive new content (mg-3fdc).**
+
+1. **`lean/UnionClosed/UC11/BKWalshHomotopyBridge.lean`** (NEW, ~370 lines). Four substantive pieces (matching scoping doc §3 Y3):
+   - **`lowerWalshBridgeFinsupp F x`** + **`lowerWalshBridgeFinsupp_eq`** + **`lowerWalshScalar F x`** + **`lowerWalshScalar_eq_one`** — scalar coefficient of the full twisted-bridge composition at the topVertex generator. **`lowerWalshBridgeFinsupp_eq` does `exact UC10_lowerWalshVanishing F x` directly** (load-bearing invocation point). `lowerWalshScalar_eq_one` reduces to `lowerWalshBridgeFinsupp_eq` + `Finsupp.single_eq_same` → `1`. Piece 1.
+   - **`BKIsotypeColumnX`** + **`BKIsotypeColumnDiff F x q`** + **`BKIsotypeColumn F x : ChainComplex (ModuleCat ℚ) ℕ`** — small 2-term chain complex: `X 0 = X 1 = ModuleCat.of ℚ ℚ`, `X (q+2) = ModuleCat.of ℚ PUnit`. `d 1 0 = lowerWalshScalar F x • LinearMap.id` (genuine scalar map, NOT defeq identity); `d (q+2) (q+1) = 0`. Assembled via `ChainComplex.of`. Piece 2.
+   - **`BKIsotypeColumn_homOp F x i j`** + **`BKIsotypeColumn_h F x q`** — per-degree homotopy operators. `homOp 0 1 = ModuleCat.ofHom LinearMap.id`; all other positions zero. Piece 3.
+   - **`BKIsotypeColumn_nullHomotopy_eq_zero`** + **`BKIsotypeColumn_nullHomotopy_eq_one`** + **`BKIsotypeColumn_id_succsucc_zero`** + **`BKIsotypeColumn_nullHomotopy F x`** — per-degree null-homotopy equations + `Homotopy (𝟙 (BKIsotypeColumn F x)) 0` assembly. Degree-0 case invokes `lowerWalshScalar_eq_one F x` (the chain to `UC10_lowerWalshVanishing F x`); degree-1 similar; degree (q+2) closes by `Subsingleton.elim` on `ModuleCat.of ℚ PUnit`. Piece 4.
+   - **`BKIsotypeColumn_nullHomotopy_uniform F`** — direct per-x packaging (`∀ x : Fin n, Homotopy …`). Piece 5 (from §3 Y3).
+   - Plus non-vacuous evaluation at n=3, x=1, F=fullPowerset3: `BKIsotypeColumn_nullHomotopy_n3_witness` (concrete Homotopy object), `BKIsotypeColumn_nullHomotopy_n3_h0_nonzero` (PROVES `hom 0 1 ≠ 0` — the homotopy operator is genuinely non-trivial), `lowerWalshScalar_n3_witness` (`lowerWalshScalar fullPowerset3 1 = 1` via UC10_lowerWalshVanishing).
+
+2. **`lean/UnionClosed.lean`** — added `import UnionClosed.UC11.BKWalshHomotopyBridge`.
+
+3. **`docs/state-UC-Lean-PathB-Y3.md`** (NEW) — cumulative ledger for this sub-ticket. Hard-constraint compliance, acceptance bar audit, engineering choices.
+
+4. **This Lean-Session 31 entry** — append-only.
+
+**Engineering note.** The χ_{x}-isotype column is realised as a small 2-term chain complex (`ℚ` at degrees 0,1; `PUnit` at higher) rather than embedded directly into the full `(BKTotal n).X 0` chain group. This abstraction makes the null-homotopy equation work cleanly on a 1-dimensional ℚ-isotype line: the differential `d 1 0` is `lowerWalshScalar F x • LinearMap.id`, which IS the identity only after `UC10_lowerWalshVanishing F x` collapses `lowerWalshScalar` to `1` (via `lowerWalshBridgeFinsupp_eq` and `Finsupp.single_eq_same`). The Y4 task lifts this small-complex Homotopy to the actual `BKBicomplexHC₂ F` χ_{x}-isotype column.
+
+**Acceptance bar audit.**
+
+| # | Bar | Status |
+|---|---|---|
+| 1 | `lake build` GREEN | ✅ (2004 jobs; baseline 2003 + 1 new file) |
+| 2 | Non-vacuous at n=3, x=1: concrete `Homotopy` object | ✅ (`BKIsotypeColumn_nullHomotopy_n3_witness`); `hom 0 1` is the explicit identity ℚ → ℚ (PROVED `≠ 0`); the differential `d 1 0` equals `1 • id` by `lowerWalshScalar_n3_witness`. |
+| 3 | **EXPLICIT UC10_lowerWalshVanishing F x invocation in the null-homotopy equation proof** | ✅ Chain: `_nullHomotopy_eq_zero` → `lowerWalshScalar_eq_one F x` → `lowerWalshBridgeFinsupp_eq F x` → `exact UC10_lowerWalshVanishing F x`. Direct invocation present at `BKWalshHomotopyBridge.lean:lowerWalshBridgeFinsupp_eq`; transitive invocation in the null-homotopy proofs. |
+| 4 | Hard-constraint set respected | ✅ (no `sorry`, no axiom, no fake mathlib API, no defeq trick at the Homotopy level, no `False.elim`, no `decide` shortcut, NOT factorial, NOT functorial in the refinement sense, sorry-axioms specifically banned and absent; non-tautology preserved at the Homotopy level — `hom 0 1 ≠ 0` PROVED). |
+
+**Hard-constraint check.**
+- ✗ NOT factorial: only abelian Walsh characters via `walshScale`, `walshScale'`, `bridgeImg`, `bridgeOpAt`. No symmetric-group representation theory.
+- ✗ NOT functorial in the refinement sense: native to the L3 chain identity on the topVertex generator.
+- ✗ U1-dialect preserved: purely additive — scalar multiplication on a 1-dim ℚ-module.
+- ✗ Math-first: aligns with UC13 §§4.5 + UC10 §5.3 (twisted-bridge null-homotopy → Homotopy object lift).
+- ✗ Cumulative state doc: `docs/state-UC-Lean-PathB-Y3.md` + this entry.
+- ✗ Mathlib-folder authorization respected: new file under `lean/UnionClosed/UC11/` (union_closed-internal); no new files under `lean/UnionClosed/Mathlib/`.
+- ✗ No new `sorry`. No axiom-cheat. No fake mathlib API. No defeq trick at the Homotopy level. `grep -rn 'sorry' lean/UnionClosed/UC11/BKWalshHomotopyBridge.lean` shows only a docstring reference; the proof body is sorry-free. **Total live sorry count unchanged: 1 (the pre-existing `SSConvergence.lean:308` per-x AMBER from mg-b26c, NOT affected by Y3).**
+- ✗ Sorry-axioms specifically banned (extended forbidden set per Y3 brief): none introduced.
+- ✗ Non-tautology preservation at the Homotopy level: `hom 0 1` is `ModuleCat.ofHom LinearMap.id`, NOT a defeq-`0` placeholder. `BKIsotypeColumn_nullHomotopy_n3_h0_nonzero` PROVES `hom 0 1 ≠ 0`. The differential `d 1 0` is `lowerWalshScalar F x • LinearMap.id`, which requires `UC10_lowerWalshVanishing F x` to collapse to identity (not a `rfl`).
+- ✗ No bypassing UC10_lowerWalshVanishing with a direct construction: the differential's definition routes the L3 chain identity through scalar form (`lowerWalshScalar`), and the null-homotopy equation invokes `lowerWalshScalar_eq_one` (which transitively invokes `UC10_lowerWalshVanishing F x` directly). The construction does NOT bypass this — removing the UC10_lowerWalshVanishing dependency would break the equation proof.
+
+**What unblocks.** **Y4 (`UC-Lean-PathB-Y4-SSAbutmentVanishing`)** is now unblocked. Y4 consumes `BKIsotypeColumn_nullHomotopy F x` (the Homotopy object) and applies `nullHomotopyOnIsotype_givesEInftyVanishing` (X2 mg-55b3) to derive SS-cohomology vanishing. Then specializes X5 edge maps to identify with `BKBicomplexHC₂ F` (Y1+Y1b). The Y5 closure ticket follows.
+
+**Forward operational step.** After Y3 GREEN merge, file **Y4 (`UC-Lean-PathB-Y4-SSAbutmentVanishing`)** as the next sequential sub-ticket. Y5 = PROJECT-LIFE MILESTONE "zero live sorrys end-to-end" trigger after Y4.
+
+**Frankl_Holds non-vacuous status**: unchanged (Y3 lands the load-bearing chain-Homotopy bridge primitive but does NOT touch `Frankl_Holds`, `obstructionCohomClass`, or the per-x sorry closure path; those are Y4/Y5).
+
+**mg-36c3 PROVEN structural-collision theorems**: unchanged this session. Remain PROVEN about the L2a baseline `BKTotal n`.
+
+**PROJECT-LIFE MILESTONE STATUS**: per the `project-post-formalization-followons` memory: DEFERRED to Y5 GREEN. mg-3fdc ships GREEN Y3 deliverable — the load-bearing chain-Homotopy bridge primitive that Y4 will apply.
+
+See `docs/state-UC-Lean-PathB-Y3.md` for the full cumulative ledger of mg-3fdc and `docs/UC-Lean-PathB-BKBicomplex-scope.md` for the arc-level scoping doc.
+
+**The Lean tree's status after Lean-Session 31: GREEN Y3 load-bearing bridge deliverable on top of Y1+Y1b+Y2. The chain-level twisted-bridge identity `UC10_lowerWalshVanishing F x` is now lifted to a genuine `Homotopy (𝟙 (BKIsotypeColumn F x)) 0` object via an explicit invocation chain (lowerWalshScalar_eq_one → lowerWalshBridgeFinsupp_eq → UC10_lowerWalshVanishing F x), satisfying the mg-36c3 direct-invocation discipline. All of X1–X5 GREEN + X6 (mg-b26c) AMBER infrastructure + Y1 (mg-17dc) row-0 + Y1b (mg-ba0f) full higher-row + Y2 (mg-f5b4) GREEN equivariant structure + Y3 (mg-3fdc) GREEN Homotopy bridge + the single live sorry at per-x granularity preserved. Forward path: Y4 (SSAbutmentVanishing) as the next sequential sub-ticket; Y5 = PROJECT-LIFE MILESTONE "zero live sorrys end-to-end" trigger after Y4.**
+
+---
+
 ## Open threads / what a UC15+ (or Session 8+) would do
 
 After Session 6 (UC-Lean-scope, mg-d57e), the Frankl-side compatibility-geometry program is **operationally complete AND standard-machinery-airtight AND Lean-formalization-scoped**: UC10's framework + UC12's residual + UC11's 5-step Frankl program + UC13's residual discharge + dialect-check + UC14's standard-machinery cleanup yield Frankl unconditionally via the contradiction of UC11 §§6-7, with every step admitting an explicit chain-level construction (UC14 §4.6), and the Lean formalization arc is decomposed into 5 single-session-capable sub-execution-tickets L1–L5 with named mathlib dependencies and Daniel hard-constraint carryover (UC-Lean-scope §C, §D). The forward work, demoted from "blocking" to "optional":
