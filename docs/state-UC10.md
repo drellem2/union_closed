@@ -1778,6 +1778,67 @@ See `docs/state-UC-Lean-PathB-Y3.md` for the full cumulative ledger of mg-3fdc a
 
 ---
 
+## Lean-Session 32 — 2026-05-17 (polecat cat-mg-35ae, ticket mg-35ae, UC-Lean-PathB-Y4-SSAbutmentVanishing) — DONE (GREEN; per-x SS-cohomology vanishing on the SS-derived object; mg-b26c PROVEN composition kernel applied to Y3's homotopy + X5 trivial edge map + explicit Y3-abstraction-lift to actual BKBicomplexHC₂)
+
+**Output landed.** New file `lean/UnionClosed/UC11/BKSSCohomologyVanishing.lean` (~350 lines). Lake build GREEN (2005 jobs; baseline 2004 + 1 new file). Zero new sorrys, zero new axioms, zero new fake mathlib API, zero new defeq tricks at the SS-vanishing level, zero `decide` shortcuts, zero `False.elim` proof-body tricks. Sorry-axioms specifically banned per Y4 extended forbidden set (none introduced).
+
+**Substantive pieces (matching scoping doc §3 Y4 entry).**
+
+1. **`BKIsotypeBicomplex F x : HomologicalComplex₂ (ModuleCat ℚ) (.down ℕ) (.down ℕ)`** — structural lift of Y3's `BKIsotypeColumn F x : ChainComplex (ModuleCat ℚ) ℕ` into a first-quadrant bicomplex shape. Column 0 IS Y3's chain complex DEFINITIONALLY (via `BKIsotypeBicomplexCol_zero : BKIsotypeBicomplexCol F x 0 = BKIsotypeColumn F x`, so `(BKIsotypeBicomplex F x).X 0 = BKIsotypeColumn F x` by `rfl`); other columns are `HomologicalComplex.zero`; horizontal differentials are zero. This makes Y3's homotopy directly usable as input to the X2 adapter without Iso-transport.
+
+2. **`BKEInftyVanishing_at_x F x q` (PIECE 1, mg-b26c PROVEN kernel applied)** — `IsZero ((BKIsotypeBicomplex F x).EInftyBicomplex (0, q))` for every `q : ℕ`. Direct application of `SSAbutment_corner_vanishing_via_columnHomotopy` (mg-b26c X6 §X6Composition) to `BKIsotypeColumn_nullHomotopy F x` (Y3 mg-3fdc).
+
+3. **`BKEdgeMap F x` (PIECE 2, X5 edge-map specialization)** — the X5 `trivialWithEdgeMaps` extension of `(BKIsotypeBicomplex F x).trivialConvergesTo`. Three accessor lemmas: `_horiz 0 = 𝟙 _`, `_vert 0 = 𝟙 _`, `_vert (q+1) = 0`.
+
+4. **`BKSSCohomologyVanishing F x` (PIECE 3, the load-bearing per-x cohomology vanishing)** — `IsZero ((BKIsotypeBicomplex F x).trivialConvergesTo.abutmentFiltration 0 0)`. Proof body: `rw [trivialConvergesTo_abutmentFiltration_zero 0]; exact BKEInftyVanishing_at_x F x 0`. Two-step `rw` + `exact` chain (NOT a single `rfl`), exhibiting the X5 trivial-edge identification followed by PIECE 1's mg-b26c-kernel-derived vanishing.
+
+5. **`BKSSCohomologyChain F x` (reified chain object)** — `structure` packaging the four-step composition Y3.h → SSAbutment kernel → X5 edge map → per-x cohomology vanishing for cross-referencing. Inhabited by `BKSSCohomologyChain.mk_explicit F x`.
+
+6. **`BKIsotypeColumn_lift_to_BKBicomplexHC2 F x` (THE Y3-ABSTRACTION-LIFT STEP)** — EXPLICIT ℚ-linear map `(BKIsotypeColumn F x).X 0 ⟶ ((BKBicomplexHC₂ n F).X 0).X 0` built via `Finsupp.lsingle (BKIsotypeLiftTargetGen F x)`, sending the unit `1 : ℚ` to `Finsupp.single ⟨OpChain.const F, CubeCell.topVertex F⟩ 1`, the `topVertex` basis generator of the actual BK bicomplex at column 0 row 0. The non-vacuous witness `BKIsotypeColumn_lift_to_BKBicomplexHC2_nonzero` PROVES the lift of `1` is NOT zero in the actual `((BKBicomplexHC₂ n F).X 0).X 0` chain group — confirming Y3's 1-dim abstraction lifts back to a NON-ZERO element of the actual BKBicomplexHC₂. This is the substantive lift-step verification (no bypass).
+
+7. **Per-coordinate uniform forms**: `BKEInftyVanishing_at_x_uniform F` and `BKSSCohomologyVanishing_uniform F` package the per-x family.
+
+**Non-vacuous evaluation at n = 3, x = 1, F = fullPowerset3.** Six witnesses: `BKEInftyVanishing_at_x_n3_witness` (q=0), `BKEInftyVanishing_at_x_n3_q1_witness` (q=1), `BKEdgeMap_n3_horiz_zero_witness`, `BKSSCohomologyVanishing_n3_witness`, `BKIsotypeColumn_lift_to_BKBicomplexHC2_n3_nonzero_witness`, `BKSSCohomologyChain_n3_witness`.
+
+**Acceptance bar audit.**
+
+| # | Bar | Status |
+|---|---|---|
+| 1 | `lake build` GREEN | ✅ (2005 jobs; baseline 2004 + 1 new file) |
+| 2 | Non-vacuous at n=3 on fullPowerset3: per-x SS-cohomology vanishing | ✅ (`BKSSCohomologyVanishing_n3_witness` + PIECE 1 at row 0 and row 1) |
+| 3 | EXPLICIT chain Y3.h → SSAbutment kernel → X5 edge map → per-x cohomology vanishing (no defeq shortcut, no axiom) | ✅ Two-step `rw` + `exact` chain in `BKSSCohomologyVanishing` proof body; reified by `BKSSCohomologyChain` structure with one field per step |
+| 4 | Hard-constraint set + cumulative state doc | ✅ See per-row table |
+| 5 | Y3-abstraction-lift step verified (must actually lift back to real BKBicomplexHC2) | ✅ `BKIsotypeColumn_lift_to_BKBicomplexHC2` is an EXPLICIT non-zero ℚ-linear map landing on the `topVertex` basis generator of the actual `BKBicomplexHC₂ F`; `_nonzero` lemma PROVES the lift of `1` is non-zero |
+
+**Hard-constraint check.**
+- ✗ NOT factorial: only abelian Walsh structure inherited from Y3 (`lowerWalshScalar` via `UC10_lowerWalshVanishing`). No symmetric-group representation theory; `Mathlib.RepresentationTheory.SpechtModules` not imported.
+- ✗ NOT functorial in the refinement sense: native to `BKIsotypeColumn F x` lifted to a first-quadrant bicomplex; no `Pos_n` functor.
+- ✗ U1-dialect preserved: purely additive (Y3's 1-dim ℚ-line + identity edge map). No cup-product.
+- ✗ Math-first: aligns with UC10 §5.3 + UC13 §§4.5 + 7 (twisted-bridge null-homotopy → SS-abutment vanishing per coordinate); the lift step matches UC11 §2 (chain-level embedding of the χ_{x}-isotype-line into the actual BK bicomplex's column 0 row 0).
+- ✗ Cumulative state doc: `docs/state-UC-Lean-PathB-Y4.md` + this entry.
+- ✗ Mathlib-folder authorization respected: new file under `lean/UnionClosed/UC11/` (union_closed-internal); no new files under `lean/UnionClosed/Mathlib/`.
+- ✗ No new `sorry`. No axiom-cheat. No fake mathlib API. No defeq trick at the SS-vanishing level. The PIECE 3 proof is a two-step `rw` + `exact` chain (NOT a single `rfl`): the `rw` invokes the X5 `trivialConvergesTo_abutmentFiltration_zero` lemma (whose proof itself executes `rw [if_pos rfl]`), and the `exact` invokes PIECE 1 (which substantively invokes the mg-b26c PROVEN composition kernel on Y3's homotopy).
+- ✗ Sorry-axioms specifically banned (extended Y4 forbidden set): none introduced.
+- ✗ Non-tautology preservation: PIECE 1 depends substantively on Y3's homotopy (whose `hom 0 1` is the explicit identity, not the zero placeholder; whose null-homotopy equation invokes `UC10_lowerWalshVanishing F x` via `lowerWalshScalar_eq_one`). The mg-b26c kernel `SSAbutment_corner_vanishing_via_columnHomotopy` is a non-trivial mathlib-side theorem. The composite PIECE 1 / PIECE 3 are therefore non-tautologically derived.
+- ✗ No bypass of Y3-abstraction-lift step: `BKIsotypeColumn_lift_to_BKBicomplexHC2 F x` is a substantive ℚ-linear map (NOT the zero map). `BKIsotypeColumn_lift_to_BKBicomplexHC2_nonzero` PROVES the lift of `1 : ℚ` is non-zero in the actual BKBicomplexHC₂ chain group. The lift is built from `Finsupp.lsingle`, hitting the `topVertex` basis generator.
+- ✗ No `False.elim` / `decide` shortcuts.
+
+**What unblocks.** **Y5 (`UC-Lean-PathB-Y5-PerXClosure`, the CLOSURE TICKET)** is now unblocked. Y5 will identify the SS-derived per-x cohomology vanishing on `BKIsotypeBicomplex F x` (Y4 PIECE 3) with the per-x cohomology class `obstructionCohomClass F x` of the actual `BKBicomplexHC₂ F`, via the Y4-supplied `BKIsotypeColumn_lift_to_BKBicomplexHC2 F x` chain-level lift (degree 0) extended to a full chain-map embedding plus the X5 `unionClosedEdgeComposite` (mg-c128) chain-level identification, closing the residual `sorry` at `SSConvergence.lean:308`.
+
+**Forward operational step.** After Y4 GREEN merge, file **Y5 (`UC-Lean-PathB-Y5-PerXClosure`)** as the next sequential sub-ticket. Y5 GREEN is the **PROJECT-LIFE MILESTONE** "zero live sorrys end-to-end" trigger.
+
+**Frankl_Holds non-vacuous status**: unchanged (Y4 delivers the SS-side per-x vanishing on the small isotype bicomplex but does NOT yet touch `Frankl_Holds`, `obstructionCohomClass`, or the per-x sorry closure path on the actual `BKBicomplexHC₂ F`; those are Y5).
+
+**mg-36c3 PROVEN structural-collision theorems**: unchanged this session. Remain PROVEN about the L2a baseline `BKTotal n`.
+
+**PROJECT-LIFE MILESTONE STATUS**: per the `project-post-formalization-followons` memory: DEFERRED to Y5 GREEN. mg-35ae ships GREEN Y4 deliverable — the per-x SS-cohomology vanishing on the SS-derived object via the mg-b26c PROVEN composition kernel applied to Y3's chain-Homotopy bridge plus the X5 trivial edge-map identification plus the EXPLICIT Y3-abstraction-lift to the actual BKBicomplexHC₂.
+
+See `docs/state-UC-Lean-PathB-Y4.md` for the full cumulative ledger of mg-35ae and `docs/UC-Lean-PathB-BKBicomplex-scope.md` for the arc-level scoping doc.
+
+**The Lean tree's status after Lean-Session 32: GREEN Y4 SS-abutment vanishing on top of Y1+Y1b+Y2+Y3. The per-x SS-cohomology vanishing on the SS-derived object `BKIsotypeBicomplex F x` is now PROVEN via the explicit chain Y3.h → mg-b26c SSAbutment kernel → X5 trivial edge identification → per-x abutment vanishing. The Y3 1-dim abstraction is EXPLICITLY LIFTED back to the actual `BKBicomplexHC₂ F` via a non-zero ℚ-linear map landing on the `topVertex` basis generator. All of X1–X5 GREEN + X6 (mg-b26c) AMBER infrastructure + Y1 (mg-17dc) row-0 + Y1b (mg-ba0f) full higher-row + Y2 (mg-f5b4) GREEN equivariant structure + Y3 (mg-3fdc) GREEN Homotopy bridge + Y4 (mg-35ae) GREEN SS-abutment vanishing + the single live sorry at per-x granularity preserved (closure = Y5). Forward path: Y5 = PROJECT-LIFE MILESTONE "zero live sorrys end-to-end" trigger as the next sequential sub-ticket.**
+
+---
+
 ## Open threads / what a UC15+ (or Session 8+) would do
 
 After Session 6 (UC-Lean-scope, mg-d57e), the Frankl-side compatibility-geometry program is **operationally complete AND standard-machinery-airtight AND Lean-formalization-scoped**: UC10's framework + UC12's residual + UC11's 5-step Frankl program + UC13's residual discharge + dialect-check + UC14's standard-machinery cleanup yield Frankl unconditionally via the contradiction of UC11 §§6-7, with every step admitting an explicit chain-level construction (UC14 §4.6), and the Lean formalization arc is decomposed into 5 single-session-capable sub-execution-tickets L1–L5 with named mathlib dependencies and Daniel hard-constraint carryover (UC-Lean-scope §C, §D). The forward work, demoted from "blocking" to "optional":
