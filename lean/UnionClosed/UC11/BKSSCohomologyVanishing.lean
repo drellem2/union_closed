@@ -83,7 +83,7 @@ import UnionClosed.UC10.BousfieldKan
 import UnionClosed.UC10.BKBicomplexHC2
 import UnionClosed.UC11.BKWalshHomotopyBridge
 import UnionClosed.UC11.Minimality
-import UnionClosed.UC11.SSConvergence
+import UnionClosed.UC11.SSKernel
 
 open CategoryTheory Limits HomologicalComplex₂
 

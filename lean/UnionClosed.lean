@@ -27,9 +27,10 @@ import UnionClosed.UC11.ObstructionClass
 import UnionClosed.UC11.NonVanishing
 import UnionClosed.UC11.CohomologyClass
 import UnionClosed.UC11.SSEdgeIdentification
-import UnionClosed.UC11.SSConvergence
+import UnionClosed.UC11.SSKernel
 import UnionClosed.UC11.BKWalshHomotopyBridge
 import UnionClosed.UC11.BKSSCohomologyVanishing
+import UnionClosed.UC11.SSConvergence
 import UnionClosed.UC13_PartA.IsotypePreservation
 import UnionClosed.UC13_PartA.CorrectedLanding
 import UnionClosed.UC13_PartA.DialectCheck
