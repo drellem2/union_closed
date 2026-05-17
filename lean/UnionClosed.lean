@@ -10,6 +10,7 @@ import UnionClosed.UC10.BousfieldKan
 import UnionClosed.UC10.XNcap
 import UnionClosed.UC10.Target
 import UnionClosed.UC10.BundledLemmas
+import UnionClosed.UC10.BKBicomplexHC2
 import UnionClosed.UC12.Doubling
 import UnionClosed.UC12.Bridge
 import UnionClosed.UC12.UC10R

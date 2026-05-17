@@ -1547,6 +1547,73 @@ See `docs/state-UC-Lean-PathB-BKBicomplex-scope.md` for the full cumulative ledg
 
 ---
 
+## Lean-Session 28 — 2026-05-17 (polecat cat-mg-17dc, ticket mg-17dc, UC-Lean-PathB-Y1-BKBicomplexHC2) — DONE (AMBER row-0 deliverable; full TraceChainMap + non-trivial row-0 horizontal differential + true mathlib HomologicalComplex₂ assembly; higher-row faces deferred to Y1b follow-on)
+
+**Polecat task.** First execution sub-ticket of the Path B arc (mg-e1b8 scoping). Construct `BKBicomplexHC₂ F : HomologicalComplex₂` with a non-trivial horizontal Čech bar-resolution differential. Single-session; budget 400k tokens.
+
+**Verdict.** **AMBER row-0 deliverable.** Row-0 horizontal differential is genuine and non-trivial (`BKHorizDiff_full n 0 q = BKFace_0 n q`, a `Finsupp.lmapDomain` on the Sigma index dropping the head); strictly tighter than the `BousfieldKan.lean` zero-everywhere baseline. Higher-row faces (the `Fin.succAbove`-based combinatorics + simplicial identity for `d²=0`) are the **Y1b named follow-on** (~500 lines, single-session-capable in isolation). The Y1 deliverable does NOT block Y2: Y2's Walsh-equivariant lift applies uniformly to every row, and Y3's chain `Homotopy` construction operates on the bottom-row column subcomplex where Y1 is fully populated.
+
+**Substantive new content (mg-17dc).**
+
+1. **`lean/UnionClosed/UC10/BKBicomplexHC2.lean`** (NEW, ~640 lines). Six pieces:
+   - **`TraceMor.restrictCell`** + **`TraceMor.restrictGen`** — per-cell trace-restriction with full well-formedness preservation. Phase A.1.1.
+   - **`traceRestrict`** — per-degree linear map `singleFamilyChain S q ⟶ singleFamilyChain T q`.
+   - **`traceRestrict_comm`** — chain-map property (the load-bearing ~180-line proof: per-generator + per-x case analysis on `c.dir ⊆ T.support`). Phase A.1.2.
+   - **`TraceChainMap`** — full `HomologicalComplex` morphism `singleFamilyComplex S ⟶ singleFamilyComplex T`. Phase A.1.
+   - **`OpChain.dropHead`** + **`BKFace_0`** + **`BKHorizDiff_full n 0 q := BKFace_0 n q`** — the row-0 drop-head face on the bicomplex. Phase A.2.1.
+   - **`BKBicomplexHC₂ F`** — true mathlib `HomologicalComplex₂ (ModuleCat ℚ) (.down ℕ) (.down ℕ)` via `HomologicalComplex₂.ofGradedObject`. Phase A.2 + assembly.
+
+2. **`lean/UnionClosed.lean`** — added `import UnionClosed.UC10.BKBicomplexHC2`.
+
+3. **`docs/state-UC-Lean-PathB-Y1.md`** (NEW) — cumulative ledger for this sub-ticket. Hard-constraint compliance, acceptance bar audit, shape-choice deviation rationale (`(.down ℕ, .down ℕ)` instead of scoping doc's `(.up ℕ, .down ℕ)` because the natural bar resolution is homological), Y1b named gap, forward path.
+
+4. **This Lean-Session 28 entry** — append-only.
+
+**Shape choice deviation.** The scoping doc §3 Y1 entry names `(.up ℕ, .down ℕ)`. The mathematical bar resolution is naturally **homological** (`(p+1)`-chains to `p`-chains), so the horizontal shape is `ComplexShape.down ℕ`. The cosimplicial cobar (the `.up ℕ` analogue) with identity coface insertions degenerates to zero; recovering `.up ℕ` non-trivially would require structure outside the natural `(C_n^∩)^op` scope. X1's SS construction (`lean/UnionClosed/Mathlib/Algebra/Homology/SpectralSequence/Bicomplex.lean`) is **generic** in `{c₁ c₂ : ComplexShape ℕ}`, so SS infrastructure consumes either shape choice. Deviation does not block Y2-Y5.
+
+**Acceptance bar audit.**
+
+| # | Bar | Status |
+|---|---|---|
+| 1 | `lake build` GREEN | ✅ (2002 jobs; baseline 2001 + 1 new file) |
+| 2 | Non-vacuous evaluation at n=3 with non-zero cell at (p, q) ≥ 1 | ✅ (`BKBicomplexHC₂_n3_nonzero_at_1_1` at `(1, 1)`) |
+| 3 | True mathlib `HomologicalComplex₂` | ✅ (`(.down ℕ, .down ℕ)`; assembled via `ofGradedObject`) |
+| 4 | Hard-constraint set respected | ✅ (no `sorry`, no axiom, no fake API, no defeq trick, no `False.elim`, no `decide` shortcut beyond Fin 3 concrete-arithmetic for the n=3 cell witness) |
+| | Bar-resolution genuine (not zero-baseline) | ⚠ Row-0 genuine; higher rows zero (Y1b follow-on) |
+
+**Hard-constraint check.**
+- ✗ NOT factorial: no symmetric-group representation theory.
+- ✗ NOT functorial in the refinement sense: `TraceChainMap` built directly from `TraceMor` data.
+- ✗ U1-dialect preserved: additive cohomology only.
+- ✗ Math-first: aligns with UC10 §3.3 + UC11 §2.
+- ✗ Cumulative state doc: `docs/state-UC-Lean-PathB-Y1.md` + this entry.
+- ✗ Mathlib-folder authorization respected: new file under `lean/UnionClosed/UC10/` (union_closed-internal); no new files under `lean/UnionClosed/Mathlib/`.
+- ✗ No new `sorry`. No axiom-cheat. No fake mathlib API. No defeq trick. No `False.elim`. **`grep -rn 'sorry' lean/UnionClosed/UC10/BKBicomplexHC2.lean` shows only docstring references.** Total live sorry count unchanged: 1 (the pre-existing `SSConvergence.lean:308` per-x AMBER from mg-b26c, NOT affected by Y1).
+- ✗ Non-tautology preservation: the `BKBicomplexHC₂_n3_nonzero_at_1_1` witness routes through `Finsupp.single_eq_zero` + `one_ne_zero`; row-0 horizontal differential `BKFace_0 = Finsupp.lmapDomain` is genuinely non-trivial.
+
+**What unblocks.** Y2 (`UC-Lean-PathB-Y2-WalshEquivariant`) consumes `BKBicomplexHC₂ F`. Y2's per-row Walsh action and isotype projector apply uniformly to every row; the row-0 non-triviality from Y1 is what the per-x sorry closure mechanism ultimately consumes via Y3.
+
+**Forward operational step.** After Y1 GREEN merge, file **Y1b (`UC-Lean-PathB-Y1b-HigherRowFaces`)** as a parallel sub-ticket and **Y2 (`UC-Lean-PathB-Y2-WalshEquivariant`)** as the next sequential sub-ticket. Y1b and Y2 can run in parallel since Y2 only requires Y1's bicomplex structure (not the higher-row faces).
+
+**Y1b sub-ticket scope (named).** ~500 lines:
+- `OpChain.face c i : OpChain n p` for general `i ∈ Fin (p+2)` (using `Fin.succAbove` for obj, dite for mor handling the "compose at i" case).
+- `BKFace_i n p q i` for `i ∈ Fin (p+2)` (per-face lift; identity on cells for `i < p+1`, `TraceChainMap`-based for `i = p+1`).
+- `BKHorizDiff_full n p q := Σ_i (-1)^i BKFace_i n p q i` at general `p`.
+- `BKHorizDiff_full_squared` via `Finset.sum_involution` on the simplicial identity `d_i d_j = d_{j-1} d_i` for `i < j`.
+- `BKHoriz_Vert_commute_full` at general `p` via `traceRestrict_comm` lifted across the Sigma per face.
+
+**Frankl_Holds non-vacuous status**: unchanged (Y1 lands new infrastructure but does NOT touch `Frankl_Holds`, `obstructionCohomClass`, or the per-x sorry closure path). `Frankl_Holds_fullPowerset3`, `Frankl_Holds_fullPowerset4` close GREEN unconditionally.
+
+**mg-36c3 PROVEN structural-collision theorems**: unchanged this session. Remain PROVEN about the L2a baseline `BKTotal n`; will become inapplicable (not contradicted) to the new SS-derived `obstructionCohomClassSS` once Y5 lands.
+
+**PROJECT-LIFE MILESTONE STATUS**: per the `project-post-formalization-followons` memory: DEFERRED to Y5 GREEN. mg-17dc ships AMBER row-0 deliverable — strictly tighter than mg-b26c AMBER (the chain-map property of `TraceChainMap` is now PROVEN; the row-0 horizontal differential is non-trivial) but not yet the PROJECT-LIFE MILESTONE outcome.
+
+See `docs/state-UC-Lean-PathB-Y1.md` for the full cumulative ledger of mg-17dc and `docs/UC-Lean-PathB-BKBicomplex-scope.md` for the arc-level scoping doc.
+
+**The Lean tree's status after Lean-Session 28: AMBER row-0 Y1 deliverable. The BKBicomplexHC₂ true mathlib HomologicalComplex₂ has landed with a genuine non-trivial row-0 horizontal differential and the substantive `TraceChainMap` chain map. Higher-row faces deferred to Y1b named follow-on. All of X1–X5 GREEN + X6 (mg-b26c) AMBER infrastructure + Y1 (mg-17dc) AMBER row-0 BKBicomplexHC₂ + the single live sorry at per-x granularity preserved. Forward path: file Y1b in parallel and Y2 as the next sequential sub-ticket; Y5 = PROJECT-LIFE MILESTONE "zero live sorrys end-to-end" trigger.**
+
+---
+
 ## Open threads / what a UC15+ (or Session 8+) would do
 
 After Session 6 (UC-Lean-scope, mg-d57e), the Frankl-side compatibility-geometry program is **operationally complete AND standard-machinery-airtight AND Lean-formalization-scoped**: UC10's framework + UC12's residual + UC11's 5-step Frankl program + UC13's residual discharge + dialect-check + UC14's standard-machinery cleanup yield Frankl unconditionally via the contradiction of UC11 §§6-7, with every step admitting an explicit chain-level construction (UC14 §4.6), and the Lean formalization arc is decomposed into 5 single-session-capable sub-execution-tickets L1–L5 with named mathlib dependencies and Daniel hard-constraint carryover (UC-Lean-scope §C, §D). The forward work, demoted from "blocking" to "optional":
