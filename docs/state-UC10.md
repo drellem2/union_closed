@@ -2241,6 +2241,79 @@ Second execution sub-ticket of the Z arc. Local-only per Daniel 2026-05-17T13:53
 
 ---
 
+## Lean-Session 39 — 2026-05-17 (polecat cat-mg-0611, ticket mg-0611, UC-Lean-Z2b-BicomplexSpectralObjectInclusionSES) — AMBER (Z2b substantive Phase A landing: stupidTrunc inclusion natural transformation closing Joël Riou's mathlib TODO + bicomplex filtration inclusion + filtration step + projection onto singleColumnAt + s.e.s. composition-zero — all GREEN; substantive `SpectralObject` Verdier construction + `IsFirstQuadrant` instance deferred to **Z2c** named follow-on per pre-authorised sub-split contingency)
+
+Third execution sub-ticket of the Z arc, second sub-piece of Z2 (after Z2a mg-3ff1). Local-only per Daniel 2026-05-17T13:53Z directive (mathlib-folder authorization respected: extended existing `lean/UnionClosed/Mathlib/Algebra/Homology/SpectralObject/Bicomplex.lean` from ~250 lines to ~750 lines; no other files under `lean/UnionClosed/Mathlib/` modified). Engagement of the pre-authorised sub-split per scoping doc §Z2 + Z2b ticket's `After Z2b AMBER` provision: the substantive Phase A inclusion + filtration step + s.e.s. composition-zero land GREEN in this session, while the full `SpectralObject` axiomatic construction + `IsFirstQuadrant` instance (Phase B + C) is explicitly named as **Z2c** closure follow-on. Pattern matches Z1 → Z1b precedent (mg-4165 → mg-a298) and Z2a → Z2b precedent (mg-3ff1 → this session).
+
+**Z2b substantive deliverables landed (Phase A: 5 morphisms + 7 cell-level formulas + naturality nat trans + s.e.s. packaging + 4 new non-vacuous evaluations):**
+
+- **`HomologicalComplex.stupidTruncInclusion K e : K.stupidTrunc e ⟶ K`** — for `[e.IsRelIff] [e.IsTruncGE]`, the canonical inclusion morphism closing Joël Riou's documented TODO at `Mathlib/Algebra/Homology/Embedding/StupidTrunc.lean` lines 19-20. Cell-wise: in-image cell uses `stupidTruncXIso.hom`; out-of-image cell uses the zero morphism (from `IsZero` source). Commutation in `IsTruncGE` uses `e.mem_next` (rel from in-image forces target in-image) for the in-image branch and `IsZero.eq_of_src` for the out-of-image branch. Auxiliary: `stupidTruncInclusion_f` (cell component) + `stupidTruncInclusion_f_eq` (cell formula at in-range cell) + `stupidTruncInclusion_f_eq_zero` (cell formula at out-of-range cell) + `stupidTruncInclusion_f_eq_of_mem` (`@[simp]`-tagged variant) + `stupidTruncXIso_hom_eq_of_eq` (well-definedness of the iso `.hom` across witness choice, used in the cell formula).
+
+- **`HomologicalComplex.stupidTruncMap_stupidTruncInclusion : stupidTruncMap φ e ≫ L.stupidTruncInclusion e = K.stupidTruncInclusion e ≫ φ`** — naturality of `stupidTruncInclusion` w.r.t. morphisms of complexes (commutes with `stupidTruncMap φ e`).
+
+- **`ComplexShape.Embedding.stupidTruncInclusionNatTrans : e.stupidTruncFunctor C ⟶ 𝟭 _`** — the natural transformation packaging the per-complex inclusion (the precise content of Joël Riou's TODO line).
+
+- **`HomologicalComplex₂.cutoffColumns_inclusion K p : K.cutoffColumns p ⟶ K`** — the user-facing bicomplex filtration inclusion at column `p`, defined by direct application of `stupidTruncInclusion` to `ComplexShape.embeddingUpIntGE p`. Cell formulas: `cutoffColumns_inclusion_f_of_le` (in-range = `cutoffColumns_XIso_of_le hp .hom`) + `cutoffColumns_inclusion_f_of_lt` (out-of-range = `0`).
+
+- **`HomologicalComplex₂.cutoffColumns_succ K p : K.cutoffColumns (p + 1) ⟶ K.cutoffColumns p`** — the filtration step inclusion. Cell-wise: at `p' ≥ p + 1` it is `XIso_of_le hp .hom ≫ XIso_of_le hp' .inv` (the iso composition); at `p' < p + 1` it is `0`. The commutation proof is a clean four-step `calc` block using the two inclusion naturalities (at `p + 1` and at `p`) chained via the standard naturality trick. Cell formulas: `cutoffColumns_succ_f_of_le` + `cutoffColumns_succ_f_of_lt`. Universal-property compatibility lemma `cutoffColumns_succ_inclusion : cutoffColumns_succ p ≫ cutoffColumns_inclusion p = cutoffColumns_inclusion (p + 1)` (the unique factorisation property).
+
+- **`HomologicalComplex₂.cutoffColumns_to_singleColumnAt K p : K.cutoffColumns p ⟶ K.singleColumnAt p`** — for `[DecidableEq ℤ]`, the cell-level projection onto the single-column bicomplex. At `p' = p` it is the substantive cell hom `cutoffColumns_to_singleColumnAt_f_self p := cutoffColumns_XIso_of_le (le_refl p) .hom ≫ singleColumnAt_XIso_self p .inv` wrapped with `eqToHom` transport to bridge the propositional equality. At `p' ≠ p` it is `0`. Commutation discharges via the fact that `(singleColumnAt p).d = 0` (giving LHS = 0) combined with two branches for the RHS: either `p'' = p` (then `p' = p - 1 < p` so source IsZero) or `p'' ≠ p` (then `f p'' = 0`). Cell formulas: `cutoffColumns_to_singleColumnAt_f_at_self` (`@[simp]`-tagged) + `cutoffColumns_to_singleColumnAt_f_of_ne`.
+
+- **`HomologicalComplex₂.cutoffColumns_succ_singleColumnAt_shortComplex K p : ShortComplex (HomologicalComplex₂ C (ComplexShape.up ℤ) c₂)`** — the s.e.s. packaging, with the load-bearing middle-position vanishing identity `cutoffColumns_succ ≫ cutoffColumns_to_singleColumnAt = 0` proven via cell case analysis on `p' = p` (source IsZero) vs `p' ≠ p` (target component zero). `@[simps!]`-tagged.
+
+**Non-vacuous evaluation (4 new Z2b examples + 4 Z2a-baseline preserved).** Four concrete cell-level examples on `ModuleCat ℚ`-valued bicomplexes using the new primitives:
+
+5. `(K.cutoffColumns_inclusion 0).f 2 = (K.cutoffColumns_XIso_of_le _).hom` — non-zero cell morphism via the new inclusion-cell-formula at column 2 of cutoff at 0.
+6. `(K.cutoffColumns_inclusion 5).f 2 = 0` — out-of-range zero at column 2 of cutoff at 5.
+7. `stupidTruncInclusion K (embeddingUpIntGE 0) = K.cutoffColumns_inclusion 0` (by `rfl`) — definitional consistency of the bicomplex inclusion via the mathlib-PR-clean primitive.
+8. `(K.cutoffColumns_succ 0).f 3 = XIso_of_le hp .hom ≫ XIso_of_le hp' .inv` — non-zero cell for the filtration step at column 3.
+9. `(K.cutoffColumns_succ 4).f 3 = 0` — out-of-range zero for the filtration step.
+10. `(K.cutoffColumns_to_singleColumnAt 0).f 5 = 0` — zero off the kept column.
+11. The s.e.s. composition-zero `(K.cutoffColumns_succ_singleColumnAt_shortComplex 0).f ≫ .g = 0` — non-vacuous packaging.
+
+**Z2c named follow-on (deferred deliverables: SpectralObject Verdier construction + IsFirstQuadrant instance):**
+
+- **Quotient functor `F^i / F^j` for `i ≤ j : EInt`** — extending `cutoffColumns` from `ℤ` to `EInt = WithBotTop ℤ` with `F^{-∞} = K.total` and `F^{+∞} = 0`; defining the quotient via the cokernel of the iterated `cutoffColumns_succ` composition (which is the Z2b-landed primitive). Functoriality in `mk₁ (homOfLE _)` via the inclusion's compatibility.
+
+- **δ-map via snake lemma on triple filtration quotients** — for `i ≤ j ≤ k`, the s.e.s. `0 ⟶ F^j / F^k ⟶ F^i / F^k ⟶ F^i / F^j ⟶ 0` (whose composition-zero is the Z2b-landed primitive `cutoffColumns_succ_singleColumnAt_shortComplex` extended to the full `ShortExact` via mono of `cutoffColumns_succ` + epi of `cutoffColumns_to_singleColumnAt`, both cell-wise) induces the snake-lemma δ-map `H^n(F^i / F^j) → H^{n+1}(F^j / F^k)`.
+
+- **Three SpectralObject exactness conditions** — `exact₁', exact₂', exact₃'` from the LES of cohomology on the triple filtration s.e.s., via `mathlib.Algebra.Homology.HomologySequence` machinery.
+
+- **`HomologicalComplex₂.spectralObject_isFirstQuadrant : (K.spectralObject).IsFirstQuadrant`** instance — for first-quadrant bicomplexes (supported in `(p, q)` with `p ≥ 0`, `q ≥ 0`), the two vanishing conditions of `IsFirstQuadrant` follow from cell-level `cutoffColumns_isZero_X_of_lt` + the total-complex coproduct structure.
+
+Z2c is sized for a focused short next session (~250-300k tokens), matching the Z2a / Z2b cadence.
+
+**Build.** `lake build` GREEN (2043 jobs unchanged from Z2a baseline; the additional file dep from `ShortComplex.ShortExact` is absorbed into the existing transitive closure). Sorry count stays at 1 (pre-existing Y6 chain-map-extension residual at `UnionClosed/UC11/SSConvergence.lean:563` unchanged from Lean-Sessions 34-38). Pre-existing `push_neg` deprecation warnings in `Frankl.lean` unchanged. Zero new sorrys / axioms / fake mathlib API / defeq tricks / `False.elim` / `decide` shortcuts in `Bicomplex.lean`.
+
+**Acceptance bar status per scoping doc §0 + §Z2 + Z2b ticket** (12 bars):
+
+| Bar | Status | Note |
+|-----|--------|------|
+| 1. `lake build` GREEN | ✅ | 2043 jobs (unchanged) |
+| 2. Non-vacuous (SpectralObject H/δ eval at small (p, q)) | ◐ AMBER | 4 new Z2b cell-level non-vacuous examples land substantively (genuine non-zero cell isos for the inclusion + filtration step + s.e.s. composition-zero); SpectralObject H/δ evaluation is Z2c-deferred |
+| 3. Mathlib-PR-clean naming, docstrings, Joël-Riou-style | ✅ | Full module docstring extended for Z2b + per-declaration docstrings; Riou + Morrison attribution preserved; `stupidTruncInclusion` is a definitive Joël Riou TODO closure |
+| 4. Zero new sorrys | ✅ | None added |
+| 5. Zero new axioms | ✅ | None |
+| 6. No fake mathlib API | ✅ | Only existing mathlib primitives (`stupidTrunc`, `stupidTruncXIso`, `extendXIso`, `extend_d_eq`, `embeddingUpIntGE`, `restriction`, `IsTruncGE.mem_next`, `IsZero.eq_of_src`, `eqToHom`, `ShortComplex.mk`) |
+| 7. No defeq bypass on s.e.s. exactness | ✅ | Composition-zero proven via genuine cell case analysis (IsZero.eq_of_src + f_of_ne); not a `rfl` bypass |
+| 8. No `False.elim` shortcuts | ✅ | None |
+| 9. Type-correct | ✅ | No metavariable cheats |
+| 10. MATHLIB-FOLDER scope respected | ✅ | Only `Bicomplex.lean` modified (extended Z2a's existing file); new import `ShortComplex.ShortExact` |
+| 11. Feeds-into-Z3 readiness | ◐ AMBER | Phase A bicomplex-side filtration inclusion + step + s.e.s. composition-zero land substantively as building blocks Z2c needs; SpectralObject + IsFirstQuadrant are Z2c follow-on |
+| 12. No L+X+Y dependencies | ✅ | Only new mathlib import is `ShortComplex.ShortExact` (already in transitive closure) |
+
+**Hard constraints.** NOT factorial / NOT functorial-in-refinement / U1-dialect / math-first / mathlib-folder authorization respected. Joël Riou attribution preserved in file header docstring + commit message (formal co-authorship deferred to push-time per Daniel 13:53Z local-only directive). The `stupidTruncInclusion` portion is a definitive closure of an upstream mathlib TODO and is publishable to mathlib as-is (modulo the local-only directive).
+
+**Strictly tighter than mg-3ff1 (Z2a AMBER).** mg-3ff1 substantively landed Z2a deliverables 1 + 2 (`cutoffColumns`, `singleColumnAt`, `filtrationOnTotal`, `grOnTotal`) + 4 cell-iso/zero structural lemmas + 4 non-vacuous evaluations. This Lean-Session 39 extends with: (1) the `stupidTruncInclusion` mathlib-TODO closure (the missing primitive Z2a noted as Z2b-A); (2) the bicomplex filtration inclusion `cutoffColumns_inclusion` (Z2b-A); (3) the filtration step `cutoffColumns_succ` (Z2b-B); (4) the s.e.s. composition-zero via `cutoffColumns_to_singleColumnAt` + `ShortComplex` packaging (Z2b-C); (5) 4 new non-vacuous evaluations on the new primitives. The remaining Z2b-D (`HomologicalComplex₂.spectralObject K`) and Z2b-E (`IsFirstQuadrant` instance) are strictly tighter named as **Z2c** with all needed building blocks in place.
+
+**Files touched.** MODIFIED `lean/UnionClosed/Mathlib/Algebra/Homology/SpectralObject/Bicomplex.lean` (~250 → ~750 lines; extends Z2a's existing file). NEW `docs/state-UC-Lean-Z2b.md` (full state). MODIFIED `docs/state-UC10.md` (this Lean-Session 39 entry).
+
+**Non-vacuous status.** `Frankl_Holds` unchanged at the Frankl-level (Z arc has not yet touched Frankl-level objects; only the mathlib-folder SpectralObject/Bicomplex infrastructure has expanded). `Frankl_Holds_fullPowerset3` + `Frankl_Holds_fullPowerset4` continue to build GREEN via concrete L4 minimal-element witnesses.
+
+**Forward operational step.** Z2c (UC-Lean-Z2c-BicomplexSpectralObjectVerdier) dispatches as the next sequential execution ticket per Phase C critical path Z2 → Z3 → (Z4 ∥ Z5) → Z6 → Z7 → Z8 → Z9 → Z10, with Z2c consuming the Z2b-supplied `stupidTruncInclusion` + `cutoffColumns_inclusion` + `cutoffColumns_succ` + `cutoffColumns_succ_inclusion` factorisation + `cutoffColumns_succ_singleColumnAt_shortComplex` composition-zero infrastructure to close out the substantive Verdier SpectralObject construction (quotient functor + δ via snake lemma + three exactness axioms via LES) + `IsFirstQuadrant` instance. Z3 (BicomplexConvergence) is blocked until Z2c GREEN per scoping doc §Z3 dependency.
+
+---
+
 ## Open threads / what a UC15+ (or Session 8+) would do
 
 After Session 6 (UC-Lean-scope, mg-d57e), the Frankl-side compatibility-geometry program is **operationally complete AND standard-machinery-airtight AND Lean-formalization-scoped**: UC10's framework + UC12's residual + UC11's 5-step Frankl program + UC13's residual discharge + dialect-check + UC14's standard-machinery cleanup yield Frankl unconditionally via the contradiction of UC11 §§6-7, with every step admitting an explicit chain-level construction (UC14 §4.6), and the Lean formalization arc is decomposed into 5 single-session-capable sub-execution-tickets L1–L5 with named mathlib dependencies and Daniel hard-constraint carryover (UC-Lean-scope §C, §D). The forward work, demoted from "blocking" to "optional":
