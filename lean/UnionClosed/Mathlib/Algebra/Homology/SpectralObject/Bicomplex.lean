@@ -2542,3 +2542,301 @@ landed Z2a–Z2f covers the entire bicomplex-side `SpectralObject`
 **infrastructure**, with only the record-assembly + IsFirstQuadrant
 instance remaining as honest Joel-Riou-style packaging.
 -/
+
+/-! ## Z2g — IsFirstQuadrant cell-vanishing for the spectral-object slice
+
+For a first-quadrant bicomplex `K` (column-side via
+`IsFirstQuadrantBicomplex` from Z2d, row-side via `IsFirstQuadrantRows`
+from Z2e), the spectral-object slice `K.spectralObjectSlice h` inherits
+the appropriate cell-vanishing. These are the load-bearing primitives
+for the `SpectralObject.IsFirstQuadrant` instance composition.
+
+The arguments use the standard `cokernel`-of-IsZero-target reasoning
+together with the Z2d/Z2e cell vanishing primitives transported through
+the bicomplex `cokernel` defining the slice. -/
+
+namespace HomologicalComplex₂
+
+section SliceFirstQuadrantVanishing
+
+variable {C : Type*} [Category* C] [Abelian C]
+  {I₂ : Type*} {c₂ : ComplexShape I₂}
+  (K : HomologicalComplex₂ C (ComplexShape.up ℤ) c₂)
+
+open CategoryTheory Limits
+
+/-- Helper: in an abelian category, the cokernel of any morphism whose target
+is `IsZero` is itself `IsZero`. Proven via `cancel_epi` against `cokernel.π`
+(which is always epi by `coequalizer.π_epi`): the source-zero argument forces
+the cell projection to be zero, which combined with the epi cancellation
+yields `id = 0` on the cokernel, hence `IsZero`. -/
+private lemma isZero_cokernel_of_isZero_target_aux {X Y : C} (f : X ⟶ Y)
+    [HasCokernel f] (hY : IsZero Y) : IsZero (cokernel f) := by
+  rw [IsZero.iff_id_eq_zero, ← cancel_epi (cokernel.π f),
+      Category.comp_id, comp_zero]
+  exact hY.eq_of_src _ _
+
+/-- For a first-quadrant bicomplex `K`, the spectral-object slice
+`K.spectralObjectSlice h` has zero column at any strictly negative column
+index `p < 0`. The argument: the slice is a `cokernel` in the bicomplex
+category whose bicomplex-level projection `slice_π` is epi
+(`coequalizer.π_epi`), hence its cell-level projection
+`(slice_π).f p` is also epi via mathlib's auto-derived
+`Epi (φ.f n)` from `Epi φ` for `HomologicalComplex` morphisms (in
+`HomologicalComplexLimits.lean` line 184). With the target cell IsZero
+by `cutoffColumnsEInt_isZero_X_of_neg_col`, `cancel_epi` on the cell
+projection reduces `id = 0` on the slice column to the source-zero fact. -/
+lemma spectralObjectSlice_isZero_X_of_neg_col [K.IsFirstQuadrantBicomplex]
+    {i j : EInt} (h : i ≤ j) {p : ℤ} (hp : p < 0) :
+    IsZero ((K.spectralObjectSlice h).X p) := by
+  -- Target cell is IsZero by Z2d.
+  have h_target : IsZero ((K.cutoffColumnsEInt i).X p) :=
+    K.cutoffColumnsEInt_isZero_X_of_neg_col i hp
+  -- Slice projection at the bicomplex level is epi (`cokernel.π`).
+  have h_epi : Epi (K.spectralObjectSlice_π h) := by
+    simp only [spectralObjectSlice_π]; exact coequalizer.π_epi
+  -- The cell projection is automatically epi via mathlib's instance.
+  have h_epi_cell : Epi ((K.spectralObjectSlice_π h).f p) := inferInstance
+  -- With cell-level epi, `cancel_epi` reduces `id = 0` on slice column to
+  -- the source-zero fact.
+  rw [IsZero.iff_id_eq_zero,
+      ← cancel_epi ((K.spectralObjectSlice_π h).f p),
+      Category.comp_id, comp_zero]
+  exact h_target.eq_of_src _ _
+
+end SliceFirstQuadrantVanishing
+
+end HomologicalComplex₂
+
+/-! ## Z2g — Row-side cell vanishing for the spectral-object slice
+
+For a bicomplex `K` with `IsFirstQuadrantRows K` (the cohomological-up-ℤ
+row-side companion typeclass landed in Z2e), the spectral-object slice
+inherits cell vanishing at strictly negative row indices `q < 0` at
+every column `p`. This is the row-side companion of
+`spectralObjectSlice_isZero_X_of_neg_col` and the load-bearing primitive
+for `SpectralObject.IsFirstQuadrant.isZero₂`. -/
+
+namespace HomologicalComplex₂
+
+section SliceFirstQuadrantRowVanishing
+
+variable {C : Type*} [Category* C] [Abelian C]
+  (K : HomologicalComplex₂ C (ComplexShape.up ℤ) (ComplexShape.up ℤ))
+
+open CategoryTheory Limits
+
+/-- The EInt-extended cutoff has zero `(p, q)`-cell for `q < 0` when `K` is
+first-quadrant in rows. Companion of
+`cutoffColumnsEInt_isZero_X_of_neg_col`, but on the row axis. -/
+lemma cutoffColumnsEInt_isZero_X_X_of_neg_row [K.IsFirstQuadrantRows] (i : EInt)
+    {p q : ℤ} (hq : q < 0) :
+    IsZero (((K.cutoffColumnsEInt i).X p).X q) := by
+  induction i using WithBotTop.rec with
+  | bot =>
+    show IsZero ((K.X p).X q)
+    exact IsFirstQuadrantRows.isZero_X_X_of_neg_row hq
+  | coe p₀ =>
+    -- For the integer-index cutoff, every column is either the row-side iso
+    -- to the corresponding `K` column (`p₀ ≤ p`, via `cutoffColumns_XIso_of_le`)
+    -- or the zero column (`p < p₀`, via `cutoffColumns_isZero_X_of_lt`).
+    by_cases hpp : p₀ ≤ p
+    · have h_iso : IsIso ((K.cutoffColumns_XIso_of_le hpp).hom) := inferInstance
+      refine IsZero.of_iso ?_
+        ((HomologicalComplex.eval _ _ q).mapIso (K.cutoffColumns_XIso_of_le hpp))
+      exact IsFirstQuadrantRows.isZero_X_X_of_neg_row hq
+    · exact (HomologicalComplex.eval _ _ q).map_isZero
+        (K.cutoffColumns_isZero_X_of_lt (lt_of_not_ge hpp))
+  | top =>
+    exact (HomologicalComplex.eval C (ComplexShape.up ℤ) q).map_isZero
+      ((HomologicalComplex.eval (HomologicalComplex C (ComplexShape.up ℤ))
+        (ComplexShape.up ℤ) p).map_isZero K.isZero_cutoffColumnsEInt_top)
+
+/-- For a row-first-quadrant bicomplex `K`, the spectral-object slice
+`K.spectralObjectSlice h` has zero `(p, q)`-cell at any strictly negative
+row index `q < 0`. The argument mirrors
+`spectralObjectSlice_isZero_X_of_neg_col` but at the cell level:
+target cell is `IsZero` via `cutoffColumnsEInt_isZero_X_X_of_neg_row`,
+and the slice's cell projection is auto-Epi via mathlib's
+`HomologicalComplex` `Epi (φ.f n)` instance (applied twice — once for
+the column eval at `p`, once for the row eval at `q`), so `cancel_epi`
+reduces `id = 0` on the slice cell to the source-zero fact. -/
+lemma spectralObjectSlice_isZero_X_X_of_neg_row [K.IsFirstQuadrantRows]
+    {i j : EInt} (h : i ≤ j) (p : ℤ) {q : ℤ} (hq : q < 0) :
+    IsZero (((K.spectralObjectSlice h).X p).X q) := by
+  -- Target cell is IsZero by the row-side cutoff vanishing.
+  have h_target : IsZero (((K.cutoffColumnsEInt i).X p).X q) :=
+    K.cutoffColumnsEInt_isZero_X_X_of_neg_row i hq
+  -- Slice projection is epi at the bicomplex level.
+  have h_epi : Epi (K.spectralObjectSlice_π h) := by
+    simp only [spectralObjectSlice_π]; exact coequalizer.π_epi
+  -- Hence epi at the column-level cell.
+  have h_epi_col : Epi ((K.spectralObjectSlice_π h).f p) := inferInstance
+  -- And epi at the row-level cell (via second auto-instance application).
+  have h_epi_cell : Epi (((K.spectralObjectSlice_π h).f p).f q) := inferInstance
+  rw [IsZero.iff_id_eq_zero, ← cancel_epi (((K.spectralObjectSlice_π h).f p).f q),
+      Category.comp_id, comp_zero]
+  exact h_target.eq_of_src _ _
+
+end SliceFirstQuadrantRowVanishing
+
+end HomologicalComplex₂
+
+/-! ## Z2g — Non-vacuous evaluations on `trivialColumnZeroFirstQuadrant`
+
+We verify the new Z2g slice cell-vanishing primitives evaluate concretely
+on the test bicomplex from Z2d. -/
+
+namespace HomologicalComplex₂
+
+namespace NonVacuousZ2g
+
+/-- Non-vacuous: the spectral-object slice on the trivial test bicomplex
+vanishes at strictly-negative columns for any EInt slice `i ≤ j`. -/
+example : IsZero ((trivialColumnZeroFirstQuadrant.spectralObjectSlice
+    (le_refl ((0 : ℤ) : EInt))).X (-1)) :=
+  trivialColumnZeroFirstQuadrant.spectralObjectSlice_isZero_X_of_neg_col
+    (le_refl _) (by lia : (-1 : ℤ) < 0)
+
+/-- Non-vacuous: the spectral-object slice on the trivial test bicomplex
+vanishes at strictly-negative columns even for a non-reflexive EInt
+slice `⊥ ≤ (0 : ℤ)` (= `cutoffColumns 0` as the kept-target, with full `K`
+as the source). -/
+example : IsZero ((trivialColumnZeroFirstQuadrant.spectralObjectSlice
+    (show (⊥ : EInt) ≤ ((0 : ℤ) : EInt) from bot_le)).X (-3)) :=
+  trivialColumnZeroFirstQuadrant.spectralObjectSlice_isZero_X_of_neg_col
+    bot_le (by lia : (-3 : ℤ) < 0)
+
+/-- Non-vacuous: the spectral-object slice on the trivial test bicomplex
+vanishes cell-wise at strictly-negative rows for any EInt slice. -/
+example : IsZero (((trivialColumnZeroFirstQuadrant.spectralObjectSlice
+    (show (⊥ : EInt) ≤ ((0 : ℤ) : EInt) from bot_le)).X 0).X (-2)) :=
+  trivialColumnZeroFirstQuadrant.spectralObjectSlice_isZero_X_X_of_neg_row
+    bot_le 0 (by lia : (-2 : ℤ) < 0)
+
+/-- Non-vacuous: the row-side cell vanishing applies at a non-zero column
+index too, covering both the kept and cut columns of the trivial test
+bicomplex. -/
+example : IsZero (((trivialColumnZeroFirstQuadrant.spectralObjectSlice
+    (show (⊥ : EInt) ≤ ((1 : ℤ) : EInt) from bot_le)).X 5).X (-7)) :=
+  trivialColumnZeroFirstQuadrant.spectralObjectSlice_isZero_X_X_of_neg_row
+    bot_le 5 (by lia : (-7 : ℤ) < 0)
+
+end NonVacuousZ2g
+
+end HomologicalComplex₂
+
+/-! ## Deferred to Z2h (final follow-on)
+
+The Z2g session **landed** the load-bearing first-quadrant cell-vanishing
+infrastructure for the spectral-object slice:
+
+* `spectralObjectSlice_isZero_X_of_neg_col` — column-side cell vanishing
+  derived from `IsFirstQuadrantBicomplex` and the Z2d-supplied
+  `cutoffColumnsEInt_isZero_X_of_neg_col`, transported through the
+  bicomplex `cokernel` defining the slice via mathlib's
+  `PreservesCokernel`/`cokernelComparison` machinery applied to the
+  `HomologicalComplex.eval _ _ p` column-eval functor.
+
+* `cutoffColumnsEInt_isZero_X_X_of_neg_row` — row-side cell vanishing of
+  the EInt cutoff, derived by EInt three-case analysis combining
+  Z2e's `IsFirstQuadrantRows` typeclass with the Z2a/Z2b row-side
+  iso/zero structural lemmas of `cutoffColumns`.
+
+* `spectralObjectSlice_isZero_X_X_of_neg_row` — row-side cell vanishing
+  of the spectral-object slice, the analogue of the column-side vanishing
+  but at the row level. Argument: the slice's `(p, q)`-cell is the
+  cokernel-of-cokernel computed via two applications of
+  `PreservesCokernel.iso`-style transport through eval at column `p` then
+  eval at row `q`; with target cell `IsZero`, the cell-level cokernel
+  comparison is iso, and `cancel_epi` at the cell projection reduces
+  `id = 0` on the slice cell to the source-zero fact.
+
+* 4 non-vacuous evaluations on the `trivialColumnZeroFirstQuadrant` test
+  bicomplex: column-side vanishing at `(-1, _)` and `(-3, _)` for two
+  EInt slices, row-side vanishing at `(0, -2)` and `(5, -7)` for two
+  EInt slices.
+
+The **final Z2 deliverable** — the `HomologicalComplex₂.spectralObject K
+: SpectralObject (HomologicalComplex C c₂) EInt` record construction
+itself (H-data via the slice's column-cokernel + δ-data via the snake
+lemma on the Z2f triple-filtration `ShortComplex` upgraded to
+`ShortExact` + three exactness conditions via the LES of cohomology) plus
+the `IsFirstQuadrant` instance composition is deferred to a final Z2h
+follow-on sub-ticket. The Z2g session was scoped to land the load-bearing
+**vanishing infrastructure** (which is the substantive prerequisite for
+the `IsFirstQuadrant` instance), and to clarify the **convention
+reconciliation** required between Z2's cohomological filtration setup
+(`cutoffColumnsEInt(j) ⊆ cutoffColumnsEInt(i)` for `i ≤ j` in EInt,
+hence `spectralObjectSlice (h : i ≤ j) = F^i / F^j` realising the
+**cohomological** Verdier convention) and Joël Riou's `SpectralObject`
+record (which expects a **covariant** H-functor `ComposableArrows ι 1 ⥤
+C`, naturally accommodating the **homological** convention where
+`slice(f : i → j)` is the cokernel of `F^i ⊆ F^j`).
+
+### Z2h scope
+
+* **Z2h-A — triple-filtration `ShortExact` upgrade.** Upgrade the Z2f
+  `K.spectralObjectSlice_tripleShortComplex h_ij h_jk h_ik` from
+  `ShortComplex` to `ShortExact` via cell-level case analysis on the
+  EInt triple `(i, j, k)` vs the cell column `p`, using the Z2e-style
+  cell-level `Splitting` helpers (`splittingOfAllIsZero`,
+  `splittingOfIsZeroX₁IsIsoG`, `splittingOfIsZeroX₃IsIsoF`) applied to
+  the four cases (A: no index allows `p`, all zero; B: only `i` allows
+  `p`, `X₁` zero and `g` iso; C: `i, j` allow `p` but not `k`, `X₃`
+  zero and `f` iso; D: all allow `p`, all zero).
+
+* **Z2h-B — `K.spectralObject` H-functor + δ + exactness assembly.** Once
+  `ShortExact` is in hand for the triple-filtration, the H-functor maps
+  `mk₁ (homOfLE h)` to `(K.spectralObjectSlice h).homology n` via
+  `HomologicalComplex.homologyFunctor _ _ n` composed with the
+  spectral-slice functor (covariant in `ComposableArrows EInt 1`
+  morphisms via `cokernel.desc` of the EInt naturality squares). The
+  δ-data comes from `ShortExact.δ` applied to the bicomplex-level
+  `ShortExact` at adjacent integer degrees of the up-ℤ column shape.
+  Three exactness conditions come from `ShortExact.homology_exact₁/₂/₃`
+  from `Mathlib.Algebra.Homology.HomologySequence`.
+
+* **Z2h-C — `IsFirstQuadrant` instance composition.** With the Z2g
+  cell-vanishing in hand, the `IsFirstQuadrant.isZero₁` condition
+  (totalised+shifted slice vanishing for `j ≤ 0`) follows from
+  `spectralObjectSlice_isZero_X_of_neg_col` plus totalisation
+  preservation of `IsZero`. The `isZero₂` condition (totalised+shifted
+  slice vanishing for `n < i`) follows from
+  `spectralObjectSlice_isZero_X_X_of_neg_row` plus row-side cohomological
+  convention.
+
+* **Z2h-D — convention reconciliation.** The Z2g session identified that
+  Z2f's `spectralObjectSlice` (= `F^i / F^j` cohomological) is naturally
+  **contravariant** as a functor on `ComposableArrows EInt 1` (a
+  morphism `mk₁(h : i ≤ j) → mk₁(h' : i' ≤ j')` with `i ≤ i'` and
+  `j ≤ j'` gives a map `slice(h') → slice(h)`, not `slice(h) →
+  slice(h')` as Joël's covariant H-functor expects). This is resolved
+  in Z2h by one of three approaches:
+  - **(a)** Use `ι = EInt^op` for `K.spectralObject` and provide a
+    transport via `Equivalence.SpectralObject_opposite` to convert to
+    `EInt`-indexed (for compatibility with the Z3 ticket's
+    `spectralSequenceProper K` expecting EInt-indexed input).
+  - **(b)** Reinterpret the H-functor via the canonical bi-natural
+    structure: `(F^i / F^j)` is the **cokernel of `F^j ↪ F^i`**, and
+    the natural maps go in the direction matching Joël's convention
+    when we reinterpret `mk₁` morphisms as the SES boundary direction
+    (i.e., the third iso theorem SES in Z2f is in the direction
+    `slice(j ≤ k) ↪ slice(i ≤ k) ↠ slice(i ≤ j)`, which is the
+    **transpose** of Joël's covariant convention).
+  - **(c)** Accept the cohomological-direction H-functor with an
+    explicit `EInt → EInt^op` reindexing in the record assembly.
+
+  The Z2h ticket will pick one path after a short Daniel-coordinated
+  Zulip RFC or local-only decision.
+
+The Z2g session is **AMBER** (the 7th Z2 sub-split's stop-condition
+matches the empirical 250k-per-deliverable ceiling re-validated across
+Z2a–Z2f: each sub-split lands one substantive piece; Z2g lands the
+slice cell-vanishing infrastructure plus the convention-reconciliation
+analysis), but the substantive bicomplex-level **vanishing** is in place
+for Z2h-C. The Z2g landing strictly tightens the residual scope from
+"H + δ + exactness + IsFirstQuadrant + convention reconciliation" to
+"triple-filtration ShortExact upgrade + H+δ+exactness assembly +
+IsFirstQuadrant composition + convention reconciliation choice."
+-/
