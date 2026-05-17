@@ -1253,6 +1253,42 @@ See `docs/state-UC-Lean-SS-X1.md` for the full cumulative ledger of mg-dd80.
 
 ---
 
+## Lean-Session 22 — 2026-05-17 (polecat cat-mg-55b3, ticket mg-55b3, UC-Lean-SS-X2-Convergence) — DONE (GREEN; X2 convergence / abutment / `E_∞` / chain-homotopy adapter / `d_r` generalisation delivered in full; X1 handoff closed; X3 ∥ X5 unblocked for parallel dispatch)
+
+**Polecat task.** X2 of the Path A execution arc, per the scoping doc §3 critical path `X1 → X2 → (X3 ∥ X5) → X4 → X6`. Deliverable: `lean/UnionClosed/Mathlib/Algebra/Homology/SpectralSequence/Convergence.lean` (NEW, 406 lines, `MATHLIB-PR-CANDIDATE: yes`). All 7 substantive pieces from the ticket body — `EInfty`, `convergesTo`, `abutmentFiltration`, `grEInftyIso`, `spectralSequence_convergesTo`, `nullHomotopyOnIsotype_givesEInftyVanishing`, `d_r` generalisation closing X1 handoff — are constructed non-vacuously. `lake build` GREEN (1997 jobs).
+
+**Verdict.** GREEN at the foundational level: convergence / abutment / `E_∞` API + chain-homotopy adapter + `d_r` generalisation all delivered, with seven non-vacuous evaluation `example` checks at arbitrary first-quadrant bicomplexes. The X1 handoff is closed via three mechanisms: (a) `EInfty` / `ConvergesTo` / `abutmentFiltration` / `grEInftyIso` API in `Convergence.lean` §2; (b) `nullHomotopyOnIsotype_givesEInftyVanishing` adapter in §4 (the union_closed-side adapter); (c) `DifferentialsFamily` abstraction in §5 (the user-data layer that admits non-zero `d_r` for non-degenerate bicomplexes; X1's zero-`d_r` is the `DifferentialsFamily.zero` instance). Acceptance bar: lake-build GREEN ✓, all 7 pieces non-vacuous ✓, non-vacuous `H^*(Tot)` recovery via `trivialConvergesTo` row-zero abutment ✓, chain-homotopy adapter produces `E_∞`-isotype-piece = 0 ✓, mathlib-PR-clean ✓.
+
+**Hard-constraint compliance.**
+
+- ✗ NOT factorial: generic abelian-category construction; no symmetric-group representation theory.
+- ✗ NOT functorial in the refinement sense: direct construction over the X1 `K.spectralSequence` and over `HomologicalComplex₂`; no `Pos_n` functor.
+- ✗ U1-dialect preserved: purely additive cohomology comparisons; no cup-product.
+- ✗ Math-first: `EInfty`, `ConvergesTo`, `abutmentFiltration`, `grEInftyIso`, the chain-homotopy adapter, and the `DifferentialsFamily` `d_r` generalisation all match standard first-quadrant SS textbook semantics.
+- ✗ Cumulative state doc: `docs/state-UC-Lean-SS-X2.md` (NEW) + this entry (Lean-Session 22).
+- ✗ Mathlib-folder authorization scoped to SS-infrastructure-for-this-arc: new file lives under `lean/UnionClosed/Mathlib/Algebra/Homology/SpectralSequence/`; the only other modified file is `lean/UnionClosed.lean` (one-line import added after `Bicomplex`).
+- ✗ No `sorry`. No axiom-cheat. No fake mathlib API. No defeq trick. No `False.elim` on `_hStar`. No `decide`. Compiles via `lake build` GREEN (1997 jobs).
+
+**Mathlib API surface invoked (new in X2; mathlib v4.29.1 at rev `5e932f97`)**: `Homotopy`, `Homotopy.homologyMap_eq`, `ShortComplex.isZero_homology_of_isZero_X₂`, `HomologicalComplex.sc`, `HomologicalComplex.homologyMap_id`, `HomologicalComplex.homologyMap_zero` (re-exports), `Limits.IsZero`, `Limits.IsZero.iff_id_eq_zero`, `Limits.isZero_zero`, `Limits.ZeroObject` namespace (for `(0 : C)` resolution). From X1's `Bicomplex.lean`: `HomologicalComplex₂.rowOfColumnHomology`, `HomologicalComplex₂.spectralSequencePage`, `HomologicalComplex₂.spectralSequence`, `HomologicalComplex₂.spectralSequence_pageR_d_eq`.
+
+**Forward path (X3 ∥ X5 unblocked, per scoping doc §3 critical path)**:
+
+- **X3 (`UC-Lean-SS-X3-Equivariant`, 250–350k tokens)** — finite-abelian-`G` action on a bicomplex; isotype-graded SS pages, with the splitting preserved by SS differentials. Consumes X1's `K.spectralSequence` + X2's `EInftyBicomplex` and `nullHomotopyOnIsotype_givesEInftyVanishing`.
+- **X5 (`UC-Lean-SS-X5-EdgeMap`, 200–300k tokens)** — SS edge maps for first-quadrant SS; specialised to the union_closed BK bicomplex shape. Consumes X1's `K.spectralSequence` + X2's `EInftyBicomplex` and `ConvergesTo`.
+- **X3 ∥ X5 dispatch**: per the critical path, these run in parallel. **Recommendation: file both X3 and X5 simultaneously after this session lands GREEN.**
+- **X4** depends on X3 only; runs in parallel with X5 once X3 is done.
+- **X6** strictly requires all of X1–X5; closes the per-x sorry at `SSConvergence.lean:368` via the SS-abutment-derived cohomology refactor.
+
+**Open threads (named in `docs/state-UC-Lean-SS-X2.md` §3.2)**: the full `H^*(K.total)` direct-sum abutment (across total degree) is X5's job (it requires `HasTotal` + `TotalComplexShape` + edge-map specialisation). X2 delivers the per-cell convergence layer that X5 will aggregate. The Massey-like non-zero `d_r` data for non-degenerate bicomplexes is admitted as a user-data instance of `DifferentialsFamily` (not constructed canonically); for the union_closed application, the χ_x-isotype is degenerate (by `UC10_lowerWalshVanishing`), so X1's zero-`d_r` suffices, and X2's `nullHomotopyOnIsotype_givesEInftyVanishing` adapter is the load-bearing piece for X6.
+
+**Frankl_Holds non-vacuous status**: unchanged (this session adds SS infrastructure but does not touch `Frankl.lean` or `obstructionCohomClass`). `Frankl_Holds_fullPowerset3`, `Frankl_Holds_fullPowerset4` close GREEN unconditionally; universal statement well-formed at every n; closure routes through the per-coord named sub-gap for hypothetical counterexample inputs (the sub-gap that X6 closes via the SS-abutment refactor once X1–X5 are GREEN).
+
+See `docs/state-UC-Lean-SS-X2.md` for the full cumulative ledger of mg-55b3.
+
+**The Lean tree's status after Lean-Session 22: RED structural blocker remains at per-x granularity (unchanged from Sessions 19–21), but the Path A execution arc is now two ticks deep — X1 GREEN (page-2-X identification + SS scaffolding) and X2 GREEN (convergence / abutment / `E_∞` / chain-homotopy adapter / `d_r` generalisation closing X1 handoff). The arc unblocks X3 ∥ X5 dispatch parallel per the critical path. Per the ticket's verdict structure: GREEN, file X3 and X5 simultaneously next.**
+
+---
+
 ## Open threads / what a UC15+ (or Session 8+) would do
 
 After Session 6 (UC-Lean-scope, mg-d57e), the Frankl-side compatibility-geometry program is **operationally complete AND standard-machinery-airtight AND Lean-formalization-scoped**: UC10's framework + UC12's residual + UC11's 5-step Frankl program + UC13's residual discharge + dialect-check + UC14's standard-machinery cleanup yield Frankl unconditionally via the contradiction of UC11 §§6-7, with every step admitting an explicit chain-level construction (UC14 §4.6), and the Lean formalization arc is decomposed into 5 single-session-capable sub-execution-tickets L1–L5 with named mathlib dependencies and Daniel hard-constraint carryover (UC-Lean-scope §C, §D). The forward work, demoted from "blocking" to "optional":
