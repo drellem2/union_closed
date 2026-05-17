@@ -1460,6 +1460,93 @@ See `docs/state-UC-Lean-SS-X6.md` for the full cumulative ledger of mg-b26c. Hum
 
 ---
 
+## Lean-Session 27 — 2026-05-17 (polecat cat-mg-e1b8, ticket mg-e1b8, UC-Lean-PathB-BKBicomplex-scope) — DONE (GREEN scoping; Y1–Y5 decomposition pinned; paper-and-pencil only) — **Path B scoped end-to-end; no structural blocker found; recommend file Y1 next**
+
+**Polecat task.** Paper-and-pencil scoping of the **Path B execution arc** — the BKBicomplex + Walsh-equivariant + Homotopy bridge construction work that closes the mg-b26c AMBER named composition gap. Daniel directive 2026-05-17 05:48Z ("b as per don't block because of scope increase and achieve sorry-free axiom-free formalization") chose Path B over Path E (named axiom, hard-constraint-forbidden). Single-session paper-and-pencil scoping; budget 350k tokens; mathlib pinned `v4.29.1` rev `5e932f97`.
+
+**Verdict.** **GREEN scoping complete + Y1–Y5 decomposition pinned + Phase D closure-ticket scope named.** Path B from mg-b26c AMBER closes the per-x sorry by upgrading the union_closed Lean encoding from a row-0-truncated 1D total complex (`BKTotal n`) to a true mathlib `HomologicalComplex₂` with the Walsh-equivariant column structure, then constructing the chain `Homotopy` that the X2 adapter consumes. No mathlib infrastructure missing (Path A delivered all six SS pieces via X1–X5); no axiom-named relaxation needed (Path E hard-constraint-forbidden); the residual is engineering construction of union_closed-side inhabitants for the existing API.
+
+**Substantive new content (mg-e1b8).**
+
+1. **`docs/UC-Lean-PathB-BKBicomplex-scope.md`** (NEW, ~520 lines) — the arc-level scoping doc. Mirrors `docs/UC-Lean-mathlib-SS-scope.md` (mg-7413 Path A scoping) in structure: §0 hard constraints carried to all Y-tickets, §1 Phase A audit (3 pieces, per-piece GREEN/AMBER/RED + summary table), §2 Phase B audit (3 pieces + table), §3 Phase C audit (3 pieces + table), §4 Phase D Y1–Y5 decomposition (budget table + critical path + per-Y acceptance bars + Phase D summary table), §5 open questions / risks (7 named risk areas + contingency plans), §6 verdict + next step (file Y1), §7 cross-references.
+
+2. **`docs/state-UC-Lean-PathB-BKBicomplex-scope.md`** (NEW, ~280 lines) — cumulative ledger for this scoping arc. Hard-constraint compliance audit, sorry/axiom/fake-API count delta (all unchanged this session — no Lean modifications), forward path with Y1 trigger, cross-references to all predecessor arcs.
+
+3. **This Lean-Session 27 entry** (`docs/state-UC10.md`) — append-only.
+
+**Audit summary (Phases A + B + C).** Nine pieces total across the three phases:
+
+| Phase | Piece | Current state | Verdict | Y-ticket |
+|---|---|---|---|---|
+| A.1 | Higher-row Čech bar resolution (`TraceChainMap` + bar-resolution `d²=0`) | Missing; the L2b/L3-named gap explicitly punted in `BousfieldKan.lean:154-167` | **AMBER** | Y1 |
+| A.2 | Čech bicomplex differentials at higher rows (`BKHorizDiff_full`, `BKHoriz_Vert_commute_full`) | Truncated to zero; needs A.1 | **AMBER** | Y1 |
+| A.3 | `(ZMod 2)^n`-equivariance lifting through higher rows | Defined at row-0 only (`walshScale`) | **GREEN** | Y2 |
+| B.1 | `(ZMod 2)^n` action on `BKBicomplexHC₂ F` via Walsh-isotype decomposition (genuine, not `trivial`/`coarse`) | X3's API has `trivial`/`coarse` inhabitants only | **AMBER** | Y2 |
+| B.2 | Isotype-graded filtration / per-S idempotent (`walshIsotypeProj` via abelian Maschke) | Missing | **AMBER** | Y2 |
+| B.3 | Integration with X3 + X4 SS API (genuine `IsotypeFamily` inhabitant) | X3's `respectsDifferentials_of_degenerate` + X4's `differential_isotype_zero` PROVEN | **AMBER** | Y2 |
+| C.1 | Translate `UC10_lowerWalshVanishing` to `Homotopy ψ 0` on χ_{x}-isotype column | Chain identity exists (mg-fbbb PROVEN); homotopy object construction missing | **AMBER (load-bearing)** | Y3 |
+| C.2 | Per-coordinate verification at each `x : Fin n` | Universal-quantification packaging | **GREEN** | Y3 |
+| C.3 | Plumb through X2 + X5 to derive `obstructionCohomClass F x = 0` via SS-abutment | mg-b26c `SSAbutment_corner_vanishing_via_columnHomotopy` PROVEN kernel exists; awaiting Y3 input | **AMBER (Y5 closure)** | Y4 + Y5 |
+
+**Aggregate phase verdict.** No structural impossibility found. Three pieces buildable as multi-line concrete constructions (A.1, A.2, B.1 = each ~300–500 lines); three as direct extensions of existing infrastructure (A.3, B.2, B.3); three as composition / packaging (C.1, C.2, C.3). All AMBER pieces are **engineering-bounded** — each is architecturally direct with a paper-side standard reference.
+
+**Phase D — Y1–Y5 execution sub-ticket decomposition.**
+
+| Sub-ticket | Title | Budget (k tokens) | Deps |
+|---|---|---|---|
+| Y1 | `UC-Lean-PathB-Y1-BKBicomplexHC2` | 350–400 | (none) |
+| Y2 | `UC-Lean-PathB-Y2-WalshEquivariant` | 350–400 | Y1 |
+| Y3 | `UC-Lean-PathB-Y3-HomotopyBridge` | 300–400 | Y1, Y2 |
+| Y4 | `UC-Lean-PathB-Y4-SSAbutmentVanishing` | 200–300 | Y1, Y2, Y3 |
+| Y5 | `UC-Lean-PathB-Y5-PerXClosure` (closure ticket; PROJECT-LIFE MILESTONE) | 200–300 | Y1, Y2, Y3, Y4 |
+| **Arc total** | | **1.40–1.80M** | |
+
+**Critical path**: Y1 → Y2 → Y3 → Y4 → Y5 (strictly serial — each Y-ticket requires the previous output). Each single-session-capable (≤ 400k). Total inside the ticket's multi-week estimate (~1.5–2M per mg-b26c §7.3).
+
+**Y5 acceptance bar (mg-e1b8 + mg-b26c + mg-7413 + mg-7f26 + mg-c0d3 + mg-36c3 cumulative).** Carrying all prior hard-constraint bars: §1 non-tautology preserved (the new `obstructionCohomClassSS` is propositionally distinct from `Finsupp.single (topVertex F) (β_x F)`; counterfactual test passes); §2 n=3 + n=4 non-vacuous (the existing `obstructionCohomClass_fullPowerset3_zero_via_iff` + `obstructionCohomClass_fullPowerset4_zero_via_iff` port forward via the propositional identity to the new object); §3 zero live sorrys (`grep -rn 'sorry' lean/UnionClosed/` returns empty — **THE PROJECT-LIFE MILESTONE**); §4 no axiom-cheat; §5 no fake mathlib API; §6 no defeq bypass (routes through `BKSSCohomologyVanishing F x` from Y4, explicitly applied to Y3's `Homotopy` object); §7 no `False.elim` on `_hStar` (Y5 proof works at SS level, independent of `IsCounterexample`); §8 `Frankl_Holds_fullPowerset3`, `Frankl_Holds_fullPowerset4` close GREEN unconditionally (preserved by the alias); §9 hard constraints (NOT factorial, NOT functorial in refinement sense, U1-dialect preserved, math-first); §10 mathlib-folder authorization scope respected (Y1–Y4 union_closed-internal; Y2 conditional thin upstream-PR-clean addition under `lean/UnionClosed/Mathlib/` only if generic abelian-Maschke helper emerges).
+
+**Hard-constraint compliance (this scoping session).**
+
+- ✗ NOT factorial: Y1–Y5 all use abelian `(ZMod 2)^n` Walsh characters; no Specht modules; `Mathlib.RepresentationTheory.SpechtModules` not imported in any Y-ticket plan.
+- ✗ NOT functorial in the refinement sense: Y1's `BKBicomplexHC₂` is native to `(C_n^∩)^op` bar resolution; `singleFamilyComplex` is a per-object choice plus per-morphism trace-restriction chain map (the L2b/L3 gap discharge form), not a categorical `Functor` object; no `Pos_n` functor.
+- ✗ U1-dialect preserved: all Y-tickets purely additive — Walsh action is direct-sum into 1-dim irreps; chain-level action is per-generator scalar; SS-abutment identification is additive.
+- ✗ Math-first: each Y-ticket aligns with paper-side (Y1 ↔ UC10 §3.3 + UC11 §2; Y2 ↔ UC10 §0.2 + §3.5; Y3 ↔ UC13 §§4.5 + UC10 §5.3; Y4 ↔ UC13 §7; Y5 ↔ UC11 §6 + UC13 §2.4.1).
+- ✗ Cumulative state doc: `docs/state-UC-Lean-PathB-BKBicomplex-scope.md` (NEW) + this entry (Lean-Session 27) + arc-level scoping doc `docs/UC-Lean-PathB-BKBicomplex-scope.md` (NEW).
+- ✗ Mathlib-folder authorization respected: this scoping session adds **no Lean files** anywhere (paper-and-pencil only). Y1–Y4 placement default = `lean/UnionClosed/UC10/` and `lean/UnionClosed/UC11/` (union_closed-internal); Y2 conditional under `lean/UnionClosed/Mathlib/` only if a generic abelian-Maschke helper emerges.
+- ✗ No new `sorry`. No axiom-cheat. No fake mathlib API. No defeq trick. No `False.elim`. No `decide`. **No Lean code modified this session.** `lake build` status preserved (GREEN, 2001 jobs; one named sorry remains at `SSConvergence.lean` as the AMBER composition gap to be closed by Y5).
+
+**Forward path: Y1 → Y2 → Y3 → Y4 → Y5 → PROJECT-LIFE MILESTONE.**
+
+1. **File Y1** (`UC-Lean-PathB-Y1-BKBicomplexHC2`) as the next execution ticket. Budget 350–400k, single-session-capable, no internal deps. Polecat: Lean-engineering + Bousfield-Kan + chain-complex bicomplex architecture comfort.
+2. **Sequential Y2 → Y3 → Y4 → Y5**: each Y-ticket consumes the previous output. Y5 is the closure ticket, refactoring `obstructionCohomClass` through the SS-derived cohomology and closing the per-x sorry — **THE PROJECT-LIFE MILESTONE "zero live sorrys end-to-end" trigger**.
+3. **Each Y-polecat** appends a Lean-Session 27+i entry to this state doc and a `state-UC-Lean-PathB-Yi.md` cumulative ledger.
+
+**Y5 GREEN trigger.** When Y5 lands GREEN:
+- `grep -rn 'sorry' lean/UnionClosed/` returns empty.
+- The per-x sorry at `lean/UnionClosed/UC11/SSConvergence.lean` is closed via the Y5 refactor.
+- `Frankl_Holds` is fully formalized end-to-end with zero live sorrys, zero axioms, and non-vacuous at n = 3 + n = 4.
+- **THE PROJECT-LIFE MILESTONE post-formalization follow-on activation triggers.** (Per the `project-post-formalization-followons` memory: the post-formalization arc — write-up, mathlib upstream PRs, methodology paper, future research directions — begins on Y5 GREEN.)
+
+**Why GREEN, not AMBER.** This is a scoping session; the GREEN/AMBER/RED axis applies to the **scoping outcome**, not to the Lean code state. The scoping is GREEN because:
+1. All nine Phase A + B + C pieces are architecturally buildable; no structural impossibility.
+2. The Y1–Y5 decomposition is concrete, with budgets / deps / acceptance bars per ticket.
+3. The closure path (Y5) consumes the existing mg-b26c PROVEN composition kernel + Y4's specialised application thereof; the closure routine is named precisely.
+4. No mathlib infrastructure missing (Path A delivered X1–X5 as needed); no axiom-named relaxation needed.
+
+**Why GREEN, not RED.** mg-36c3 classified the per-x sorry as a **RED structural blocker** under the L2a baseline encoding. mg-b26c reframed it as AMBER once the X1–X5 SS infrastructure landed (the gap became the engineering bridge, not structural impossibility). mg-e1b8 (this session) confirms via the §1–§4 audit that the engineering bridge is **concretely constructible** in five sequential Y-sub-tickets with no novel mathematical content, no structural blockers, no missing mathlib pieces, no hard-constraint violations. The scoping is GREEN because the engineering work has a clear, paper-side-standard execution plan.
+
+**Frankl_Holds non-vacuous status**: unchanged (this session is paper-and-pencil scoping only; no Lean code modified). `Frankl_Holds_fullPowerset3`, `Frankl_Holds_fullPowerset4` close GREEN unconditionally; universal statement well-formed at every n; closure routes through the per-coord named sub-gap (AMBER, mg-b26c) for hypothetical counterexample inputs — Y5 GREEN will close that sub-gap.
+
+**mg-36c3 PROVEN structural-collision theorems handling**: unchanged this session. The two theorems (`per_x_cohom_vanishing_collides_topVertex_not_coboundary`, `aggregate_cohom_vanishing_collides_topVertex_not_coboundary`) remain PROVEN about the **L2a baseline `BKTotal n`**. Y5 archives them as historical record (scoping doc §5.4 Option A) — they become inapplicable (not contradicted) to Y5's new SS-derived `obstructionCohomClassSS`.
+
+**PROJECT-LIFE MILESTONE STATUS**: per the `project-post-formalization-followons` memory: the PROJECT-LIFE MILESTONE post-formalization follow-on activation is **DEFERRED** to Y5 GREEN. mg-e1b8 ships GREEN scoping — strictly tighter than mg-b26c AMBER (the engineering path is now concretely decomposed into single-session-capable Y-tickets) but not yet the PROJECT-LIFE MILESTONE "zero live sorrys" outcome. The Path B arc is now **architecturally and decomposition-wise ready for execution**.
+
+See `docs/state-UC-Lean-PathB-BKBicomplex-scope.md` for the full cumulative ledger of mg-e1b8 and `docs/UC-Lean-PathB-BKBicomplex-scope.md` for the arc-level scoping doc.
+
+**The Lean tree's status after Lean-Session 27: AMBER named composition gap unchanged (paper-and-pencil scoping only; no Lean modifications). All of X1–X5 GREEN + X6 (mg-b26c) AMBER X1-X5 SS-infrastructure landing + 2 PROVEN X1-X5 composition theorems preserved. The single live sorry at per-x granularity remains, with the GREEN closure path now decomposed into five concrete Y-sub-tickets Y1–Y5. Forward path: file Y1 (`UC-Lean-PathB-Y1-BKBicomplexHC2`) as the next execution ticket; sequential Y2 → Y3 → Y4 → Y5 to follow; Y5 = PROJECT-LIFE MILESTONE "zero live sorrys end-to-end" trigger.**
+
+---
+
 ## Open threads / what a UC15+ (or Session 8+) would do
 
 After Session 6 (UC-Lean-scope, mg-d57e), the Frankl-side compatibility-geometry program is **operationally complete AND standard-machinery-airtight AND Lean-formalization-scoped**: UC10's framework + UC12's residual + UC11's 5-step Frankl program + UC13's residual discharge + dialect-check + UC14's standard-machinery cleanup yield Frankl unconditionally via the contradiction of UC11 §§6-7, with every step admitting an explicit chain-level construction (UC14 §4.6), and the Lean formalization arc is decomposed into 5 single-session-capable sub-execution-tickets L1–L5 with named mathlib dependencies and Daniel hard-constraint carryover (UC-Lean-scope §C, §D). The forward work, demoted from "blocking" to "optional":
