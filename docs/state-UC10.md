@@ -2104,6 +2104,37 @@ See `docs/UC-Lean-MathlibSS-Full-scope.md` for the full cumulative scoping doc; 
 
 ---
 
+## Lean-Session 36 — 2026-05-17 (polecat cat-mg-4165, ticket mg-4165, UC-Lean-Z1-SpectralObjectAssembly) — AMBER (cokernel cofork colimit + dual primitives delivered; epi-mono `fac` + `homologyData` + `spectralSequenceHomologyData` + `Abelian.SpectralObject.spectralSequence` deferred to Z1b follow-on due to Lean-side typeclass-synthesis blocker on `Epi (X.mapFourδ₄Toδ₃' ...)` / `Mono (X.mapFourδ₁Toδ₀' ...)`)
+
+First execution piece of the Z arc per mg-103f scoping. Local-only per Daniel 2026-05-17T13:53Z directive ("mathlib code local-only for now, can push upstream later if we have time").
+
+**What landed substantively (deliverable 1).** New file `lean/UnionClosed/Mathlib/Algebra/Homology/SpectralObject/SpectralSequenceAssembly.lean` (~ 220 lines, Joël-Riou-style, mathlib-PR-clean docstrings) inside the `CategoryTheory.Abelian.SpectralObject.SpectralSequence.HomologyData` namespace, mirroring the existing kernel-fork side from `Mathlib.Algebra.Homology.SpectralObject.SpectralSequence`:
+
+- `cc_w` — the vanishing equation `(page r).d pq pq' ≫ ((pageXIso ...).hom ≫ mapFourδ₄Toδ₃' i₀ i₁ i₂ i₃ i₃' ...) = 0`. Favourable case via `pageD_eq` + `d_map_fourδ₄Toδ₃_assoc`; unfavourable via `HomologicalComplex.shape`.
+- `cc` — a `CokernelCofork ((page r).d pq pq')` whose point identifies to `X.E i₀ i₁ i₂ i₃'`. Dual to mathlib's `kf`.
+- `ccSc` + `instance : Epi ccSc.g` + `isIso_mapFourδ₄Toδ₃'_of_no_rel` (dual of `isIso_mapFourδ₁Toδ₀'`) + `ccSc_exact` (favourable via `ShortComplex.exact_of_iso (Iso.symm ...)` + `dCokernelSequence_exact` at degrees `(n₀ - 1) n₀ n₁ n₂`; unfavourable via `exact_iff_mono` + the iso lemma above).
+- `isColimitCc` — colimit witness via `ShortComplex.Exact.gIsCokernel`.
+
+All zero new sorrys / axioms / fake API / defeq tricks / `False.elim` shortcuts. Six non-trivial primitives genuinely realising the cokernel-cofork dual to the kernel-fork side, using `i₃_next` adapter (dual to kf's `i₀_prev`) and `isZero_H_obj_mk₁_i₃_le'` (dual to kf's `isZero_H_obj_mk₁_i₀_le'`).
+
+**Build.** `lake build` GREEN (2027 jobs; baseline 2026 + new file). No regressions to existing files.
+
+**The AMBER gap (deliverables 2–5).** The intended construction of `homologyData` via `ShortComplex.HomologyData.ofEpiMonoFactorisation` is blocked by a Lean typeclass-synthesis issue: `Epi (X.mapFourδ₄Toδ₃' i₀' i₁ i₂ i₃ i₃' ...)` and `Mono (X.mapFourδ₁Toδ₀' i₀' i₀ i₁ i₂ i₃' ...)` are NOT findable by `infer_instance` despite the corresponding instances existing for the UNPRIMED form `Epi (X.map ... (fourδ₄Toδ₃ ...) ...)` in `EpiMono.lean` lines 79–81 and 110–112. Various unfoldings (`dsimp only [SpectralObject.mapFourδ₄Toδ₃', ComposableArrows.fourδ₄Toδ₃']`, `unfold SpectralObject.mapFourδ₄Toδ₃'`, `show Epi (X.map _ _ _ _ _ _ _ _ _ _ _ _)`, `inferInstanceAs`, direct `X.epi_map _ _ _ _ _ _ _ _ _ rfl rfl rfl hn₁ hn₂ rfl`) all fail. The likely root cause: `mapFourδ₄Toδ₃'` is in a section with `[Preorder ι']` while the underlying instance is in a section with `[Category* ι]`; Lean's instance search doesn't bridge through the Preorder→Category coercion under abbreviation unfolding.
+
+**Resolution.** Recommended Z1b-A: add explicit `instance` declarations for `Epi (X.mapFourδ₄Toδ₃' ...)` and `Mono (X.mapFourδ₁Toδ₀' ...)` at top level of `SpectralObject/EpiMono.lean` (each delegating to `inferInstanceAs` via `show`). Short session (~50 lines), upstream-clean, unblocks deliverables 2–5 immediately. See `docs/state-UC-Lean-Z1.md` for full diagnosis + Z1b-B (manual `LeftHomologyData`/`RightHomologyData` construction) + Z1b-C (direct iso construction bypassing `HomologyData`) alternative paths.
+
+**Files touched.** NEW `lean/UnionClosed/Mathlib/Algebra/Homology/SpectralObject/SpectralSequenceAssembly.lean` (~220 lines). MODIFIED `lean/UnionClosed.lean` (one new import). NEW `docs/state-UC-Lean-Z1.md` (full state). MODIFIED `docs/state-UC10.md` (this Lean-Session 36 entry).
+
+**Non-vacuous status.** Frankl_Holds unchanged (Z arc has not yet touched Frankl-level objects; only mathlib-folder SpectralObject infrastructure). `Frankl_Holds_fullPowerset3` + `Frankl_Holds_fullPowerset4` continue to build GREEN via concrete L4 minimal-element witnesses (per mg-e75c).
+
+**Hard constraints.** NOT factorial / NOT functorial-in-refinement / U1-dialect / math-first / mathlib-folder authorization respected (`SpectralObject/` subfolder per Daniel scoping + project_z_arc_local_only memory). Joël Riou attribution in commit message + file header docstring (formal co-authorship deferred to push-time per Daniel 13:53Z local-only directive).
+
+**Strictly tighter than mg-103f (Z arc scoping).** mg-103f delivered the GREEN paper-and-pencil verdict that Z1 is single-session-capable; this Lean-Session 36 delivers the substantive cokernel cofork side as the first execution piece + names the precise AMBER blocker (typeclass-search on primed abbreviations) with three concrete resolution paths for Z1b.
+
+**Forward operational step.** Daniel reviews this AMBER state and decides whether to file Z1b (UC-Lean-Z1b-EpiMonoInstances, short session, deliverables 2–5 closure) as the next sequential ticket, OR roll deliverables 2–5 into Z2's BicomplexSpectralObject dispatch where the bicomplex→SpectralObject bridge can absorb the homologyData assembly inline. The cokernel-cofork side here will be consumed by deliverable 3 (`homologyData`'s `cc` argument) whenever Z1b lands — no rework needed.
+
+---
+
 ## Open threads / what a UC15+ (or Session 8+) would do
 
 After Session 6 (UC-Lean-scope, mg-d57e), the Frankl-side compatibility-geometry program is **operationally complete AND standard-machinery-airtight AND Lean-formalization-scoped**: UC10's framework + UC12's residual + UC11's 5-step Frankl program + UC13's residual discharge + dialect-check + UC14's standard-machinery cleanup yield Frankl unconditionally via the contradiction of UC11 §§6-7, with every step admitting an explicit chain-level construction (UC14 §4.6), and the Lean formalization arc is decomposed into 5 single-session-capable sub-execution-tickets L1–L5 with named mathlib dependencies and Daniel hard-constraint carryover (UC-Lean-scope §C, §D). The forward work, demoted from "blocking" to "optional":
