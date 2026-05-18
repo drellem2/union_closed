@@ -2578,3 +2578,47 @@ These primitives are the **load-bearing infrastructure** for Z2j's Phase B `Shor
 **Non-vacuous status.** `Frankl_Holds` unchanged at the Frankl-level (Z arc has not yet touched Frankl-level objects). `Frankl_Holds_fullPowerset3` + `Frankl_Holds_fullPowerset4` continue to build GREEN via concrete L4 minimal-element witnesses. The pre-existing `sorry` at `UnionClosed/UC11/SSConvergence.lean:563` is unchanged.
 
 **Forward operational step.** Z2j (UC-Lean-Z2j-SpectralObjectRecordClosure) dispatches as the next sequential execution ticket per Phase C critical path Z2 → Z3. Z2j is sized for a focused short session (~200-250k tokens) consuming Z2i's Phase B bridging-iso + factor-lemma primitives + Z2h's EInt-indexed Mono/Epi infrastructure + all prior Z2a-Z2g infrastructure to close: (B-closure) the bundled `spectralObjectSlice_tripleShortComplex_shortExact` via factor lemmas + LES invocation, (A) `K.spectralObject_op : SpectralObject (HomologicalComplex C c₂) EIntᵒᵖ` record assembly, (C) `EIntᵒᵖ ≃ EInt` transport, (D) `IsFirstQuadrant` instance composition, (E) non-vacuous totalised evaluation. Z3 (mg-50b7) auto-dispatches per pre-filed depends-chain (after Z2j merge). The empirical 9-sub-split-and-still-AMBER pattern in Z2 strengthens the case for Daniel-coordinated strategic review of Z3-Z10 cadence expectations.
+
+---
+
+## Lean-Session 47 — 2026-05-18 (polecat cat-mg-e0a0, ticket mg-e0a0, UC-Lean-Z2j-SpectralObjectRecordClosure) — AMBER (Z2j MINIMAL substantive landing: only `isPullback_top_mono` helper + `Mathlib.CategoryTheory.Abelian.CommSq` import + 1 non-vacuous eval; the substantive Phase B-closure SES upgrade PERSISTED AS AMBER under the same Z2i `Abelian (HomologicalComplex (HomologicalComplex C c₂) ...)` TC-diamond despite 5 distinct workaround attempts — Phase B-closure SES + Phase A `K.spectralObject_op` record + Phase C `EIntᵒᵖ ≃ EInt` transport + Phase D `IsFirstQuadrant` instance + Phase E totalised non-vacuous eval are ALL deferred to **Z2k** named follow-on per pre-authorised sub-split contingency — the **eleventh sub-split** of Z2; Daniel-coordinated structural review of Z3-Z10 pre-splitting now strongly warranted given the persistent TC-diamond blocker)
+
+**Verdict.** AMBER (minimal substantive landing — only one helper plus import; Phase B-closure SES upgrade itself failed under the Z2i TC-diamond). Z2j is the **tenth sub-split** of Z2 (Z2 → Z2a → Z2b → Z2c → Z2d → Z2e → Z2f → Z2g → Z2h → Z2i → Z2j). The structural-review caveat (mg-b823, 5+ sub-splits) is now exceeded **six times** and the TC-diamond is identified as a persistent mathlib-side blocker.
+
+**Substantive primitives landed.** Only one Z2j-new helper (substantively less than Z2g/Z2h/Z2i which each landed 4-7 substantive primitives):
+
+- **`isPullback_top_mono` (private helper)**: the trivial pullback square `(f, 𝟙_X, g, f ≫ g)` is a pullback when `g` is mono — the orientation needed for `Abelian.mono_cokernel_map_of_isPullback` to produce `Mono (cokernel.map f (f ≫ g) (𝟙) g _) : cokernel f ⟶ cokernel (f ≫ g)`. Built via `PullbackCone.IsLimit.mk` with lift = `s.snd` and uniqueness from `cancel_mono g`. This is the prerequisite IsPullback for the eventual Z2k Phase B-closure SES upgrade via cell-level reduction.
+
+**Import added.** `Mathlib.CategoryTheory.Abelian.CommSq` (brings in `Abelian.mono_cokernel_map_of_isPullback`).
+
+**Non-vacuous evaluation (1 new on `trivialColumnZeroFirstQuadrant`).** `isPullback_top_mono` applied concretely at non-trivial filtration triple `⊥ ≤ 0 ≤ ⊤`.
+
+**What FAILED to land — Phase B-closure SES upgrade.** Z2j attempted the bundled `spectralObjectSlice_tripleShortComplex_shortExact` via `Abelian.mono_cokernel_map_of_isPullback` + `kernelCokernelCompSequence_exact` consuming the Z2i bridging-iso + factor lemmas. The blocker is the **same Z2i TC-diamond**: `Abelian (HomologicalComplex (HomologicalComplex C c₂) (ComplexShape.up ℤ))` fails to synthesize due to a diamond conflict between `HomologicalComplex.instHasZeroMorphisms` and `preadditiveHasZeroMorphisms`. The TC error consistently reports `synthesized HomologicalComplex.instHasZeroMorphisms / inferred preadditiveHasZeroMorphisms`.
+
+**Workarounds attempted (all failed).** (1) Section-variable `[Abelian C]` discipline matching Z2e's pattern; (2) Two-step `letI` chain (`Abelian (HomologicalComplex C c₂)` then bicomplex Abelian); (3) `set_option maxHeartbeats 1600000`; (4) `set_option synthInstance.maxHeartbeats 800000`; (5) Expanded bicomplex variable with full TC chain `[Category* C] [Preadditive C] [HasZeroObject C] [Abelian C]`. All failed with the same diamond error.
+
+**Root cause analysis.** The diamond is at the INNER level: `HasZeroMorphisms (HomologicalComplex C c₂)` has two non-defeq instances. When `Abelian` requires `HasZeroMorphisms` for the bicomplex, Lean's TC search picks one but the inferred-from-typing-rules picks the other. This is a **mathlib-side issue** requiring upstream resolution (typeclass priority adjustment, `@[reducible]` annotation, or instance unification). Z2e was unaffected because it never invokes the two-levels-deep `Abelian (HomologicalComplex₂ ...)` chain.
+
+**Path forward for Z2k.** Z2k must adopt **variant (b) cell-level reduction** via `HomologicalComplex.shortExact_of_degreewise_shortExact` applied twice to reduce to cell-level in C (where the diamond does not apply, since `Abelian C` is given). This requires substantial cell-level bridge-iso development (~200-300 lines). The full Z2j scope (Phase A/C/D/E + Phase B-closure) likely needs Z2k₁/Z2k₂ further sub-splits.
+
+**Engineering choices** (for what landed). (a) The `IsPullback` orientation in `isPullback_top_mono` (top = f, left = 𝟙, right = g, bottom = f ≫ g) was chosen to match the cokernel.map argument order produced by `Abelian.mono_cokernel_map_of_isPullback`, which gives `cokernel(t) → cokernel(b)` — corresponding to our desired `cokernel f → cokernel (f ≫ g)` direction. An earlier `isPullback_id_of_mono` orientation (with 𝟙 on top) was abandoned because it would have produced the WRONG cokernel.map orientation (`cokernel(𝟙) → cokernel(g)` which is trivially mono since cokernel of identity is zero).
+
+**What was deferred to Z2k.** EVERYTHING substantive beyond `isPullback_top_mono`:
+- Phase B-closure SES upgrade (`spectralObjectSlice_tripleShortComplex_shortExact`) — the load-bearing input that Z2j attempted but the TC-diamond blocked
+- Phase A: `K.spectralObject_op : SpectralObject (HomologicalComplex C c₂) EIntᵒᵖ` record assembly
+- Phase C: `EIntᵒᵖ ≃ EInt` transport
+- Phase D: `IsFirstQuadrant` instance composition
+- Phase E: totalised non-vacuous evaluation
+
+**Sub-split history.** This is the **tenth** Z2 sub-split (Z2 → Z2a → ... → Z2j). The 5+ sub-splits structural-review caveat (mg-b823) was already exceeded five times (at Z2e, Z2f, Z2g, Z2h, Z2i); this is the sixth additional structural-review touchpoint. **Z2j substantively landed LESS than the Z2g/Z2h/Z2i pattern** (only one helper vs each of those landing 4-7 substantive primitives) due to the TC-diamond persisting through all workaround attempts. The cumulative 10-sub-split-and-still-AMBER pattern + persistent TC-diamond mathlib-side blocker make **Daniel-coordinated structural review of Z3-Z10 pre-splitting strongly warranted**.
+
+**Files touched.** MODIFIED `lean/UnionClosed/Mathlib/Algebra/Homology/SpectralObject/Bicomplex.lean` (~3450 → ~3577 lines; extends Z2i's existing file by ~127 lines: `isPullback_top_mono` helper + 1 non-vacuous evaluation + extensively updated deferred-to-Z2k writeup honestly reflecting the TC-diamond persistence + revised header file authors line; one new import `Mathlib.CategoryTheory.Abelian.CommSq`). NEW `docs/state-UC-Lean-Z2j.md` (full state). MODIFIED `docs/state-UC10.md` (this Lean-Session 47 entry).
+
+**Non-vacuous status.** `Frankl_Holds` unchanged at the Frankl-level (Z arc has not yet touched Frankl-level objects). `Frankl_Holds_fullPowerset3` + `Frankl_Holds_fullPowerset4` continue to build GREEN via concrete L4 minimal-element witnesses. The pre-existing `sorry` at `UnionClosed/UC11/SSConvergence.lean:563` is unchanged.
+
+**Forward operational step.** Three options for Daniel:
+- **Option A (recommended)**: File a mathlib-side issue/PR to resolve the `HomologicalComplex.instHasZeroMorphisms` / `preadditiveHasZeroMorphisms` diamond. Once upstream-resolved, the Z2j-attempted SES upgrade + Z2k Phases A/C/D/E can close in one focused session each.
+- **Option B (next polecat)**: File Z2k (UC-Lean-Z2k-SpectralObjectRecordCompletion) as the next sequential sub-ticket, scoped to ONLY the Phase B-closure SES upgrade via cell-level reduction (workaround b, ~200-300 lines).
+- **Option C (escalate)**: Mail Daniel via `mg mail send human` to surface the persistent TC-diamond + propose Z3-Z10 pre-splitting strategic-audit conversation.
+
+The empirical 10-sub-split-and-still-AMBER pattern in Z2 + the TC-diamond persisting across 3 distinct sub-sessions (Z2i + Z2j with 5 distinct workaround attempts) **strongly** warrants Option A or C.

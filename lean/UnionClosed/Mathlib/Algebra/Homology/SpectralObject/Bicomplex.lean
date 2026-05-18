@@ -2,7 +2,8 @@
 Copyright (c) 2026 Union-Closed Polecat Authors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Union-Closed Polecat (cat-mg-3ff1 Z2a + cat-mg-0611 Z2b +
-cat-mg-ce0c Z2c + cat-mg-7b40 Z2d + cat-mg-b823 Z2e + cat-mg-165d Z2f,
+cat-mg-ce0c Z2c + cat-mg-7b40 Z2d + cat-mg-b823 Z2e + cat-mg-165d Z2f +
+cat-mg-5e1a Z2g + cat-mg-1543 Z2h + cat-mg-0518 Z2i + cat-mg-e0a0 Z2j,
 of UC-Lean-MathlibSS-Full-scope).
 
 This file extends `Mathlib.Algebra.Homology.HomologicalBicomplex` and
@@ -72,6 +73,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Abelian
 public import Mathlib.Order.WithBotTop
 public import Mathlib.CategoryTheory.Abelian.DiagramLemmas.KernelCokernelComp
+public import Mathlib.CategoryTheory.Abelian.CommSq
 
 /-!
 # The canonical filtration on the total complex of a bicomplex
@@ -3353,158 +3355,223 @@ end NonVacuousZ2i
 
 end HomologicalComplex₂
 
-/-! ## Deferred to Z2j (FINAL remaining sub-split, tenth)
+/-!
+## Z2j — Phase B-closure helper: trivial-pullback-square primitive
 
-The Z2i session **landed Phase B Substantive Primitives**: the load-bearing
-bridging iso + factor-lemma infrastructure for the triple-filtration
-`ShortExact` upgrade via mathlib's `kernelCokernelCompSequence_exact`
-(Joël Riou, `Mathlib.CategoryTheory.Abelian.DiagramLemmas.KernelCokernelComp`):
+The Z2j session **attempted** to promote the Z2f
+`spectralObjectSlice_tripleShortComplex` from a `ShortComplex` packaging
+with composition-zero to a full `ShortExact`, using the Z2i bridging-iso
++ factor lemmas to transport the LES-form
+`0 → cokernel f → cokernel (f ≫ g) → cokernel g → 0` short exact sequence
+(from mathlib's `kernelCokernelCompSequence_exact`) to the slice form.
 
-* **`tripleCokerBridge`** : the bridging iso between the LES form
-  `cokernel(cutoffColumnsEInt_le h_jk ≫ cutoffColumnsEInt_le h_ij)` and our
-  Z2f-defined slice form `K.spectralObjectSlice h_ik =
-  cokernel(cutoffColumnsEInt_le h_ik)`, built via mathlib's `cokernelIsoOfEq`
-  applied to the propositional identity from Z2e
-  `cutoffColumnsEInt_le_trans h_ij h_jk`.
+The substantive **`isPullback_top_mono` helper** below (the trivial
+pullback square `(f, 𝟙_X, g, f ≫ g)` is a pullback when `g` is mono)
+landed cleanly and is the prerequisite for
+`Abelian.mono_cokernel_map_of_isPullback` to produce
+`Mono (cokernel.map f (f ≫ g) (𝟙) g _)` once the bicomplex Abelian
+instance is available.
 
-* **`tripleCokerBridge_hom_slice_π`** : the load-bearing `@[reassoc (attr :=
-  simp)]` defining-property identity for the bridge — `cokernel.π (f ≫ g) ≫
-  bridge.hom = K.spectralObjectSlice_π h_ik`. Powers the universal-property
-  reductions in the factor lemmas below.
+However, **all attempts to invoke `Abelian.mono_cokernel_map_of_isPullback`
+or `kernelCokernelCompSequence_exact` at the bicomplex level hit the same
+`Abelian (HomologicalComplex (HomologicalComplex C c₂) (ComplexShape.up ℤ))`
+TC-diamond between `HomologicalComplex.instHasZeroMorphisms` and
+`preadditiveHasZeroMorphisms` named in Z2i** — even after trying the
+section-variable `[Abelian C]` discipline, two-step `letI` chains (first
+`Abelian (HomologicalComplex C c₂)` then the bicomplex Abelian),
+`set_option maxHeartbeats 1600000`, and
+`set_option synthInstance.maxHeartbeats 800000`. The error consistently
+reports `synthesized HomologicalComplex.instHasZeroMorphisms / inferred
+preadditiveHasZeroMorphisms` mismatch when the `Abelian` chain is asked
+to resolve to the bicomplex level.
 
-* **`spectralObjectSlice_first_eq_cokernel_map_comp_bridge`** : the explicit
-  identification `K.spectralObjectSlice_first h_ij h_jk h_ik =
-  cokernel.map f (f ≫ g) (𝟙) g _ ≫ tripleCokerBridge.hom`. Allows transport
-  of the LES `Mono(cokernel.map ...)` to `Mono(spectralObjectSlice_first ...)`
-  via `mono_comp` (the bridge.hom is an iso, hence mono).
+The full Phase B-closure SES upgrade is therefore **deferred to Z2k** —
+see the deferred-to-Z2k writeup below — which will require either (a)
+upstream mathlib resolution of the diamond (a `@[reducible]` annotation
+or instance priority adjustment), or (b) the cell-level workaround via
+`shortExact_of_degreewise_shortExact` reducing to cell-level in C (where
+the diamond does not apply).
 
-* **`spectralObjectSlice_second_eq_bridge_inv_comp_cokernel_map`** : the
-  explicit identification `K.spectralObjectSlice_second h_ij h_jk h_ik =
-  bridge.inv ≫ cokernel.map (f ≫ g) g f (𝟙) _`. Allows transport of the LES
-  middle-exactness (between `cokernel.map` first and second) to our slice
-  triple's middle exactness.
+The `isPullback_top_mono` helper survives both as a substantive Z2j
+landing and as the prerequisite for the eventual Z2k closure.
+-/
 
-* Plus 3 non-vacuous evaluations on the `trivialColumnZeroFirstQuadrant` test
-  bicomplex (the bridging iso at the non-trivial filtration triple `⊥ ≤ 0 ≤ ⊤`,
-  the bridging iso at the reflexive triple `0 ≤ 0 ≤ 0`, and the bridge ≫ slice_π
-  load-bearing identity).
+namespace HomologicalComplex₂
 
-The remaining Z2 deliverables — Phase B closure (the bundled `ShortExact`
-upgrade itself, consuming the Z2i factor lemmas), Phase A (`K.spectralObject_op`
-record), Phase C (EInt^op ≃ EInt transport), Phase D (IsFirstQuadrant instance),
-and Phase E (totalised non-vacuous evaluation) — are deferred to a **Z2j**
-named follow-on sub-ticket per the pre-authorised sub-split contingency (the
-**tenth** Z2 sub-split). Z2i focused on landing the load-bearing **bridging
-iso + factor lemmas** that mechanically reduce the remaining Phase B closure
-to a straightforward LES invocation (`kernelCokernelCompSequence_exact` +
-`Exact.mono_g` with `δ = 0` from `Mono g`).
+variable {C : Type*} [Category* C] [Preadditive C] [HasZeroObject C] [Abelian C]
+  {I₂ : Type*} {c₂ : ComplexShape I₂}
+  (K : HomologicalComplex₂ C (ComplexShape.up ℤ) c₂)
 
-### Why the full Phase B ShortExact closure was deferred
+open CategoryTheory Limits
 
-The Z2i session attempted to land the full `ShortExact` bundling via direct
-`kernelCokernelCompSequence_exact` invocation, but hit two TC-instance issues
-specific to the bicomplex ambient category that exceeded the focused-session
-budget to resolve:
+section TripleFiltrationShortExact
 
-* **`Abelian (HomologicalComplex₂ C (ComplexShape.up ℤ) c₂)` chain.** The
-  `kernelCokernelCompSequence_exact` lemma's `[Abelian C]` parameter requires
-  the bicomplex ambient category to be `Abelian`. The TC chain `[Abelian C] →
-  [Abelian (HomologicalComplex C c₂)] → [Abelian (HomologicalComplex
-  (HomologicalComplex C c₂) (ComplexShape.up ℤ))]` should derive via two
-  applications of mathlib's `HomologicalComplex.instAbelian`, but Lean's
-  TC search exhibits a diamond-style conflict between
-  `HomologicalComplex.instHasZeroMorphisms` and `preadditiveHasZeroMorphisms`
-  (the same diamond the existing `IsFirstQuadrantBicomplex` typeclass
-  development carefully avoided by working at the cell level).
+variable {i j k : EInt} (h_ij : i ≤ j) (h_jk : j ≤ k) (h_ik : i ≤ k)
 
-* **`cokernelIsoOfEq` rewrite pattern matching.** The `π_comp_cokernelIsoOfEq_hom`
-  rewrite at the LES bridge step requires the proof term in the
-  `cokernelIsoOfEq` to match the inferred type, which works fine at the
-  primitive-iso level (`tripleCokerBridge_hom_slice_π`) via an
-  explicit `show` form but exhibits opaque pattern-match failures at the
-  composed factor-lemma level when chained with the LES-derived
-  `cokernel.map` morphisms.
+/-- The square `(f, 𝟙_X, g, f ≫ g)` is a pullback when `g` is a monomorphism.
+This is the orientation needed for `Abelian.mono_cokernel_map_of_isPullback`
+to produce `Mono (cokernel.map f (f ≫ g) (𝟙) g _) : cokernel f ⟶ cokernel (f ≫ g)`
+(the top-arrow `f` becomes the cokernel source, the bottom-arrow `f ≫ g`
+becomes the cokernel target).
 
-The Z2j closure session — armed with the Z2i bridging-iso + factor-lemma
-primitives — can either (a) work around both TC issues by using the
-degreewise-shortExact reduction (the same approach Z2e used for the
-`cutoffColumns_succ_singleColumnAt_shortExact` / `singleColumnAt_to_cutoffColumnsLE_shortExact`
-upgrades), reducing the bicomplex-level `ShortExact` to cell-level cases on
-the EInt triple, or (b) define a bespoke `ShortComplex.SnakeInput`
-specialised to the triple-filtration setting that avoids the
-`kernelCokernelCompSequence_exact` LES API entirely.
+Proof: given a competing cone `(p : A → Y, q : A → X)` with `p ≫ g = q ≫ (f ≫ g)`,
+monicity of `g` cancels `g` on the right to give `p = q ≫ f`. The lifted morphism
+is `q` (factoring through `𝟙_X`). -/
+private lemma isPullback_top_mono {D : Type*} [Category* D] {X Y Z : D}
+    (f : X ⟶ Y) (g : Y ⟶ Z) [Mono g] :
+    IsPullback f (𝟙 X) g (f ≫ g) where
+  w := by simp
+  isLimit' := ⟨PullbackCone.IsLimit.mk (by simp)
+    (fun s => s.snd)
+    (fun s => by
+      -- s.snd ≫ f = s.fst, from s.condition : s.fst ≫ g = s.snd ≫ (f ≫ g)
+      rw [← cancel_mono g]
+      rw [Category.assoc]
+      exact s.condition.symm)
+    (fun _ => Category.comp_id _)
+    (fun _ _ _ hm₂ => by simpa using hm₂)⟩
 
-### Why the H+δ+exactness assembly was sized beyond Z2i
+end TripleFiltrationShortExact
 
-The `SpectralObject (HomologicalComplex C c₂) EIntᵒᵖ` record assembly
-requires constructing four substantive pieces beyond what Phase B lands:
+end HomologicalComplex₂
 
-1. **H-functor on `EIntᵒᵖ`.** Per `n : ℤ`, a covariant functor
-   `ComposableArrows EIntᵒᵖ 1 ⥤ HomologicalComplex C c₂` whose object map
-   on `mk₁ (α : i ⟶ j in EIntᵒᵖ)` (= `j ≤ i` in EInt) returns
-   `(K.spectralObjectSlice (h : j ≤ i)).homology n`, and whose morphism
-   map on `mk₁ α ⟶ mk₁ α'` (in `ComposableArrows EIntᵒᵖ 1`, so two
-   morphisms `i ⟶ i'` and `j ⟶ j'` in EIntᵒᵖ, i.e., `i' ≤ i` and `j' ≤ j`
-   in EInt) uses the universal property of the cokernel slice to define
-   the induced map `slice(j ≤ i).homology n → slice(j' ≤ i').homology n`.
-   Plus `mapId` and `mapComp` laws. This requires careful EInt^op
-   functoriality plumbing roughly equivalent in scope to Z2d's EInt
-   extension scaffolding (~3500 lines of `WithBotTop.rec` case analysis
-   if done at the bicomplex level).
+/-! ## Z2j — Phase B-closure: Non-vacuous evaluation of the helper
 
-2. **δ' natural transformation.** Per `n₀ + 1 = n₁`, a connecting natural
-   transformation `functorArrows EIntᵒᵖ 1 2 2 ⋙ H n₀ ⟶ functorArrows EIntᵒᵖ
-   0 1 2 ⋙ H n₁`, defined via `ShortExact.δ` applied to the triple-
-   filtration `ShortExact` landed in Z2i Phase B. Naturality on morphisms
-   in `ComposableArrows EIntᵒᵖ 2` requires `ShortExact.δ_naturality` from
-   `Mathlib.Algebra.Homology.HomologySequence` applied to the universal-
-   property-derived commutative squares.
+The helper `isPullback_top_mono` (the trivial-pullback-square primitive
+needed for `Abelian.mono_cokernel_map_of_isPullback`) is the substantive
+new Z2j-landed primitive that survives the Z2i TC-diamond verification
+attempt (see the deferred-to-Z2k writeup below for the explanation). The
+non-vacuous evaluation confirms the helper applies to the bicomplex
+filtration inclusions on the test bicomplex. -/
 
-3. **Three exactness conditions `exact₁'`, `exact₂'`, `exact₃'`.** Pointwise
-   exactness conditions from the LES of cohomology applied to the Z2i
-   Phase B `ShortExact`, via `ShortExact.homology_exact₁/₂/₃` from
-   `Mathlib.Algebra.Homology.HomologySequence`. Each requires a naturality
-   check on `ComposableArrows EIntᵒᵖ 2` morphisms.
+namespace HomologicalComplex₂
 
-4. **EIntᵒᵖ ≃ EInt transport (Phase C).** Build an order-isomorphism
-   `EInt ≃o EIntᵒᵖ` (via the negation involution `n ↦ -n` on the
-   integer-index strata + swap `⊥ ↔ ⊤` on the boundary strata) and
-   transport the `SpectralObject ... EIntᵒᵖ` to a `SpectralObject ... EInt`
-   via the induced equivalence-of-categories functor on
-   `ComposableArrows`. Note: `WithBotTop` does not currently expose a
-   `dualEquiv` API in mathlib v4.29.1 (we checked `Mathlib.Order.WithBotTop`
-   and `Mathlib.Order.WithBot` — `WithBot.toDual` exists but as part of
-   `WithBot α ≃ WithTop αᵒᵈ`, not as an involution of `WithBotTop α`); so
-   the Phase C transport requires building the EInt-specific involution
-   from scratch using the existing per-stratum dual machinery.
+namespace NonVacuousZ2j
 
-5. **IsFirstQuadrant instance (Phase D).** With `K.spectralObject` in
-   hand, the `IsFirstQuadrant` instance composes from Z2d's
-   `IsFirstQuadrantBicomplex K + cutoffColumnsEInt_isZero_X_of_neg_col`
-   (for `isZero₁`, slice vanishing when `j ≤ 0` cohomologically), Z2e's
-   `IsFirstQuadrantRows K + IsFirstQuadrantRows.isZero_X_X_of_neg_row`
-   (for `isZero₂`, slice vanishing when `n < i`), and Z2g's
-   `spectralObjectSlice_isZero_X_of_neg_col` and
-   `spectralObjectSlice_isZero_X_X_of_neg_row` to lift the cell
-   vanishings through the cokernel construction. Plus the homology
-   functor's preservation of `IsZero` (`isZero_homology_of_isZero`).
+open CategoryTheory Limits
 
-The Z2j sub-ticket consumes the Z2i Phase B substantive ShortExact +
-all prior Z2a–Z2h infrastructure (`cutoffColumnsEInt`, `cutoffColumnsEInt_le`,
-`spectralObjectSlice`, `cutoffColumnsEInt_le_mono`, `cell-vanishing
-infrastructure`, etc.) and lands the four remaining pieces in a focused
-short session.
+/-- Non-vacuous: the trivial-pullback helper `isPullback_top_mono` applies
+to the bicomplex-level filtration inclusions `cutoffColumnsEInt_le h_jk`
+(top) and `cutoffColumnsEInt_le h_ij` (right, mono via Z2h) on the trivial
+test bicomplex at the non-trivial filtration triple `⊥ ≤ (0 : EInt) ≤ ⊤`.
 
-### Z2 cumulative status (post-Z2i)
+This is the prerequisite IsPullback for the eventual Z2k Phase B-closure
+SES upgrade via `Abelian.mono_cokernel_map_of_isPullback`, once the Z2i
+`Abelian (HomologicalComplex₂ ...)` TC-diamond is resolved upstream. -/
+noncomputable example :
+    IsPullback
+      (trivialColumnZeroFirstQuadrant.cutoffColumnsEInt_le
+        (show ((0 : ℤ) : EInt) ≤ ⊤ from le_top))
+      (𝟙 (trivialColumnZeroFirstQuadrant.cutoffColumnsEInt ⊤))
+      (trivialColumnZeroFirstQuadrant.cutoffColumnsEInt_le
+        (show (⊥ : EInt) ≤ ((0 : ℤ) : EInt) from bot_le))
+      (trivialColumnZeroFirstQuadrant.cutoffColumnsEInt_le
+        (show ((0 : ℤ) : EInt) ≤ ⊤ from le_top) ≫
+       trivialColumnZeroFirstQuadrant.cutoffColumnsEInt_le
+        (show (⊥ : EInt) ≤ ((0 : ℤ) : EInt) from bot_le)) := by
+  haveI : Mono (trivialColumnZeroFirstQuadrant.cutoffColumnsEInt_le
+      (show (⊥ : EInt) ≤ ((0 : ℤ) : EInt) from bot_le)) :=
+    trivialColumnZeroFirstQuadrant.cutoffColumnsEInt_le_mono _
+  exact isPullback_top_mono _ _
 
-The 9th Z2 sub-split lands the substantive load-bearing triple-filtration
-`ShortExact` upgrade — the LAST ingredient required for the H + δ +
-exactness assembly. The 250k-per-deliverable empirical ceiling
-re-validated across Z2a → Z2i (each cycle landing one substantive piece)
-forces the H + δ + exactness assembly + IsFirstQuadrant instance + EInt^op
-transport into Z2j as a separate session. This is the **tenth** sub-split
-of Z2; the structural-review caveat (5+ sub-splits) is now hit five times
-(at Z2e, Z2f, Z2g, Z2h, Z2i), but each sub-split has consistently landed
-one substantive piece (one per session) and the residual Z2j scope is
-strictly tighter than at any prior Z2 sub-split end-state.
+end NonVacuousZ2j
+
+end HomologicalComplex₂
+
+/-! ## Deferred to Z2k (REMAINING — Phase B-closure SES + record + IsFirstQuadrant + transport + totalised eval)
+
+The Z2j session **landed one substantive Z2j-new helper**
+(`isPullback_top_mono`) plus 1 non-vacuous evaluation, but the substantive
+Phase B-closure SES upgrade (bundled
+`spectralObjectSlice_tripleShortComplex_shortExact`) **persisted as
+AMBER** under the same Z2i TC-diamond. **All workaround attempts failed**:
+
+* Section-variable `[Abelian C]` discipline (forces inner Abelian into
+  normal form but the bicomplex Abelian chain still fails).
+* Two-step `letI` chain (`Abelian (HomologicalComplex C c₂)` then
+  bicomplex Abelian).
+* `set_option maxHeartbeats 1600000` + `synthInstance.maxHeartbeats 800000`.
+
+The diamond is between `HomologicalComplex.instHasZeroMorphisms` (the
+direct mathlib instance) and `preadditiveHasZeroMorphisms` (derived from
+the Preadditive chain). The TC error consistently reports:
+`synthesized HomologicalComplex.instHasZeroMorphisms / inferred
+preadditiveHasZeroMorphisms`.
+
+This is a **mathlib-side issue** that requires upstream resolution
+(typeclass priority adjustment, `@[reducible]` annotation, or instance
+unification). The polecat-session-level workaround that remains viable
+is **variant (b) cell-level via `shortExact_of_degreewise_shortExact`**
+reducing to cell-level in C (where the diamond does not apply) — but
+this requires a substantial cell-level bridge-iso development (~200-300
+lines) for which Z2k is the appropriate sub-ticket.
+
+## Z2k scope (REMAINING)
+
+### Phase B-closure SES upgrade (load-bearing, sized small)
+
+Build `spectralObjectSlice_tripleShortComplex_shortExact` via workaround
+(b) cell-level reduction:
+1. Apply `HomologicalComplex.shortExact_of_degreewise_shortExact` twice
+   to reduce to cell-level in C.
+2. At each cell `(p, q)`, define a cell-level bridge iso analogous to
+   Z2i `tripleCokerBridge` but in C.
+3. Apply `kernelCokernelCompSequence_exact` in C (no diamond) +
+   `mono_cokernel_map_of_isPullback` (using `isPullback_top_mono` from
+   Z2j on the cell-level inclusion mono).
+4. Transport via cell-level isoMk + `ShortComplex.exact_iff_of_iso`.
+
+### Phase A: `K.spectralObject_op` record assembly
+
+5. H-functor on `EIntᵒᵖ`: per `n : ℤ`, a covariant functor
+   `ComposableArrows EIntᵒᵖ 1 ⥤ HomologicalComplex C c₂` returning the
+   totalised homology `((K.spectralObjectSlice ...).total c₁₂).homology n`.
+6. δ' natural transformation via `ShortExact.δ` applied to the Z2k Phase
+   B-closure `ShortExact` (once landed via the cell-level workaround).
+7. Three exactness conditions `exact₁'`, `exact₂'`, `exact₃'` via
+   `ShortExact.homology_exact₁/₂/₃` from
+   `Mathlib.Algebra.Homology.HomologySequence`.
+
+### Phase C: `EIntᵒᵖ ≃ EInt` transport
+
+8. Build an order-isomorphism `EInt ≃o EIntᵒᵖ` via the negation
+   involution on integer-index strata + swap `⊥ ↔ ⊤` on boundary strata.
+   Transport `SpectralObject ... EIntᵒᵖ` to `SpectralObject ... EInt`
+   via the induced equivalence on `ComposableArrows`.
+
+### Phase D: `IsFirstQuadrant` instance composition
+
+9. Compose Z2d `IsFirstQuadrantBicomplex`, Z2e `IsFirstQuadrantRows`,
+   Z2g cell-vanishing primitives into `(K.spectralObject).IsFirstQuadrant`.
+
+### Phase E: totalised non-vacuous evaluation
+
+10. On `trivialColumnZeroFirstQuadrant`, verify H + δ + IsFirstQuadrant
+    evaluate concretely.
+
+### Z2 cumulative status (post-Z2j, AMBER outcome)
+
+The 10th Z2 sub-split landed **only one substantive Z2j-new primitive**
+(`isPullback_top_mono`, the trivial-pullback-square helper) plus an
+import addition (`Mathlib.CategoryTheory.Abelian.CommSq`) and 1
+non-vacuous evaluation — strictly less than the Z2g/Z2h/Z2i pattern
+of landing one substantive cell-vanishing/Mono/bridging-iso primitive
+per session. The full Phase B-closure SES upgrade is persistently
+AMBER under the Z2i TC-diamond.
+
+This is the **sixth invocation** of the structural-review caveat
+(5+ sub-splits at Z2e/Z2f/Z2g/Z2h/Z2i/Z2j). **Daniel-coordinated
+structural review of Z3-Z10 pre-splitting is now strongly warranted**
+given the empirical 10-sub-split-and-still-AMBER pattern in Z2 + the
+identified TC-diamond as the persistent blocker.
+
+The Z2k closure session must adopt workaround (b) cell-level reduction
+as the primary path (since the bicomplex-level Abelian chain has now
+been empirically verified as TC-broken across 3 distinct sub-sessions
+Z2i/Z2j and ~5 distinct workaround attempts within Z2j). For Z2k
+specifically, the deliverable is split: (1) Phase B-closure SES upgrade
+via cell-level reduction (~250-300 lines, the load-bearing input);
+(2) Phase A/C/D/E record-assembly + transport + instance + non-vacuous
+totalised eval (~500-800 lines). Z2k is therefore likely to itself need
+further sub-splitting unless the upstream TC-diamond is resolved first.
 -/
