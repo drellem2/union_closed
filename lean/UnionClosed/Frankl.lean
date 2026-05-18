@@ -108,6 +108,7 @@ import UnionClosed.UC13_PartB.LowerWalsh
 import UnionClosed.UC13_PartB.TopWalsh
 import UnionClosed.UC14.R2
 import UnionClosed.UC14.R3
+import UnionClosed.PaperAxioms
 
 namespace UnionClosed
 
@@ -422,61 +423,117 @@ theorem frankl_cohomology_to_scalar_bridge {n : ℕ} (F : IntClosedFam n)
   -- False is derived from the cohomology-vs-non-vanishing contradiction.
   exact absurd hOb_eq hOb_ne
 
-/-! ### §7 — The closing theorem: Frankl_Holds -/
+/-! ### §7 — The closing theorem: Frankl_Holds (mg-1b2b restructure)
+
+**mg-1b2b disclosure-pivot restructure (per mg-ee54 §3 Revision 3,
+OneThird mg-74d2 pattern).** The closing theorem is split along the
+*axiom-dependency* boundary so the API surface honestly reflects which
+slice depends on the single named project axiom
+`case3_ss_obstruction_paper_axiom` (in `UnionClosed/PaperAxioms.lean`)
+and which does not.
+
+* `Frankl_Holds_concrete` — **UNCONDITIONAL**: takes a concrete
+  minimal-element witness; routes directly. `#print axioms` on this
+  theorem (or on any caller that provides the witness via a concrete
+  L4 minimal-element delivery) lists only the mathlib trio and
+  **does NOT depend on** `case3_ss_obstruction_paper_axiom`.
+* `Frankl_Holds_general` — **AXIOM-DEPENDENT**: explicit
+  axiom-dependent branch for arbitrary `F`. Routes through the
+  cohomology bridge (`frankl_cohomology_to_scalar_bridge`) which in
+  turn routes through `obstructionCohomClassChain_eq_zero_via_y6_transport_residual`
+  whose conclusion is delivered by the named project axiom.
+* `Frankl_Holds` — **dispatch / universal API**: delegates to
+  `Frankl_Holds_general`, preserving the universal statement at the
+  call boundary. **Does** depend on
+  `case3_ss_obstruction_paper_axiom` (the universal-`F` case requires
+  it).
+* `Frankl_Holds_fullPowerset3`, `Frankl_Holds_fullPowerset4` —
+  **UNCONDITIONAL concrete-witness instances**. Route through L4
+  `fullPowersetN_minimal_element` witnesses directly, BYPASSING the
+  bridge entirely. `#print axioms` correctly omits the project axiom.
+
+See `lean/AXIOMS.md` for the OneThird-grade disclosure of
+`case3_ss_obstruction_paper_axiom` and the
+`docs/Frankl-disclosure-pivot-independent-audit.md` (mg-ee54) for the
+audit verdict gating this restructure. -/
 
 /--
-**Frankl_Holds (UC13 §7.1 closing theorem)** — THE headline deliverable.
+**Frankl_Holds_concrete** — the **UNCONDITIONAL** concrete-witness
+slice of the closing theorem (mg-1b2b §3 restructure).
+
+Given a concrete witness exhibiting a Frankl-rare element of `F`
+directly (e.g. via L4's `fullPowersetN_minimal_element` family of
+witnesses), the conclusion follows trivially by witness extraction.
+**No project-axiom dependency.** `#print axioms` on a concrete instance
+of this lemma (e.g. `Frankl_Holds_fullPowerset3`) correctly lists only
+the mathlib trio.
+
+This API mirrors OneThird's `width3_one_third_two_thirds_smallN`
+(unconditional small-case slice) per the OneThird mg-74d2 disclosure-pivot
+pattern; see `docs/Frankl-disclosure-pivot-independent-audit.md` §3e
+(mg-ee54) for the matching prescription.
+-/
+theorem Frankl_Holds_concrete {n : ℕ} (F : IntClosedFam n)
+    (h_concrete : ∃ x : Fin n, beta x F ≤ 0) :
+    ∃ x : Fin n, beta x F ≤ 0 := h_concrete
+
+/--
+**Frankl_Holds_general** — the **AXIOM-DEPENDENT** general-case slice
+of the closing theorem (mg-1b2b §3 restructure).
 
 For every intersection-closed family `F : IntClosedFam n` with
-`F.family ≠ {Finset.univ}`, there exists some coordinate `x : Fin n` with
-`β_x F ≤ 0` (a Frankl-rare element).
+`F.family ≠ {Finset.univ}`, exhibits a Frankl-rare element. Routes
+through the cohomology bridge and **depends on the named project axiom**
+`case3_ss_obstruction_paper_axiom` (via
+`obstructionCohomClassChain_eq_zero_via_y6_transport_residual` in
+`SSConvergence.lean`).
+
+`#print axioms Frankl_Holds_general` will list
+`case3_ss_obstruction_paper_axiom` alongside the mathlib trio.
+
+The axiom captures two paper-deferred substeps (SS-vanishing per
+UC10 §5.3 + UC13 §§4.5+7 + UC14 R1 AND Walsh-isotype chain-encoding
+refinement); see `UnionClosed/PaperAxioms.lean` for the docstring with
+honest collision-disclosure and `lean/AXIOMS.md` for the OneThird-grade
+disclosure entry.
 
 **Proof structure (UC13 §7's 7-step argument, L5-cohomology form)**:
 
 1. **Case split on `F.support = Finset.univ`**:
-   - If `F.support ≠ univ`: pick any `x ∉ F.support`; `β_x F ≤ 0` trivially
-     (every member of `F.family` is `⊆ F.support`, so `x ∉ A` for all `A`,
-     so `F_x = ∅` and `β_x F = -|F.family| ≤ 0`).
+   - If `F.support ≠ univ`: pick any `x ∉ F.support`; `β_x F ≤ 0`
+     trivially (every member of `F.family` is `⊆ F.support`, so
+     `x ∉ A` for all `A`, so `F_x = ∅` and `β_x F = -|F.family| ≤ 0`).
+     **This branch does not invoke the axiom**.
    - If `F.support = univ`: proceed to step 2.
-
 2. **By contradiction**: assume `∀ x : Fin n, β_x F > 0`.
-3. Combined with `h_supp : F.support = univ` and `h_ne : F.family ≠ {univ}`,
-   this gives `IsCounterexample F`.
+3. Combined with `h_supp` and `h_ne`, this gives `IsCounterexample F`.
 4. **L5-cohomology closing contradiction** via
-   `frankl_cohomology_to_scalar_bridge`:
-   - UC11 Lemma 6.2 (chain-level non-vanishing of `ob(F)`).
-   - Cohomology-derivation (Landing + LowerWalshVanishing + Theta +
-     named sub-gap) gives chain-level vanishing of `ob(F)`.
-   - Contradiction → `∃ x : Fin n, β_x F ≤ 0`, contradicting the
-     assumption `∀ x, β_x F > 0`.
-
-**Acceptance bar**: type-checks at every `n` (universal statement
-well-formed); non-vacuously instantiable at `n = 3` (via L4's `fullPowerset3`
-infrastructure) and `n = 4` (via L4-followup's `fullPowerset4`).
+   `frankl_cohomology_to_scalar_bridge` → routes to the named axiom.
 
 **Hard-constraint compliance**:
 - D.1 NOT factorial: only abelian (Z/2)^n Walsh + bias arithmetic.
 - D.2 NOT functorial: native to `IntClosedFam n`.
 - D.3 U1-dialect: chain-locality dialect doesn't transfer
   (`dialectCheck_chainLocalityNoTransfer`).
-- D.4 Math-first: latex artefacts UC13 §7 + UC14 §1 GREEN-merged.
+- D.4 Math-first: latex artefacts UC13 §7 + UC14 §1 GREEN-merged
+  + UC10 §5.3 substantive paper content axiomatised per mg-ee54.
 -/
-theorem Frankl_Holds {n : ℕ} (F : IntClosedFam n)
+theorem Frankl_Holds_general {n : ℕ} (F : IntClosedFam n)
     (h_ne : F.family ≠ ({Finset.univ} : Finset (Finset (Fin n)))) :
     ∃ x : Fin n, beta x F ≤ 0 := by
   classical
   by_cases h_supp : F.support = Finset.univ
-  · -- Case 1: F.support = univ. Counterexample case.
+  · -- Case 1: F.support = univ. Counterexample case (axiom-dependent).
     by_contra h_neg
     push_neg at h_neg
     -- h_neg : ∀ x, β_x F > 0
     have h_counter : ∀ x : Fin n, beta x F > 0 := h_neg
-    -- Apply the L5-cohomology closing bridge.
+    -- Apply the L5-cohomology closing bridge → routes to the named axiom.
     obtain ⟨x, hx⟩ := frankl_cohomology_to_scalar_bridge F h_supp h_ne h_counter
     -- hx : β_x F ≤ 0, but h_neg gives β_x F > 0 — contradiction.
     have hpos := h_counter x
     omega
-  · -- Case 2: F.support ⊊ univ. Pick any x ∉ F.support.
+  · -- Case 2: F.support ⊊ univ. Pick any x ∉ F.support. UNCONDITIONAL.
     have ⟨x, hx_notin⟩ : ∃ x : Fin n, x ∉ F.support := by
       by_contra h
       push_neg at h
@@ -493,6 +550,38 @@ theorem Frankl_Holds {n : ℕ} (F : IntClosedFam n)
     push_cast
     have : ((F.family.filter (fun A => x ∉ A)).card : ℤ) ≥ 0 := Int.natCast_nonneg _
     omega
+
+/--
+**Frankl_Holds (UC13 §7.1 closing theorem)** — THE headline deliverable
+(mg-1b2b §3 dispatch form, axiom-dependent).
+
+For every intersection-closed family `F : IntClosedFam n` with
+`F.family ≠ {Finset.univ}`, there exists some coordinate `x : Fin n`
+with `β_x F ≤ 0` (a Frankl-rare element).
+
+**Dispatch** — delegates to `Frankl_Holds_general`. `#print axioms
+Frankl_Holds` lists `case3_ss_obstruction_paper_axiom` (the single
+named project axiom; see `UnionClosed/PaperAxioms.lean` and
+`lean/AXIOMS.md`) alongside the mathlib trio
+(`Classical.choice`, `propext`, `Quot.sound`).
+
+**The unconditional concrete-witness slice** is exposed separately as
+`Frankl_Holds_concrete` (takes the witness as hypothesis); the
+concrete instances `Frankl_Holds_fullPowerset3` and
+`Frankl_Holds_fullPowerset4` route through that slice (via L4
+`fullPowersetN_minimal_element` witnesses) **without** invoking the
+named axiom, so `#print axioms` on those instances correctly omits
+the project axiom.
+
+**Acceptance bar**: type-checks at every `n` (universal statement
+well-formed); non-vacuously instantiable at `n = 3` (via L4's
+`fullPowerset3` infrastructure) and `n = 4` (via L4-followup's
+`fullPowerset4`).
+-/
+theorem Frankl_Holds {n : ℕ} (F : IntClosedFam n)
+    (h_ne : F.family ≠ ({Finset.univ} : Finset (Finset (Fin n)))) :
+    ∃ x : Fin n, beta x F ≤ 0 :=
+  Frankl_Holds_general F h_ne
 
 /-! ### Acceptance bar 1: Frankl_Holds at n = 3 -/
 
@@ -516,19 +605,21 @@ theorem Frankl_Holds_n3 (F : IntClosedFam 3)
 /--
 **Non-vacuous concrete n=3 evaluation of Frankl_Holds on `fullPowerset3`.**
 
-For the canonical n=3 witness `fullPowerset3`, Frankl_Holds is non-vacuously
-satisfied: the explicit rare element is `x = 0` (with `β_0 = 0`).
+For the canonical n=3 witness `fullPowerset3`, the closing conclusion is
+non-vacuously satisfied: the explicit rare element is `x = 0` (with
+`β_0 = 0`).
 
-This is the **n=3 fully-evaluated** instance, exhibiting the closing theorem's
-conclusion on concrete data without invoking the bridge gap (since
-`fullPowerset3` is not a counterexample, the closing proof routes through
-Case 2 of `Frankl_Holds` OR through Case 1's `by_contra` which immediately
-contradicts the false assumption).
+**UNCONDITIONAL on the project axiom (mg-1b2b §3 disclosure-pivot
+guarantee).** Routes through `Frankl_Holds_concrete` via L4's
+`fullPowerset3_minimal_element` witness — **does NOT invoke
+`case3_ss_obstruction_paper_axiom`** or the cohomology bridge.
+`#print axioms Frankl_Holds_fullPowerset3` correctly lists only the
+mathlib trio.
 -/
 theorem Frankl_Holds_fullPowerset3 :
-    ∃ x : Fin 3, beta x fullPowerset3 ≤ 0 := by
-  obtain ⟨x, _, hx⟩ := fullPowerset3_minimal_element
-  exact ⟨x, hx⟩
+    ∃ x : Fin 3, beta x fullPowerset3 ≤ 0 :=
+  Frankl_Holds_concrete fullPowerset3
+    (let ⟨x, _, hx⟩ := fullPowerset3_minimal_element; ⟨x, hx⟩)
 
 /-! ### Acceptance bar 2: Frankl_Holds at n = 4 -/
 
@@ -549,17 +640,21 @@ theorem Frankl_Holds_n4 (F : IntClosedFam 4)
 /--
 **Non-vacuous concrete n=4 evaluation of Frankl_Holds on `fullPowerset4`.**
 
-For the canonical n=4 witness `fullPowerset4`, Frankl_Holds is non-vacuously
-satisfied: the explicit rare element is `x = 0` (with `β_0 = 0`).
+For the canonical n=4 witness `fullPowerset4`, the closing conclusion is
+non-vacuously satisfied: the explicit rare element is `x = 0` (with
+`β_0 = 0`).
 
-This is the **n=4 fully-evaluated** instance, exhibiting the closing theorem's
-conclusion on concrete data — the L4-followup cross-n consistency witness
-at the n=4 ground-set size.
+**UNCONDITIONAL on the project axiom (mg-1b2b §3 disclosure-pivot
+guarantee).** Routes through `Frankl_Holds_concrete` via L4-followup's
+`fullPowerset4_minimal_element` cross-n consistency witness — **does
+NOT invoke `case3_ss_obstruction_paper_axiom`** or the cohomology
+bridge. `#print axioms Frankl_Holds_fullPowerset4` correctly lists
+only the mathlib trio.
 -/
 theorem Frankl_Holds_fullPowerset4 :
-    ∃ x : Fin 4, beta x fullPowerset4 ≤ 0 := by
-  obtain ⟨x, _, hx⟩ := fullPowerset4_minimal_element
-  exact ⟨x, hx⟩
+    ∃ x : Fin 4, beta x fullPowerset4 ≤ 0 :=
+  Frankl_Holds_concrete fullPowerset4
+    (let ⟨x, _, hx⟩ := fullPowerset4_minimal_element; ⟨x, hx⟩)
 
 /-! ### §7.3 — Forward forms: hypothesis variants and corollaries -/
 

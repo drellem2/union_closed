@@ -78,6 +78,7 @@ import UnionClosed.UC13_PartA.IsotypePreservation
 import UnionClosed.UC13_PartA.CorrectedLanding
 import UnionClosed.UC13_PartB.LowerWalsh
 import UnionClosed.UC14.R1_ThetaMap
+import UnionClosed.PaperAxioms
 
 namespace UnionClosed.UC11
 
@@ -494,106 +495,112 @@ theorem obstructionCohomClass_vanishing_via_lowerWalsh
   exact obstructionCohomClass_at_vanishing_via_lowerWalsh F hStar x
     (hLanding x) (hLowerVanish x) (hTheta (obstructionClass F x))
 
-/-! ### Y6 chain-to-SS transport bridge (mg-e75c, AMBER named single residual gap)
+/-! ### Chain-to-SS transport bridge (mg-1b2b disclosure-pivot landing)
 
-The Y6 task (`UC-Lean-PathB-Y6-ChainToSSTransport`, mg-e75c) aims to close the
-new chain-to-SS transport gap exposed by the Y5 (mg-470a) def-alias refactor.
-The gap lives at `Frankl.lean:209`: the chain-side argument expects
-`obstructionCohomClassChain F = 0` (the OLD chain class's vanishing), but
-under `IsCounterexample F` this is STRUCTURALLY FALSE via the mg-36c3 PROVEN
-collision (`obstructionCohomClassChain_ne_zero_of_counterexample` routes
-through `topVertex_not_coboundary` augmentation injectivity).
+**History.** This bridge was the Y6 (mg-e75c) AMBER named single residual
+gap: under `IsCounterexample F`, the OLD chain class
+`obstructionCohomClassChain F = 0` was structurally unprovable in the
+current Lean chain encoding via the mg-36c3 PROVEN collision
+(`obstructionCohomClassChain_ne_zero_of_counterexample`) combined with
+the Y6 finding that no chain-map extension of the Y4 degree-0 lift
+exists (`single (topVertex F) r` in `image of (BK col 0).d 1 0` for
+every `r : ℚ` contradicts `topVertex_not_coboundary` for `r ≠ 0`).
 
-**Y6 substantive primitives composed in this bridge**:
-1. Y5 NEW class def-alias (`obstructionCohomClass_def`): `obstructionCohomClass F x = 0`
-   trivially via the def-alias to constantly zero.
-2. Y5 SS-derived class vanishing (`obstructionCohomClassSS_eq_zero`): Y4-substantive
-   `BKSSCohomologyVanishing F x` → `ModuleCat.subsingleton_of_isZero` → `Subsingleton.elim`.
-3. Y4 lift (`BKIsotypeColumn_lift_to_BKBicomplexHC2`): degree-0 ℚ-linear
-   embedding of the Y3 1-dim ℚ-line into the actual `BKBicomplexHC₂` chain group.
-4. Y4 lift non-vacuity (`BKIsotypeColumn_lift_to_BKBicomplexHC2_nonzero`): the
-   lift of `1 : ℚ` is the non-zero `Finsupp.single ⟨const F, topVertex F⟩ 1`.
-5. **Y6 NEW lift injectivity primitive** (mg-e75c, in `BKSSCohomologyVanishing.lean`):
-   `BKIsotypeColumn_lift_to_BKBicomplexHC2_injective F x`.
-6. mg-6acd `topVertex_not_coboundary`: chain-cohomology augmentation
-   injectivity on the topVertex generator line.
+**Y6 residual closure paths** (out of single-session Y6 scope, both
+remain open for Lean delivery):
 
-**Structural residual (Y6 AMBER named single sub-gap)**: the Y4 lift is
-degree-0 ONLY (not a chain map). Extending it to a chain map at degree 1
-would require `single (topVertex F) r ∈ image of (BK col 0).d 1 0` for
-every `r ∈ ℚ`, which contradicts `topVertex_not_coboundary` for `r ≠ 0`.
-Hence no chain-map extension of the lift exists in the current encoding,
-and Y4's SS-IsZero on the SMALL Y3-derived bicomplex's SS-abutment object
-does NOT propositionally transport to `(BKTotal n).homology 0` IsZero on
-the topVertex generator line.
+* (a) Walsh-isotype refinement of `(BKTotal n).X 0` to first-class the
+  per-S (Z/2)^n-Walsh-isotype direct-sum decomposition (multi-week
+  chain-group refactor; the χ_x-isotype piece IS zero in chain
+  cohomology because the topVertex generator is in the χ_[n]-isotype,
+  separate from χ_{x}^{n-1}).
+* (b) Full mathlib `Mathlib.AlgebraicTopology.SpectralSequence`
+  infrastructure for the (Z/2)^n-Walsh-graded BK bicomplex (multi-month
+  Path A per mg-103f Z-arc scoping; blocked across 11 Z2 sub-splits by
+  the TC-diamond per mg-8510 + `docs/state-UC-Lean-Z2j.md`).
 
-**Closure paths remain** (strictly out of single-session Y6 scope):
-(a) Walsh-isotype refinement of `(BKTotal n).X 0` to faithfully realise
-    the per-S (Z/2)^n-Walsh-isotype direct-sum decomposition (multi-week
-    chain group refactor; the χ_x-isotype piece IS zero in chain cohomology
-    because the topVertex generator is in the χ_[n]-isotype, separate from
-    χ_{x}^{n-1}).
-(b) Full mathlib `Mathlib.AlgebraicTopology.SpectralSequence` infrastructure
-    for the (Z/2)^n-Walsh-graded BK bicomplex (multi-month Path A).
-(c) Named-axiom relaxation (forbidden by Y6 hard constraints).
+**mg-1b2b disclosure-pivot landing.** Per the mg-ee54 audit
+GREEN-WITH-CONDITIONS verdict on mg-8510's (v)+(iv) hybrid
+recommendation (Daniel 09:21Z conditional approval + 14:44Z accept-all
++ 10:03Z #print-axioms ready-for-Zulip directive), the Y6 sorry is
+deleted and the bridge body is replaced with a one-liner invoking the
+**single named project axiom** `case3_ss_obstruction_paper_axiom` (in
+`UnionClosed/PaperAxioms.lean`). The axiom captures the combination of
+two paper-deferred substeps — SS-vanishing (UC10 §5.3 + UC13 §§4.5+7 +
+UC14 R1, substantively-paper-rigorous) AND Walsh-isotype chain-encoding
+refinement (path (a) above) — both deferred to Z-arc research-track.
+The collision-disclosure framing is in the axiom's docstring + the
+top-level `lean/AXIOMS.md` (OneThird-grade disclosure with the
+additional collision-disclosure layer not present in the OneThird
+template).
 
-**Y6 deliverable verdict**: AMBER named single residual gap. The Y6
-substantive primitives (lift injectivity, Y4 chain, Y5 def-alias) are
-substantively threaded into the bridge body. The structural blocker is
-narrowed and named explicitly.
+**Substantive primitives PRESERVED below as `have`-bound diagnostics.**
+The Y4-substantive Y5 + Y4 + Y6 lift-injectivity primitives stay in
+the bridge body unchanged so that (i) the disclosure pivot is reversible
+once either closure path (a) or (b) ships and the axiom can be replaced
+with a substantive proof routing through these primitives, and (ii) a
+reader of the bridge body can follow the structural blocker via the
+preserved `have`-bindings and the load-bearing axiom invocation on the
+final line. The disclosure-pivot pattern is symmetric to OneThird's
+`Case3Residual.lean` (cf. `lean/AXIOMS.md` for the comparison).
 -/
 
-/-- **Y6 chain-to-SS transport bridge (mg-e75c, AMBER named single residual gap)**:
-under `IsCounterexample F`, the OLD chain class `obstructionCohomClassChain F = 0`.
+/-- **Chain-to-SS transport bridge (mg-1b2b disclosure-pivot)**: under
+`IsCounterexample F`, the OLD chain class `obstructionCohomClassChain F = 0`.
 
-This is the Y6 AMBER named single residual gap. The substantive Y4 + lift +
-Y6-lift-injectivity content is threaded; the residual chain-map-extension step
-is the named structural blocker.
+**Pre-mg-1b2b status**: Y6 (mg-e75c) AMBER named single residual gap
+(chain-map-extension structural blocker). **Post-mg-1b2b status**: the
+sorry is deleted; the conclusion is delivered by the **single named
+project axiom** `case3_ss_obstruction_paper_axiom` (capturing combined
+SS-vanishing + Walsh-isotype-chain-encoding-refinement substeps both
+deferred to research-track; see `UnionClosed/PaperAxioms.lean` for the
+axiom's docstring + `lean/AXIOMS.md` for the OneThird-grade disclosure
+including collision-disclosure layer).
 
-**Substantive primitives invoked in proof body** (per mg-36c3 direct-invocation
-discipline):
+**Substantive Y4 + Y5 + Y6 primitives preserved as `have`-bound
+diagnostics** (the disclosure pivot is reversible; once either closure
+path (a) Walsh-isotype chain refactor or (b) full mathlib SpectralObject
+infrastructure ships, the axiom invocation is replaced by a substantive
+proof routing through these primitives):
+
 * Y5 NEW class def-alias `obstructionCohomClass_def F x`.
-* Y5 SS-derived class vanishing `obstructionCohomClassSS_eq_zero F x` (Y4-substantive).
+* Y5 SS-derived class vanishing `obstructionCohomClassSS_eq_zero F x`
+  (Y4-substantive).
 * Y4 SS-IsZero `BKSSCohomologyVanishing F x`.
 * Y4 lift `BKIsotypeColumn_lift_to_BKBicomplexHC2_apply F x`.
 * Y4 lift non-vacuity `BKIsotypeColumn_lift_to_BKBicomplexHC2_nonzero F x`.
-* **Y6 NEW** lift injectivity `BKIsotypeColumn_lift_to_BKBicomplexHC2_injective F x`.
+* **Y6** lift injectivity `BKIsotypeColumn_lift_to_BKBicomplexHC2_injective F x`.
 * mg-6acd `topVertex_not_coboundary F`.
-* hStar threaded but NOT False.elim'd (per Y6 acceptance bar 7). -/
+* hStar threaded (Y6 acceptance bar 7 retained: no `False.elim hStar`
+  shortcut to produce the conclusion from the hypothesis vacuously;
+  the conclusion comes from the named axiom). -/
 theorem obstructionCohomClassChain_eq_zero_via_y6_transport_residual
     (F : IntClosedFam n) (hStar : IsCounterexample F) :
     obstructionCohomClassChain F = 0 := by
-  funext x
-  -- ===== Y6 SUBSTANTIVE INVOCATION CHAIN =====
-  -- Step 1: Y5 NEW class def-alias (trivially zero, justified via Y4 chain).
-  have _hNew := obstructionCohomClass_def F x
-  -- Step 2: Y5 SS-derived class vanishing (Y4-substantive via mg-b26c + Y3 + UC10):
-  have _hSS_zero : obstructionCohomClassSS F x = 0 := obstructionCohomClassSS_eq_zero F x
-  -- Step 3: Y4 SS-IsZero on the small Y3-derived bicomplex:
-  have _hY4IsZero := BKSSCohomologyVanishing F x
-  -- Step 4: Y4 lift's chain-level apply equation:
-  have _hLiftApply := BKIsotypeColumn_lift_to_BKBicomplexHC2_apply F x
-  -- Step 5: Y4 lift's chain-level non-vacuity witness:
-  have _hLiftNZ := BKIsotypeColumn_lift_to_BKBicomplexHC2_nonzero F x
-  -- Step 6: Y6 NEW lift injectivity primitive (mg-e75c):
-  have _hLiftInj : ∀ r : ℚ,
-      (BKIsotypeColumn_lift_to_BKBicomplexHC2 F x).hom r = 0 → r = 0 :=
-    BKIsotypeColumn_lift_to_BKBicomplexHC2_injective F x
-  -- Step 7: mg-6acd topVertex_not_coboundary (augmentation injectivity):
+  -- ===== Substantive Y4 + Y5 + Y6 primitives (preserved as diagnostics) =====
+  -- These `have`-bindings document the substantive content that the named
+  -- axiom captures; replacing the axiom with a substantive proof in either
+  -- closure path (a) Walsh-isotype chain refactor or (b) full mathlib
+  -- SpectralObject infrastructure would route through these primitives.
+  have _hSS_zero : ∀ x : Fin n, obstructionCohomClassSS F x = 0 :=
+    fun x => obstructionCohomClassSS_eq_zero F x
+  have _hY4IsZero := fun x : Fin n => BKSSCohomologyVanishing F x
+  have _hLiftApply := fun x : Fin n => BKIsotypeColumn_lift_to_BKBicomplexHC2_apply F x
+  have _hLiftNZ := fun x : Fin n => BKIsotypeColumn_lift_to_BKBicomplexHC2_nonzero F x
+  have _hLiftInj :
+      ∀ x : Fin n, ∀ r : ℚ,
+        (BKIsotypeColumn_lift_to_BKBicomplexHC2 F x).hom r = 0 → r = 0 :=
+    fun x => BKIsotypeColumn_lift_to_BKBicomplexHC2_injective F x
   have _hTopVertex := topVertex_not_coboundary n F
-  -- Step 8: hStar threaded but NOT False.elim'd (per Y6 acceptance bar 7):
-  have _hStarPosX : beta x F > 0 := hStar.2.2 x
-  -- ===== Y6 AMBER RESIDUAL: chain-map-extension structural blocker =====
-  -- The Y4 lift `BKIsotypeColumn_lift_to_BKBicomplexHC2 F x` is degree-0 only.
-  -- Extending to a chain map at degree 1 would require
-  --   `single (topVertex F) r ∈ image of (BK col 0).d 1 0` for every r ∈ ℚ,
-  -- contradicting `topVertex_not_coboundary` for `r ≠ 0`. Hence no chain map
-  -- extension exists; Y4's SS-IsZero on the SMALL Y3 col's SS-abutment does
-  -- NOT propositionally transport to (BKTotal n).homology 0 IsZero on the
-  -- topVertex line. Closure requires multi-week Walsh-isotype chain refactor
-  -- or multi-month Path A SS-infrastructure (both out of Y6 single-session
-  -- scope).
-  sorry
+  -- ===== Named-axiom invocation (mg-1b2b disclosure-pivot landing) =====
+  -- The conclusion is delivered by `case3_ss_obstruction_paper_axiom`,
+  -- the single named project axiom. The axiom's docstring discloses the
+  -- propositional equivalence to Frankl modulo PROVEN
+  -- `obstructionCohomClassChain_ne_zero_of_counterexample`, and frames
+  -- the gap as combined SS-vanishing + chain-encoding-refinement substeps
+  -- both deferred to research-track. See `lean/AXIOMS.md` for the
+  -- OneThird-grade disclosure.
+  exact case3_ss_obstruction_paper_axiom F hStar
 
 /-! ### Non-vacuous evaluation at n = 3 + n = 4 (per-coordinate form) -/
 

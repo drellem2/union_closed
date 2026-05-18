@@ -4,6 +4,36 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Union-Closed Polecat (cat-mg-4165 Z1a + cat-mg-a298 Z1b, of
 UC-Lean-MathlibSS-Full-scope).
 
+**STATUS (mg-1b2b, 2026-05-18): RESEARCH-TRACK / DEFERRED.** Per the
+mg-8510 Z-arc architecture audit verdict (TC-diamond root-cause
++ (v)+(iv) hybrid recommendation, `docs/Z-arc-architecture-audit.md`)
+and the mg-ee54 independent-audit GREEN-WITH-CONDITIONS verdict on
+the resulting Frankl disclosure-pivot
+(`docs/Frankl-disclosure-pivot-independent-audit.md`), this file is
+**preserved as research-track scaffolding**, not active code. The
+union-closed (Frankl) Lean development closes via the single named
+project axiom `case3_ss_obstruction_paper_axiom` (see
+`lean/UnionClosed/PaperAxioms.lean` and `lean/AXIOMS.md`); the
+SpectralObject infrastructure below is the future replacement path for
+that axiom (per the "Replacement path (open)" section of
+`lean/AXIOMS.md`, Path (b) — full mathlib SpectralObject
+infrastructure, multi-month).
+
+**Joël Riou attribution preserved** per Daniel 2026-05-17T13:53Z
+local-only directive. The constructions in this file follow Joël-Riou
+style and are mathlib-PR-clean modulo the local-only flag; future
+upstreaming is gated on the TC-diamond resolution (or a downstream
+workaround) per the mg-8510 §1d 5-workaround failure pattern.
+
+**Do not delete or refactor without first reading:** `lean/AXIOMS.md`
+(the named axiom this file is the future replacement path for),
+`docs/Z-arc-architecture-audit.md` (mg-8510, the strategic rationale),
+`docs/Frankl-disclosure-pivot-independent-audit.md` (mg-ee54, the
+audit gate), and `docs/PROOF-STRUCTURE-ONBOARDING.md` §5 pitfall #1
+(the TC-diamond pitfall that blocks the active Lean delivery).
+
+---
+
 This file extends `Mathlib.Algebra.Homology.SpectralObject.SpectralSequence`,
 authored by Joël Riou, by closing the three TODOs in that file's module-doc:
 `Abelian.SpectralObject.SpectralSequence.homologyData`,

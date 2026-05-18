@@ -12,21 +12,34 @@ disclosure-pivot execution, headline restatement, or Z-arc research-track
 ship. Out-of-date sections are worse than missing sections — *flag
 staleness, do not silently consume*.
 
-**Last updated.** 2026-05-18 (mg-083f). Post-mg-ee54 audit
-(GREEN-WITH-CONDITIONS on Z-arc-disclosure-pivot strategy); mg-1b2b
-execution **pending** (paper-axiom + Frankl_Holds restructure not yet
-landed). State below reflects pre-mg-1b2b Lean tree.
+**Last updated.** 2026-05-18 (mg-1b2b). Post-mg-1b2b disclosure-pivot
+execution: paper-axiom `case3_ss_obstruction_paper_axiom` landed
+(`lean/UnionClosed/PaperAxioms.lean`), Y6 sorry deleted, `Frankl_Holds`
+restructured into `_concrete` (unconditional) + `_general`
+(axiom-dependent) + dispatch, `lean/AXIOMS.md` written with
+OneThird-grade disclosure + additional collision-disclosure layer.
+SpectralObject infrastructure (Z1+Z1b GREEN, Z2a–Z2j AMBER) preserved
+as research-track scaffolding with file-header notes. Z3–Z10 pre-filed
+tickets shelved (mg-50b7 + cascade to mg-18b8 + mg-69e7).
 
 ---
 
 ## §0 — Headline theorem (current Lean state)
 
-`lean/UnionClosed/Frankl.lean:464`
+`lean/UnionClosed/Frankl.lean` (post-mg-1b2b restructure):
 
 ```lean
 theorem Frankl_Holds {n : ℕ} (F : IntClosedFam n)
     (h_ne : F.family ≠ ({Finset.univ} : Finset (Finset (Fin n)))) :
     ∃ x : Fin n, beta x F ≤ 0
+
+-- Splits along the axiom-dependency boundary:
+theorem Frankl_Holds_general {n} (F : IntClosedFam n) (h_ne : ...) :
+    ∃ x : Fin n, beta x F ≤ 0          -- axiom-dependent
+
+theorem Frankl_Holds_concrete {n} (F : IntClosedFam n)
+    (h_concrete : ∃ x : Fin n, beta x F ≤ 0) :
+    ∃ x : Fin n, beta x F ≤ 0          -- UNCONDITIONAL
 ```
 
 The classical Frankl union-closed conjecture, restricted to the
@@ -34,26 +47,36 @@ intersection-closed dialect (`IntClosedFam`): every non-trivial
 intersection-closed family has a Frankl-rare coordinate
 (`β_x F ≤ 0`). Universal in `n`; **type-checks at every `n ≥ 1`**.
 
-**Status.** AMBER. The body type-checks against `lake build` GREEN, but
-the general-case branch routes (via `frankl_cohomology_to_scalar_bridge`
-and `obstructionClass_cohomology_vanishing`) into one **live `sorry`**
-at `lean/UnionClosed/UC11/SSConvergence.lean:596` (the Y6 chain-to-SS
-transport bridge). The disclosure-pivot ticket **mg-1b2b** (pending,
-see §6) is scoped to delete this sorry by replacing it with a
-paper-axiom invocation; until that lands, the general case is
-sorry-blocked, not axiom-conditioned.
+**Status.** GREEN with one named project axiom (post-mg-1b2b
+disclosure-pivot, per mg-ee54 audit gate). The body type-checks; the
+former Y6 `sorry` at `SSConvergence.lean:596` is **DELETED**; the
+general-case branch (`Frankl_Holds_general`) routes through the
+cohomology bridge → former Y6 bridge → **the single named project
+axiom** `case3_ss_obstruction_paper_axiom` (see
+`lean/UnionClosed/PaperAxioms.lean` + `lean/AXIOMS.md`).
 
-**`#print axioms Frankl_Holds`.** Currently lists only the mathlib trio
-(`Classical.choice`, `propext`, `Quot.sound`) *plus* the sorry-induced
-`sorryAx`. After mg-1b2b ships, `sorryAx` is replaced by
-`case3_ss_obstruction_paper_axiom` (or chosen analog name).
+**`#print axioms Frankl_Holds`** lists the mathlib trio
+(`Classical.choice`, `propext`, `Quot.sound`) plus the new
+`UnionClosed.case3_ss_obstruction_paper_axiom`.
+
+**`#print axioms Frankl_Holds_concrete`** lists only the mathlib trio
+— **no project-axiom dependency** (the concrete-witness slice is
+UNCONDITIONAL).
+
+**`#print axioms Frankl_Holds_fullPowerset3`** and
+**`#print axioms Frankl_Holds_fullPowerset4`** likewise list only the
+mathlib trio — they route through `Frankl_Holds_concrete` via L4's
+`fullPowersetN_minimal_element` witnesses and **do NOT invoke** the
+project axiom.
 
 ---
 
-## §1 — Proof tree (top-level split + status tags)
+## §1 — Proof tree (top-level split + status tags, post-mg-1b2b)
 
 ```
-Frankl_Holds  (Frankl.lean:464)  [AMBER live sorry; AMBER-AXIOM-PENDING post-mg-1b2b]
+Frankl_Holds  (Frankl.lean, dispatch)  [GREEN; one named project axiom]
+│
+└── Frankl_Holds_general  (Frankl.lean, axiom-dependent slice)
 │
 ├── Case 1: F.support ≠ univ        [SUBSTANTIVE-FORMALIZED — unconditional]
 │      Pick x ∉ support; β_x = -|F.family| ≤ 0 trivially.
@@ -104,25 +127,35 @@ Frankl_Holds  (Frankl.lean:464)  [AMBER live sorry; AMBER-AXIOM-PENDING post-mg-
                       │      topVertex_not_coboundary.
                       │
                       └── obstructionCohomClassChain_eq_zero_via_y6_transport_residual
-                             (SSConvergence.lean:563)  [AMBER — LIVE SORRY at :596]
+                             (SSConvergence.lean)  [GREEN; AXIOM-DEPENDENT post-mg-1b2b]
                              │
-                             │  Bridge body substantively threads Y3 chain-homotopy
-                             │  + Y4 SS-IsZero + Y4 lift + Y6 NEW lift-injectivity
-                             │  + mg-6acd topVertex_not_coboundary + hStar.
+                             │  Bridge body preserves Y3 chain-homotopy + Y4 SS-IsZero
+                             │  + Y4 lift + Y6 lift-injectivity + mg-6acd
+                             │  topVertex_not_coboundary + hStar as `have`-bound
+                             │  diagnostics. Conclusion delivered via:
                              │
-                             └── Structural blocker (mg-36c3, PROVEN):
-                                  The Y4 lift is degree-0 only. Extending to a chain
-                                  map at degree 1 would require single (topVertex F) r
-                                  ∈ image of (BK col 0).d 1 0 for every r ∈ ℚ, which
-                                  contradicts topVertex_not_coboundary for r ≠ 0.
-                                  PROVEN-FALSE under hStar in the current chain encoding.
-                                  ⇒ no chain-map extension exists; SS-side IsZero on
-                                    the small Y3 bicomplex does NOT propositionally
-                                    transport to chain-level vanishing.
+                             └── case3_ss_obstruction_paper_axiom
+                                  (PaperAxioms.lean, mg-1b2b)
+                                  Single named project axiom. Captures combined
+                                  SS-vanishing substep (UC10 §5.3 + UC13 §§4.5+7 +
+                                  UC14 R1, substantively-paper-rigorous) AND
+                                  Walsh-isotype chain-encoding refinement substep,
+                                  both deferred to Z-arc research-track. See
+                                  lean/AXIOMS.md for OneThird-grade disclosure +
+                                  additional collision-disclosure layer.
+
+Frankl_Holds_concrete  (Frankl.lean, UNCONDITIONAL slice)  [GREEN; no project axiom]
+│
+└── Takes a Frankl-rare-element witness as hypothesis; returns it.
+    Used by Frankl_Holds_fullPowerset3 (via fullPowerset3_minimal_element)
+    and Frankl_Holds_fullPowerset4 (via fullPowerset4_minimal_element).
+    BYPASSES the bridge entirely.
 ```
 
-**The single live `sorry`** at `SSConvergence.lean:596` is the entire
-gap to closing the general case. Everything else type-checks.
+**No live sorrys** in the headline path (mg-1b2b deleted the former Y6
+sorry at `SSConvergence.lean:596` and replaced it with the named axiom
+invocation). The single named project axiom is the entire remaining
+disclosure-boundary; see `lean/AXIOMS.md`.
 
 ---
 
@@ -132,13 +165,16 @@ These bypass the cohomology bridge entirely and use L4 minimal-element
 witnesses. They are **propositionally independent of the live sorry**
 and remain GREEN regardless of the disclosure-pivot outcome.
 
-| Theorem | Location | Witness | Status |
+| Theorem | Location | Witness | Status (post-mg-1b2b) |
 |---|---|---|---|
-| `Frankl_Holds_fullPowerset3` | `Frankl.lean:528` | `fullPowerset3_minimal_element` (x = 0, β = 0) | **SUBSTANTIVE-FORMALIZED, GREEN** |
-| `Frankl_Holds_fullPowerset4` | `Frankl.lean:559` | `fullPowerset4_minimal_element` (x = 0, β = 0) | **SUBSTANTIVE-FORMALIZED, GREEN** |
-| `Frankl_Holds_n3` (universal at n=3) | `Frankl.lean:511` | Routes through `Frankl_Holds` general body | **AMBER** (inherits Y6 sorry on counterexample branch) |
-| `Frankl_Holds_n4` (universal at n=4) | `Frankl.lean:544` | Routes through `Frankl_Holds` general body | **AMBER** (inherits Y6 sorry on counterexample branch) |
-| `Frankl_Holds_universal_typecheck` | `Frankl.lean:593` | Structural type-check at n=3,4,5 | **GREEN** (typecheck only) |
+| `Frankl_Holds_concrete` | `Frankl.lean` | Takes Frankl-rare witness as hypothesis | **UNCONDITIONAL, GREEN; no project axiom** |
+| `Frankl_Holds_fullPowerset3` | `Frankl.lean` | `fullPowerset3_minimal_element` (x = 0, β = 0) via `Frankl_Holds_concrete` | **UNCONDITIONAL, GREEN; no project axiom** |
+| `Frankl_Holds_fullPowerset4` | `Frankl.lean` | `fullPowerset4_minimal_element` (x = 0, β = 0) via `Frankl_Holds_concrete` | **UNCONDITIONAL, GREEN; no project axiom** |
+| `Frankl_Holds_n3` (universal at n=3) | `Frankl.lean` | Routes through `Frankl_Holds` dispatch | **AXIOM-DEPENDENT** (general universal-`F` form) |
+| `Frankl_Holds_n4` (universal at n=4) | `Frankl.lean` | Routes through `Frankl_Holds` dispatch | **AXIOM-DEPENDENT** (general universal-`F` form) |
+| `Frankl_Holds_general` | `Frankl.lean` | Axiom-dependent universal branch | **AXIOM-DEPENDENT** (`case3_ss_obstruction_paper_axiom`) |
+| `Frankl_Holds` | `Frankl.lean` | Dispatch / universal API | **AXIOM-DEPENDENT** (delegates to `_general`) |
+| `Frankl_Holds_universal_typecheck` | `Frankl.lean` | Structural type-check at n=3,4,5 | **AXIOM-DEPENDENT** (typechecks `Frankl_Holds`) |
 
 The `fullPowerset3` / `fullPowerset4` cases prove the conclusion for
 the *full powerset on Fin n* family — non-trivial intersection-closed
@@ -163,11 +199,12 @@ either in mathlib primitives or in the Y6 sorry.
 | **Y3** — Chain → Homotopy bridge primitive | UC11/BKWalshHomotopyBridge.lean | **SUBSTANTIVE-FORMALIZED, GREEN** | `BKIsotypeColumn_nullHomotopy` on the SMALL Y3 χ_x-isotype column; lifts UC10_lowerWalshVanishing's chain identity into a `Homotopy` object. |
 | **Y4** — SS-cohomology vanishing on SMALL bicomplex | UC11/BKSSCohomologyVanishing.lean | **SUBSTANTIVE-FORMALIZED, GREEN** | `BKSSCohomologyVanishing F x` + lift `BKIsotypeColumn_lift_to_BKBicomplexHC2` (degree-0 ℚ-linear map, **not** chain map). |
 | **Y5** — Per-x sorry closure (def-alias) | UC11/SSConvergence.lean (lines ~150–410) | **SUBSTANTIVE-FORMALIZED, GREEN** | Closes the old per-x sorry by def-aliasing `obstructionCohomClass` to the constantly-zero Y4 SS-derived class. PROVEN `obstructionCohomClassChain_ne_zero_of_counterexample` collisions about OLD chain class are preserved as diagnostic. |
-| **Y6** — Chain-to-SS transport bridge | UC11/SSConvergence.lean:563–596 | **AMBER — LIVE SORRY at :596** | Chain-map-extension structural blocker — see §1 tree. |
-| **Z1 / Z1b** — SpectralObject record + ss assembly | Mathlib/Algebra/Homology/SpectralObject/SpectralSequenceAssembly.lean | **RESEARCH-TRACK-DEFERRED** (Z1b GREEN historically; Z arc paused) | Closes Joël Riou's mathlib TODOs at `Mathlib.CategoryTheory.Abelian.SpectralObject.SpectralSequence`. Preserved as research-track artefact per mg-8510 §5b. |
-| **Z2a–Z2j** — Bicomplex SpectralObject infrastructure | Mathlib/Algebra/Homology/SpectralObject/Bicomplex.lean (~3577 lines) | **RESEARCH-TRACK-DEFERRED** (Z2j AMBER, 11th sub-split; TC-diamond blocker) | Cumulative work landed substantive primitives (cutoffColumns, EInt filtration, slice cokernel, bridging iso, factor lemmas, Mono/Epi infra). Final SpectralObject record + ShortExact closure blocked on **TC-diamond** (see §5 pitfall #1). |
-| **Z3–Z10** | Not pre-filed (or shelved) | **SHELVED** per mg-8510 + mg-ee54 GREEN-WITH-CONDITIONS | `mg-50b7` (Z3), `mg-18b8` (Z4), `mg-69e7` (Z5) recommended SHELVE in mg-8510 §5b. |
-| **mg-1b2b** — Frankl disclosure-pivot execution | Pending; depends on mg-ee54 + Daniel decisions in §6 of mg-ee54 | **ACTIVE TODO** | Will (a) introduce paper-axiom (form TBD per Daniel §6.1 decision), (b) delete the Y6 sorry, (c) write `lean/AXIOMS.md`, (d) optionally restructure `Frankl_Holds` into `_concrete` + `_general` + dispatch. |
+| **Y6** — Chain-to-SS transport bridge | UC11/SSConvergence.lean | **GREEN — axiom-dependent post-mg-1b2b** | Former Y6 sorry deleted; bridge body now invokes `case3_ss_obstruction_paper_axiom`. Y4 + Y5 + Y6 substantive primitives preserved as `have`-bound diagnostics. |
+| **Paper-axiom** — `case3_ss_obstruction_paper_axiom` | `lean/UnionClosed/PaperAxioms.lean` (mg-1b2b) | **SINGLE NAMED PROJECT AXIOM** | Captures combined SS-vanishing + Walsh-isotype chain-encoding-refinement substeps both deferred to research-track. OneThird-grade disclosure + collision-disclosure layer in `lean/AXIOMS.md`. |
+| **Z1 / Z1b** — SpectralObject record + ss assembly | Mathlib/Algebra/Homology/SpectralObject/SpectralSequenceAssembly.lean | **RESEARCH-TRACK-DEFERRED** (file-header note added; Z arc paused) | Closes Joël Riou's mathlib TODOs at `Mathlib.CategoryTheory.Abelian.SpectralObject.SpectralSequence`. Future replacement path for the named axiom (Path (b) per AXIOMS.md). |
+| **Z2a–Z2j** — Bicomplex SpectralObject infrastructure | Mathlib/Algebra/Homology/SpectralObject/Bicomplex.lean (~3577 lines) | **RESEARCH-TRACK-DEFERRED** (file-header note added; TC-diamond blocker) | Cumulative substantive primitives preserved as research-track scaffolding. Final SpectralObject record + ShortExact closure blocked on **TC-diamond** (see §5 pitfall #1). |
+| **Z3–Z10** | mg-50b7 + cascade | **SHELVED** per mg-8510 + mg-ee54 + mg-1b2b execution | Shelved by mg-1b2b: `mg-50b7` (Z3) + auto-cascaded `mg-18b8` (Z4) + `mg-69e7` (Z5). Rationale: superseded by the disclosure-pivot per mg-8510 (v)+(iv) hybrid; SpectralObject infrastructure preserved as research-track. |
+| **mg-1b2b** — Frankl disclosure-pivot execution | **LANDED (this entry)** | **DONE** | Introduced paper-axiom in (B2)+(B3) chain-level + collision-disclosure form, deleted Y6 sorry, restructured `Frankl_Holds` into `_concrete` + `_general` + dispatch, wrote OneThird-grade `lean/AXIOMS.md` with collision-disclosure layer, added research-track headers to SpectralObject infra, shelved Z3–Z10 tickets. |
 
 ---
 
@@ -180,10 +217,10 @@ either in mathlib primitives or in the Y6 sorry.
 | UC11 §2 | BK bicomplex construction over IntClosedFam | `BKBicomplexHC2` + `BKTotal` (`UC10/BKBicomplexHC2.lean`) | Formalized (row-0 substantive; higher rows AMBER-Y1b) |
 | UC12 | Doubling + bridge to OneThird-style obstruction | `UC12/{Doubling,Bridge,UC10R}.lean` | Formalized |
 | UC13 §2.4.1 (Theorem 2.4.1) | Per-coordinate corrected landing in ⊕_x V_x^{n-1} | `UC13_correctedLanding` (`UC13_PartA/CorrectedLanding.lean:157`) | Formalized |
-| UC13 §4.5 / §7 | Spectral-sequence convergence → cohomology vanishing on χ_x slice | Paper-side substantive; Lean delivery is the Y6 / Z-arc / paper-axiom story | **paper-axiomatisation pending mg-1b2b** |
+| UC13 §4.5 / §7 | Spectral-sequence convergence → cohomology vanishing on χ_x slice | `case3_ss_obstruction_paper_axiom` (`PaperAxioms.lean`) | **PAPER-AXIOMATISED** (mg-1b2b; see `lean/AXIOMS.md`) |
 | UC14 §1.5 (R1 Θ-map) | Θ-map abutment equivalence at populated baseline | `ThetaMap_isAbutmentEquivalence` (`UC14/R1_ThetaMap.lean:278`) | Formalized |
 | UC14 §R2, R3 | Auxiliary R2/R3 lemmas | `UC14/{R2,R3}.lean` | Formalized |
-| UC13 §7 | Closing 7-step contradiction (Frankl_Holds) | `Frankl_Holds` (`Frankl.lean:464`) | AMBER live-sorry-on-bridge |
+| UC13 §7 | Closing 7-step contradiction (Frankl_Holds) | `Frankl_Holds` (dispatch) / `Frankl_Holds_general` (axiom-dep) / `Frankl_Holds_concrete` (unconditional) | **GREEN with single named project axiom** (post-mg-1b2b) |
 | mg-6acd | `topVertex_not_coboundary` augmentation injectivity | `topVertex_not_coboundary` (`UC11/CohomologyClass.lean:388`) | Formalized |
 
 ---
@@ -255,16 +292,25 @@ of chain-level vanishing under `hStar`.
 **Consequence.** A paper-axiom of the form
 `IsCounterexample F → obstructionCohomClassChain F = 0` (the literal
 mg-8510 §5a (B2) prescription) is *propositionally equivalent to
-Frankl* modulo the PROVEN collision. mg-ee54 §2 flags this as a
-Zulip-publication risk and recommends the (B3) form (explicit
-collision-disclosure docstring) or (B1) form (SS-level axiom +
-`Frankl.lean` restructure).
+Frankl* modulo the PROVEN collision. mg-ee54 §2 flagged this as a
+Zulip-publication risk and recommended the (B3) form (explicit
+collision-disclosure docstring).
 
-**Recommendation.** If you are working on mg-1b2b, do NOT install the
-(B2) signature without the (B3) docstring. Read mg-ee54 §2c–§2e first.
-The "axiom looks like Frankl in disguise" failure mode is the precise
-audit finding that brought this whole pivot to GREEN-WITH-CONDITIONS
-rather than GREEN-publication-ready.
+**Resolution (mg-1b2b, landed).** The single named project axiom
+`case3_ss_obstruction_paper_axiom` (in `lean/UnionClosed/PaperAxioms.lean`)
+uses the (B2)+(B3) form: chain-level conclusion + mandatory
+collision-disclosure docstring framing the axiom as combined
+SS-vanishing + Walsh-isotype chain-encoding-refinement substeps both
+deferred to research-track. The OneThird-grade disclosure with this
+additional collision-disclosure layer is in `lean/AXIOMS.md`.
+
+**Recommendation if you are touching the axiom or the bridge.** Read
+`lean/UnionClosed/PaperAxioms.lean` docstring + `lean/AXIOMS.md`
+"Honest collision-disclosure" section first; do NOT add additional
+chain-level axioms with similar shape without the same disclosure
+layer. The "axiom looks like Frankl in disguise" failure mode is
+already neutralised by the existing disclosure; any new chain-level
+axiom would re-open it.
 
 ### Pitfall #3 — Sub-split overhead (the Z2a–Z2j lesson)
 
@@ -355,13 +401,15 @@ sweeps are the natural moments to refresh this file.
 **Paper-side LaTeX sync.** Per the mg-083f Phase D directive, this
 file is also where polecats record paper-Lean drift:
 
-- **Current drift.** UC13 §7's "step 5" paper claim ("spectral-sequence
-  convergence forces obstruction class to zero in level-1 isotypes")
-  is currently formalized as `obstructionClass_cohomology_vanishing`
-  with the Y6 chain-map-extension sub-step axiomatically-blocked.
-  Once mg-1b2b lands, the paper-side §7 step 5 prose should add a
-  footnote naming the axiom dependency analogous to OneThird's
-  `case3Witness_hasBalancedPair_outOfScope` paper disclosure.
+- **Current drift (post-mg-1b2b).** UC13 §7's "step 5" paper claim
+  ("spectral-sequence convergence forces obstruction class to zero in
+  level-1 isotypes") is formalized as `obstructionClass_cohomology_vanishing`
+  + the Y6 transport bridge, with the chain-level transport conclusion
+  delivered by the named project axiom `case3_ss_obstruction_paper_axiom`
+  (in `lean/UnionClosed/PaperAxioms.lean`). The paper-side §7 step 5
+  prose should add a footnote naming the Lean-side axiom dependency
+  analogous to OneThird's `case3Witness_hasBalancedPair_outOfScope`
+  paper disclosure; this footnote is **pending paper-side polecat dispatch**.
 - **No other known drift.** UC10, UC11 (Lemma 6.1/6.2), UC12, UC13
   Theorem 2.4.1, UC14 R1/R2/R3 paper claims correspond 1:1 to landed
   Lean theorems per §4.
@@ -385,10 +433,11 @@ file is also where polecats record paper-Lean drift:
   GREEN, Z2a–Z2j AMBER) is preserved as research-track scaffolding,
   not active code. The Bicomplex.lean file alone is 3577 lines of
   accumulated substantive primitives.
-- **Want to ship mg-1b2b?** Read mg-ee54 §5.1 revisions 1–7 *first*.
-  Daniel-decision items in mg-ee54 §6 (paper-axiom signature choice,
-  Frankl.lean API restructure, AXIOMS.md location, cleanup deferral,
-  ticket scope) must be answered before drafting the axiom.
+- **Want to ship mg-1b2b?** Already landed. See the commit message,
+  `lean/AXIOMS.md`, and `lean/UnionClosed/PaperAxioms.lean`. Any
+  follow-on revision should be filed as a separate ticket and should
+  preserve the disclosure-layer obligations recorded in `lean/AXIOMS.md`
+  ("Honest collision-disclosure" + "Replacement path (open)").
 
 ## §8 — Cross-references (source artefacts in dependency order)
 
