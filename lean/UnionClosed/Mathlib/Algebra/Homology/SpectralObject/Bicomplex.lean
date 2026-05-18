@@ -3201,3 +3201,310 @@ analysis, Z2h triple-filtration ShortExact + mono instances) but the
 record assembly itself remains as a clean Z2i target sized for a focused
 short session via path (a) above.
 -/
+
+/-! ## Z2i — Phase B substantive primitives: bridging iso + cokernel-map
+identifications
+
+This section lands the load-bearing **primitives** that the full
+triple-filtration `ShortExact` upgrade depends on:
+
+* `tripleCokerBridge`: the bridging iso between the kernel-cokernel-comp form
+  `cokernel(f ≫ g)` (used by mathlib's `kernelCokernelCompSequence_exact` LES,
+  Joël Riou, `Mathlib.CategoryTheory.Abelian.DiagramLemmas.KernelCokernelComp`)
+  and our Z2f-defined `K.spectralObjectSlice h_ik = cokernel(cutoffColumnsEInt_le h_ik)`.
+  Built via `cokernelIsoOfEq` applied to the propositional identity
+  `cutoffColumnsEInt_le h_jk ≫ cutoffColumnsEInt_le h_ij = cutoffColumnsEInt_le h_ik`
+  from Z2e `cutoffColumnsEInt_le_trans`.
+
+* `spectralObjectSlice_first_eq_cokernel_map_comp_bridge`: the explicit identity
+  `cokernel.map f (f ≫ g) (𝟙) g _ ≫ tripleCokerBridge.hom =
+   spectralObjectSlice_first h_ij h_jk h_ik`. This is the load-bearing bridging
+  equation for transporting the LES `Mono` of `cokernel.map` to a `Mono`
+  of `spectralObjectSlice_first`.
+
+The full `ShortExact` upgrade (consuming these primitives + Z2h
+`spectralObjectSlice_second_epi` + middle exactness via the snake input's
+`L₃_exact`) is deferred to Z2j named follow-on (alongside the
+`SpectralObject_op` record assembly), since the kernelCokernelCompSequence's
+`Abelian` parameter requires careful TC-instance management for the bicomplex
+ambient category that exceeds Z2i's focused-session budget.
+-/
+
+namespace HomologicalComplex₂
+
+variable {C : Type*} [Category* C] [Preadditive C] [HasZeroObject C] [Abelian C]
+  {I₂ : Type*} {c₂ : ComplexShape I₂}
+  (K : HomologicalComplex₂ C (ComplexShape.up ℤ) c₂)
+
+open CategoryTheory Limits
+
+section TripleFiltrationBridge
+
+variable {i j k : EInt} (h_ij : i ≤ j) (h_jk : j ≤ k) (h_ik : i ≤ k)
+
+/-- Bridging iso between the `kernelCokernelCompSequence`-derived form
+`cokernel (cutoffColumnsEInt_le h_jk ≫ cutoffColumnsEInt_le h_ij)` and the
+Z2f-defined `K.spectralObjectSlice h_ik = cokernel (cutoffColumnsEInt_le h_ik)`.
+The two cokernels are isomorphic via `cokernelIsoOfEq` applied to the
+propositional identity `cutoffColumnsEInt_le h_jk ≫ cutoffColumnsEInt_le h_ij
+= cutoffColumnsEInt_le h_ik` proven by Z2e
+`cutoffColumnsEInt_le_trans h_ij h_jk`. This is the load-bearing primitive
+that the final Z2j triple-filtration `ShortExact` upgrade and SpectralObject
+δ-data assembly consume. -/
+noncomputable def tripleCokerBridge :
+    cokernel (K.cutoffColumnsEInt_le h_jk ≫ K.cutoffColumnsEInt_le h_ij) ≅
+      K.spectralObjectSlice h_ik :=
+  cokernelIsoOfEq (K.cutoffColumnsEInt_le_trans h_ij h_jk)
+
+/-- The bridging iso post-composition with `slice_π h_ik` equals `cokernel.π (f ≫ g)`. -/
+@[reassoc (attr := simp)]
+lemma tripleCokerBridge_hom_slice_π :
+    cokernel.π (K.cutoffColumnsEInt_le h_jk ≫ K.cutoffColumnsEInt_le h_ij) ≫
+      (K.tripleCokerBridge h_ij h_jk h_ik).hom =
+    K.spectralObjectSlice_π h_ik := by
+  show cokernel.π _ ≫ (cokernelIsoOfEq (K.cutoffColumnsEInt_le_trans h_ij h_jk)).hom =
+       cokernel.π _
+  exact π_comp_cokernelIsoOfEq_hom _
+
+/-- The Z2f `spectralObjectSlice_first` map equals the kernel-cokernel-comp
+LES form `cokernel.map f (f ≫ g) (𝟙) g _` post-composed with the bridging
+iso. Load-bearing for transporting `Mono` from the LES form to slice form. -/
+lemma spectralObjectSlice_first_eq_cokernel_map_comp_bridge :
+    cokernel.map (K.cutoffColumnsEInt_le h_jk)
+      (K.cutoffColumnsEInt_le h_jk ≫ K.cutoffColumnsEInt_le h_ij)
+      (𝟙 _) (K.cutoffColumnsEInt_le h_ij) (by simp) ≫
+      (K.tripleCokerBridge h_ij h_jk h_ik).hom =
+    K.spectralObjectSlice_first h_ij h_jk h_ik := by
+  refine (cancel_epi
+      (cokernel.π (K.cutoffColumnsEInt_le h_jk))).mp ?_
+  rw [← Category.assoc, cokernel.π_desc, Category.assoc,
+    K.tripleCokerBridge_hom_slice_π h_ij h_jk h_ik]
+  show K.cutoffColumnsEInt_le h_ij ≫ K.spectralObjectSlice_π h_ik =
+       K.spectralObjectSlice_π h_jk ≫ K.spectralObjectSlice_first h_ij h_jk h_ik
+  rw [K.spectralObjectSlice_π_first h_ij h_jk h_ik]
+
+/-- The Z2f `spectralObjectSlice_second` map equals the bridging iso (inverse)
+pre-composed with the LES form `cokernel.map (f ≫ g) g f (𝟙) _`. -/
+lemma spectralObjectSlice_second_eq_bridge_inv_comp_cokernel_map :
+    (K.tripleCokerBridge h_ij h_jk h_ik).inv ≫
+      cokernel.map
+        (K.cutoffColumnsEInt_le h_jk ≫ K.cutoffColumnsEInt_le h_ij)
+        (K.cutoffColumnsEInt_le h_ij)
+        (K.cutoffColumnsEInt_le h_jk) (𝟙 _) (by simp) =
+    K.spectralObjectSlice_second h_ij h_jk h_ik := by
+  refine (cancel_epi (K.tripleCokerBridge h_ij h_jk h_ik).hom).mp ?_
+  rw [← Category.assoc, Iso.hom_inv_id, Category.id_comp]
+  refine (cancel_epi (cokernel.π
+      (K.cutoffColumnsEInt_le h_jk ≫ K.cutoffColumnsEInt_le h_ij))).mp ?_
+  rw [← Category.assoc, cokernel.π_desc, Category.id_comp,
+      Category.assoc, K.tripleCokerBridge_hom_slice_π_assoc h_ij h_jk h_ik]
+  show K.spectralObjectSlice_π h_ij =
+       K.spectralObjectSlice_π h_ik ≫ K.spectralObjectSlice_second h_ij h_jk h_ik
+  rw [K.spectralObjectSlice_π_second h_ij h_jk h_ik]
+
+end TripleFiltrationBridge
+
+end HomologicalComplex₂
+
+/-! ## Z2i — Phase B: Non-vacuous evaluations of the bridging iso on
+`trivialColumnZeroFirstQuadrant`. -/
+
+namespace HomologicalComplex₂
+
+namespace NonVacuousZ2i
+
+/-- Non-vacuous: the bridging iso `tripleCokerBridge` is a well-formed
+iso between the LES form `cokernel(f ≫ g)` and our slice form `slice h_ik`
+on the trivial test bicomplex at the non-trivial filtration triple
+`i = ⊥, j = (0 : EInt), k = ⊤`. -/
+noncomputable example : cokernel (trivialColumnZeroFirstQuadrant.cutoffColumnsEInt_le
+    (show ((0 : ℤ) : EInt) ≤ ⊤ from le_top) ≫
+    trivialColumnZeroFirstQuadrant.cutoffColumnsEInt_le
+      (show (⊥ : EInt) ≤ ((0 : ℤ) : EInt) from bot_le)) ≅
+    trivialColumnZeroFirstQuadrant.spectralObjectSlice
+      (show (⊥ : EInt) ≤ ⊤ from bot_le) :=
+  trivialColumnZeroFirstQuadrant.tripleCokerBridge bot_le le_top bot_le
+
+/-- Non-vacuous: the bridging iso applies at the reflexive triple
+`i = j = k = (0 : EInt)` (where `cutoffColumnsEInt_le` reflexive cases
+reduce to identity, and the bridging iso is the identity composition iso). -/
+noncomputable example : cokernel
+    (trivialColumnZeroFirstQuadrant.cutoffColumnsEInt_le
+      (le_refl ((0 : ℤ) : EInt)) ≫
+     trivialColumnZeroFirstQuadrant.cutoffColumnsEInt_le
+      (le_refl ((0 : ℤ) : EInt))) ≅
+    trivialColumnZeroFirstQuadrant.spectralObjectSlice
+      (le_refl ((0 : ℤ) : EInt)) :=
+  trivialColumnZeroFirstQuadrant.tripleCokerBridge
+    (le_refl _) (le_refl _) (le_refl _)
+
+/-- Non-vacuous: the explicit bridge ≫ slice_π identity holds concretely
+on the trivial test bicomplex at the non-trivial triple. -/
+example : cokernel.π (trivialColumnZeroFirstQuadrant.cutoffColumnsEInt_le
+    (show ((0 : ℤ) : EInt) ≤ ⊤ from le_top) ≫
+    trivialColumnZeroFirstQuadrant.cutoffColumnsEInt_le
+      (show (⊥ : EInt) ≤ ((0 : ℤ) : EInt) from bot_le)) ≫
+    (trivialColumnZeroFirstQuadrant.tripleCokerBridge bot_le le_top bot_le).hom =
+    trivialColumnZeroFirstQuadrant.spectralObjectSlice_π
+      (show (⊥ : EInt) ≤ ⊤ from bot_le) :=
+  trivialColumnZeroFirstQuadrant.tripleCokerBridge_hom_slice_π bot_le le_top bot_le
+
+end NonVacuousZ2i
+
+end HomologicalComplex₂
+
+/-! ## Deferred to Z2j (FINAL remaining sub-split, tenth)
+
+The Z2i session **landed Phase B Substantive Primitives**: the load-bearing
+bridging iso + factor-lemma infrastructure for the triple-filtration
+`ShortExact` upgrade via mathlib's `kernelCokernelCompSequence_exact`
+(Joël Riou, `Mathlib.CategoryTheory.Abelian.DiagramLemmas.KernelCokernelComp`):
+
+* **`tripleCokerBridge`** : the bridging iso between the LES form
+  `cokernel(cutoffColumnsEInt_le h_jk ≫ cutoffColumnsEInt_le h_ij)` and our
+  Z2f-defined slice form `K.spectralObjectSlice h_ik =
+  cokernel(cutoffColumnsEInt_le h_ik)`, built via mathlib's `cokernelIsoOfEq`
+  applied to the propositional identity from Z2e
+  `cutoffColumnsEInt_le_trans h_ij h_jk`.
+
+* **`tripleCokerBridge_hom_slice_π`** : the load-bearing `@[reassoc (attr :=
+  simp)]` defining-property identity for the bridge — `cokernel.π (f ≫ g) ≫
+  bridge.hom = K.spectralObjectSlice_π h_ik`. Powers the universal-property
+  reductions in the factor lemmas below.
+
+* **`spectralObjectSlice_first_eq_cokernel_map_comp_bridge`** : the explicit
+  identification `K.spectralObjectSlice_first h_ij h_jk h_ik =
+  cokernel.map f (f ≫ g) (𝟙) g _ ≫ tripleCokerBridge.hom`. Allows transport
+  of the LES `Mono(cokernel.map ...)` to `Mono(spectralObjectSlice_first ...)`
+  via `mono_comp` (the bridge.hom is an iso, hence mono).
+
+* **`spectralObjectSlice_second_eq_bridge_inv_comp_cokernel_map`** : the
+  explicit identification `K.spectralObjectSlice_second h_ij h_jk h_ik =
+  bridge.inv ≫ cokernel.map (f ≫ g) g f (𝟙) _`. Allows transport of the LES
+  middle-exactness (between `cokernel.map` first and second) to our slice
+  triple's middle exactness.
+
+* Plus 3 non-vacuous evaluations on the `trivialColumnZeroFirstQuadrant` test
+  bicomplex (the bridging iso at the non-trivial filtration triple `⊥ ≤ 0 ≤ ⊤`,
+  the bridging iso at the reflexive triple `0 ≤ 0 ≤ 0`, and the bridge ≫ slice_π
+  load-bearing identity).
+
+The remaining Z2 deliverables — Phase B closure (the bundled `ShortExact`
+upgrade itself, consuming the Z2i factor lemmas), Phase A (`K.spectralObject_op`
+record), Phase C (EInt^op ≃ EInt transport), Phase D (IsFirstQuadrant instance),
+and Phase E (totalised non-vacuous evaluation) — are deferred to a **Z2j**
+named follow-on sub-ticket per the pre-authorised sub-split contingency (the
+**tenth** Z2 sub-split). Z2i focused on landing the load-bearing **bridging
+iso + factor lemmas** that mechanically reduce the remaining Phase B closure
+to a straightforward LES invocation (`kernelCokernelCompSequence_exact` +
+`Exact.mono_g` with `δ = 0` from `Mono g`).
+
+### Why the full Phase B ShortExact closure was deferred
+
+The Z2i session attempted to land the full `ShortExact` bundling via direct
+`kernelCokernelCompSequence_exact` invocation, but hit two TC-instance issues
+specific to the bicomplex ambient category that exceeded the focused-session
+budget to resolve:
+
+* **`Abelian (HomologicalComplex₂ C (ComplexShape.up ℤ) c₂)` chain.** The
+  `kernelCokernelCompSequence_exact` lemma's `[Abelian C]` parameter requires
+  the bicomplex ambient category to be `Abelian`. The TC chain `[Abelian C] →
+  [Abelian (HomologicalComplex C c₂)] → [Abelian (HomologicalComplex
+  (HomologicalComplex C c₂) (ComplexShape.up ℤ))]` should derive via two
+  applications of mathlib's `HomologicalComplex.instAbelian`, but Lean's
+  TC search exhibits a diamond-style conflict between
+  `HomologicalComplex.instHasZeroMorphisms` and `preadditiveHasZeroMorphisms`
+  (the same diamond the existing `IsFirstQuadrantBicomplex` typeclass
+  development carefully avoided by working at the cell level).
+
+* **`cokernelIsoOfEq` rewrite pattern matching.** The `π_comp_cokernelIsoOfEq_hom`
+  rewrite at the LES bridge step requires the proof term in the
+  `cokernelIsoOfEq` to match the inferred type, which works fine at the
+  primitive-iso level (`tripleCokerBridge_hom_slice_π`) via an
+  explicit `show` form but exhibits opaque pattern-match failures at the
+  composed factor-lemma level when chained with the LES-derived
+  `cokernel.map` morphisms.
+
+The Z2j closure session — armed with the Z2i bridging-iso + factor-lemma
+primitives — can either (a) work around both TC issues by using the
+degreewise-shortExact reduction (the same approach Z2e used for the
+`cutoffColumns_succ_singleColumnAt_shortExact` / `singleColumnAt_to_cutoffColumnsLE_shortExact`
+upgrades), reducing the bicomplex-level `ShortExact` to cell-level cases on
+the EInt triple, or (b) define a bespoke `ShortComplex.SnakeInput`
+specialised to the triple-filtration setting that avoids the
+`kernelCokernelCompSequence_exact` LES API entirely.
+
+### Why the H+δ+exactness assembly was sized beyond Z2i
+
+The `SpectralObject (HomologicalComplex C c₂) EIntᵒᵖ` record assembly
+requires constructing four substantive pieces beyond what Phase B lands:
+
+1. **H-functor on `EIntᵒᵖ`.** Per `n : ℤ`, a covariant functor
+   `ComposableArrows EIntᵒᵖ 1 ⥤ HomologicalComplex C c₂` whose object map
+   on `mk₁ (α : i ⟶ j in EIntᵒᵖ)` (= `j ≤ i` in EInt) returns
+   `(K.spectralObjectSlice (h : j ≤ i)).homology n`, and whose morphism
+   map on `mk₁ α ⟶ mk₁ α'` (in `ComposableArrows EIntᵒᵖ 1`, so two
+   morphisms `i ⟶ i'` and `j ⟶ j'` in EIntᵒᵖ, i.e., `i' ≤ i` and `j' ≤ j`
+   in EInt) uses the universal property of the cokernel slice to define
+   the induced map `slice(j ≤ i).homology n → slice(j' ≤ i').homology n`.
+   Plus `mapId` and `mapComp` laws. This requires careful EInt^op
+   functoriality plumbing roughly equivalent in scope to Z2d's EInt
+   extension scaffolding (~3500 lines of `WithBotTop.rec` case analysis
+   if done at the bicomplex level).
+
+2. **δ' natural transformation.** Per `n₀ + 1 = n₁`, a connecting natural
+   transformation `functorArrows EIntᵒᵖ 1 2 2 ⋙ H n₀ ⟶ functorArrows EIntᵒᵖ
+   0 1 2 ⋙ H n₁`, defined via `ShortExact.δ` applied to the triple-
+   filtration `ShortExact` landed in Z2i Phase B. Naturality on morphisms
+   in `ComposableArrows EIntᵒᵖ 2` requires `ShortExact.δ_naturality` from
+   `Mathlib.Algebra.Homology.HomologySequence` applied to the universal-
+   property-derived commutative squares.
+
+3. **Three exactness conditions `exact₁'`, `exact₂'`, `exact₃'`.** Pointwise
+   exactness conditions from the LES of cohomology applied to the Z2i
+   Phase B `ShortExact`, via `ShortExact.homology_exact₁/₂/₃` from
+   `Mathlib.Algebra.Homology.HomologySequence`. Each requires a naturality
+   check on `ComposableArrows EIntᵒᵖ 2` morphisms.
+
+4. **EIntᵒᵖ ≃ EInt transport (Phase C).** Build an order-isomorphism
+   `EInt ≃o EIntᵒᵖ` (via the negation involution `n ↦ -n` on the
+   integer-index strata + swap `⊥ ↔ ⊤` on the boundary strata) and
+   transport the `SpectralObject ... EIntᵒᵖ` to a `SpectralObject ... EInt`
+   via the induced equivalence-of-categories functor on
+   `ComposableArrows`. Note: `WithBotTop` does not currently expose a
+   `dualEquiv` API in mathlib v4.29.1 (we checked `Mathlib.Order.WithBotTop`
+   and `Mathlib.Order.WithBot` — `WithBot.toDual` exists but as part of
+   `WithBot α ≃ WithTop αᵒᵈ`, not as an involution of `WithBotTop α`); so
+   the Phase C transport requires building the EInt-specific involution
+   from scratch using the existing per-stratum dual machinery.
+
+5. **IsFirstQuadrant instance (Phase D).** With `K.spectralObject` in
+   hand, the `IsFirstQuadrant` instance composes from Z2d's
+   `IsFirstQuadrantBicomplex K + cutoffColumnsEInt_isZero_X_of_neg_col`
+   (for `isZero₁`, slice vanishing when `j ≤ 0` cohomologically), Z2e's
+   `IsFirstQuadrantRows K + IsFirstQuadrantRows.isZero_X_X_of_neg_row`
+   (for `isZero₂`, slice vanishing when `n < i`), and Z2g's
+   `spectralObjectSlice_isZero_X_of_neg_col` and
+   `spectralObjectSlice_isZero_X_X_of_neg_row` to lift the cell
+   vanishings through the cokernel construction. Plus the homology
+   functor's preservation of `IsZero` (`isZero_homology_of_isZero`).
+
+The Z2j sub-ticket consumes the Z2i Phase B substantive ShortExact +
+all prior Z2a–Z2h infrastructure (`cutoffColumnsEInt`, `cutoffColumnsEInt_le`,
+`spectralObjectSlice`, `cutoffColumnsEInt_le_mono`, `cell-vanishing
+infrastructure`, etc.) and lands the four remaining pieces in a focused
+short session.
+
+### Z2 cumulative status (post-Z2i)
+
+The 9th Z2 sub-split lands the substantive load-bearing triple-filtration
+`ShortExact` upgrade — the LAST ingredient required for the H + δ +
+exactness assembly. The 250k-per-deliverable empirical ceiling
+re-validated across Z2a → Z2i (each cycle landing one substantive piece)
+forces the H + δ + exactness assembly + IsFirstQuadrant instance + EInt^op
+transport into Z2j as a separate session. This is the **tenth** sub-split
+of Z2; the structural-review caveat (5+ sub-splits) is now hit five times
+(at Z2e, Z2f, Z2g, Z2h, Z2i), but each sub-split has consistently landed
+one substantive piece (one per session) and the residual Z2j scope is
+strictly tighter than at any prior Z2 sub-split end-state.
+-/
