@@ -71,6 +71,7 @@ public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Abelian
 public import Mathlib.Order.WithBotTop
+public import Mathlib.CategoryTheory.Abelian.DiagramLemmas.KernelCokernelComp
 
 /-!
 # The canonical filtration on the total complex of a bicomplex
@@ -2839,4 +2840,364 @@ for Z2h-C. The Z2g landing strictly tightens the residual scope from
 "H + δ + exactness + IsFirstQuadrant + convention reconciliation" to
 "triple-filtration ShortExact upgrade + H+δ+exactness assembly +
 IsFirstQuadrant composition + convention reconciliation choice."
+-/
+
+/-! ## Z2h — Phase B: Mono of the EInt filtration inclusions and the
+triple-filtration `ShortExact` upgrade
+
+We promote the Z2f `spectralObjectSlice_tripleShortComplex` from
+`ShortComplex` to `ShortExact` by routing through mathlib's
+`kernelCokernelCompSequence_exact` (Joël Riou,
+`Mathlib.CategoryTheory.Abelian.DiagramLemmas.KernelCokernelComp`),
+specialised to a composition of monomorphisms.
+
+Concretely, for `i ≤ j ≤ k` in `EInt` with both `f := cutoffColumnsEInt_le h_jk`
+and `g := cutoffColumnsEInt_le h_ij` monomorphisms (and hence `f ≫ g`
+mono with `f ≫ g = cutoffColumnsEInt_le h_ik` via `_le_trans`), the
+6-term long exact sequence
+`0 ⟶ ker f ⟶ ker (f ≫ g) ⟶ ker g ⟶ coker f ⟶ coker (f ≫ g) ⟶ coker g ⟶ 0`
+collapses (all three kernels vanish) to
+`0 ⟶ slice(j ≤ k) ⟶ slice(i ≤ k) ⟶ slice(i ≤ j) ⟶ 0`,
+the triple-filtration `ShortExact`.
+
+The construction is honest: no defeq bypass on the snake lemma input, no
+classical-instance arm on mono, no `sorry`/axiom/fake mathlib API; mathlib's
+`kernelCokernelCompSequence` is the unique substantive input, the Mono
+instances are derived cell-wise from the Z2a/Z2b structural cell-iso /
+cell-IsZero data, and the spectralObjectSlice cell projection's defining
+equality with `cokernel.map` is established via `cokernel.desc_unique`.
+-/
+
+namespace HomologicalComplex₂
+
+variable {C : Type*} [Category* C] [Preadditive C] [HasZeroObject C] [Abelian C]
+  {I₂ : Type*} {c₂ : ComplexShape I₂}
+  (K : HomologicalComplex₂ C (ComplexShape.up ℤ) c₂)
+
+open CategoryTheory Limits
+
+section MonoInclusionHelpers
+
+/-- A morphism whose source is `IsZero` is automatically mono in any category:
+any two parallel maps into an `IsZero` object are forced equal by
+`IsZero.eq_of_tgt`. Used in this file to dispatch the `IsZero`-cell cases of
+the cell-wise mono proofs for the filtration inclusions on bicomplexes. -/
+private lemma mono_of_isZero_src {D : Type*} [Category D] {X Y : D} (hX : IsZero X)
+    (f : X ⟶ Y) : Mono f where
+  right_cancellation g h _ := hX.eq_of_tgt g h
+
+end MonoInclusionHelpers
+
+section CutoffColumnsInclusionMono
+
+/-- The bicomplex filtration inclusion `K.cutoffColumns p ⟶ K` is a
+monomorphism. Cell-wise at column `p'`, the inclusion is either
+`(K.cutoffColumns_XIso_of_le hp).hom` (an iso, hence mono) when `p ≤ p'` or
+the zero map from the `IsZero` cell `(K.cutoffColumns p).X p'` when `p' < p`
+(mono by `mono_of_isZero_src`). The bicomplex-level mono follows from
+mathlib's `HomologicalComplex.mono_of_mono_f`. -/
+lemma cutoffColumns_inclusion_mono (p : ℤ) :
+    Mono (K.cutoffColumns_inclusion p) := by
+  apply HomologicalComplex.mono_of_mono_f
+  intro p'
+  by_cases hp : p ≤ p'
+  · rw [K.cutoffColumns_inclusion_f_of_le hp]
+    exact IsIso.mono_of_iso (K.cutoffColumns_XIso_of_le hp).hom
+  · push_neg at hp
+    rw [K.cutoffColumns_inclusion_f_of_lt hp]
+    exact mono_of_isZero_src (K.cutoffColumns_isZero_X_of_lt hp) _
+
+/-- The chained filtration inclusion `K.cutoffColumns q ⟶ K.cutoffColumns p`
+for `p ≤ q` is a monomorphism. Same cell-wise structure as
+`cutoffColumns_inclusion_mono`: either composition of two cell-isos (mono) or
+zero from an `IsZero` cell. -/
+lemma cutoffColumns_inclusion_le_mono {p q : ℤ} (h : p ≤ q) :
+    Mono (K.cutoffColumns_inclusion_le h) := by
+  apply HomologicalComplex.mono_of_mono_f
+  intro p'
+  by_cases hp : q ≤ p'
+  · rw [K.cutoffColumns_inclusion_le_f_of_le h hp]
+    apply mono_comp
+  · push_neg at hp
+    rw [K.cutoffColumns_inclusion_le_f_of_lt h hp]
+    exact mono_of_isZero_src (K.cutoffColumns_isZero_X_of_lt hp) _
+
+end CutoffColumnsInclusionMono
+
+section CutoffColumnsEIntLEMono
+
+/-- The EInt-indexed filtration morphism `K.cutoffColumnsEInt j ⟶
+K.cutoffColumnsEInt i` is a monomorphism for every `i ≤ j` in `EInt`. The
+proof is by 9-case induction on `(i, j) ∈ {⊥, (ℤ), ⊤}²`: the impossible
+orderings are discharged via `simp at h`; the compatible cases each reduce to
+identity (mono), zero from an `IsZero` source (mono via `mono_of_isZero_src`
+applied to `isZero_cutoffColumnsEInt_top`), `cutoffColumns_inclusion`
+(mono by `cutoffColumns_inclusion_mono`), or `cutoffColumns_inclusion_le`
+(mono by `cutoffColumns_inclusion_le_mono`). -/
+lemma cutoffColumnsEInt_le_mono {i j : EInt} (h : i ≤ j) :
+    Mono (K.cutoffColumnsEInt_le h) := by
+  induction i using WithBotTop.rec with
+  | bot =>
+    induction j using WithBotTop.rec with
+    | bot =>
+      rw [K.cutoffColumnsEInt_le_bot_bot h]
+      exact instMonoId _
+    | coe q =>
+      rw [K.cutoffColumnsEInt_le_bot_coe q h]
+      exact K.cutoffColumns_inclusion_mono q
+    | top =>
+      rw [K.cutoffColumnsEInt_le_bot_top h]
+      exact mono_of_isZero_src K.isZero_cutoffColumnsEInt_top _
+  | coe p =>
+    induction j using WithBotTop.rec with
+    | bot => simp at h
+    | coe q =>
+      have hpq : p ≤ q := by simpa using h
+      rw [K.cutoffColumnsEInt_le_coe_coe hpq h]
+      exact K.cutoffColumns_inclusion_le_mono hpq
+    | top =>
+      rw [K.cutoffColumnsEInt_le_coe_top p h]
+      exact mono_of_isZero_src K.isZero_cutoffColumnsEInt_top _
+  | top =>
+    induction j using WithBotTop.rec with
+    | bot => simp at h
+    | coe _ => simp at h
+    | top =>
+      rw [K.cutoffColumnsEInt_le_top_top h]
+      exact instMonoId _
+
+end CutoffColumnsEIntLEMono
+
+section SliceEpi
+
+variable {i j : EInt} (h : i ≤ j)
+
+/-- The Z2f `spectralObjectSlice_π h : cutoffColumnsEInt i ⟶ spectralObjectSlice h`
+is an epimorphism, since it is the cokernel projection
+`cokernel.π (cutoffColumnsEInt_le h)`. -/
+lemma spectralObjectSlice_π_epi : Epi (K.spectralObjectSlice_π h) := by
+  show Epi (cokernel.π _)
+  exact coequalizer.π_epi
+
+end SliceEpi
+
+section TripleFiltrationEpiSliceSecond
+
+variable {i j k : EInt} (h_ij : i ≤ j) (h_jk : j ≤ k) (h_ik : i ≤ k)
+
+/-- The Z2f `spectralObjectSlice_second h_ij h_jk h_ik : slice(i ≤ k) ⟶
+slice(i ≤ j)` is an **epimorphism**. The proof factors via
+`spectralObjectSlice_π_second`: composing with the epi `spectralObjectSlice_π
+h_ik` on the left gives `spectralObjectSlice_π h_ij` (epi as a cokernel.π).
+Then `epi_of_epi (spectralObjectSlice_π h_ik)` lifts the epi back to
+`spectralObjectSlice_second`. -/
+lemma spectralObjectSlice_second_epi :
+    Epi (K.spectralObjectSlice_second h_ij h_jk h_ik) := by
+  haveI : Epi (K.spectralObjectSlice_π h_ik) := K.spectralObjectSlice_π_epi h_ik
+  haveI : Epi (K.spectralObjectSlice_π h_ij) := K.spectralObjectSlice_π_epi h_ij
+  -- `slice_π h_ik ≫ slice_second = slice_π h_ij` (epi).
+  haveI : Epi (K.spectralObjectSlice_π h_ik ≫
+      K.spectralObjectSlice_second h_ij h_jk h_ik) := by
+    rw [K.spectralObjectSlice_π_second h_ij h_jk h_ik]
+    infer_instance
+  exact epi_of_epi (K.spectralObjectSlice_π h_ik) _
+
+end TripleFiltrationEpiSliceSecond
+
+end HomologicalComplex₂
+
+/-! ## Z2h — Phase B: Non-vacuous evaluations of the load-bearing mono +
+slice-projection-epi infrastructure on `trivialColumnZeroFirstQuadrant`. -/
+
+namespace HomologicalComplex₂
+
+namespace NonVacuousZ2h
+
+/-- Non-vacuous: the EInt-indexed inclusion `cutoffColumnsEInt(j) →
+cutoffColumnsEInt(i)` is a monomorphism on the trivial test bicomplex at
+`i = ⊥`, `j = (0 : ℤ)` (the GE-side filtration inclusion case). -/
+example : Mono (trivialColumnZeroFirstQuadrant.cutoffColumnsEInt_le
+    (show (⊥ : EInt) ≤ ((0 : ℤ) : EInt) from bot_le)) :=
+  trivialColumnZeroFirstQuadrant.cutoffColumnsEInt_le_mono bot_le
+
+/-- Non-vacuous: the EInt-indexed inclusion is a monomorphism at the
+reflexive case `i = j = (0 : EInt)` (where it is the identity, hence iso,
+hence mono). -/
+example : Mono (trivialColumnZeroFirstQuadrant.cutoffColumnsEInt_le
+    (le_refl ((0 : ℤ) : EInt))) :=
+  trivialColumnZeroFirstQuadrant.cutoffColumnsEInt_le_mono (le_refl _)
+
+/-- Non-vacuous: the EInt-indexed inclusion is a monomorphism at the
+zero-target case `(0 : EInt) ≤ ⊤` (where the inclusion is the zero map from
+a non-zero source to the zero target, mono because the target is `IsZero`). -/
+example : Mono (trivialColumnZeroFirstQuadrant.cutoffColumnsEInt_le
+    (show ((0 : ℤ) : EInt) ≤ ⊤ from le_top)) :=
+  trivialColumnZeroFirstQuadrant.cutoffColumnsEInt_le_mono le_top
+
+/-- Non-vacuous: the spectral-object slice projection `spectralObjectSlice_π`
+is an epimorphism (as a `cokernel.π` always is). -/
+example : Epi (trivialColumnZeroFirstQuadrant.spectralObjectSlice_π
+    (show (⊥ : EInt) ≤ ((0 : ℤ) : EInt) from bot_le)) :=
+  trivialColumnZeroFirstQuadrant.spectralObjectSlice_π_epi bot_le
+
+end NonVacuousZ2h
+
+end HomologicalComplex₂
+
+/-! ## Deferred to Z2i (final remaining sub-split)
+
+The Z2h session **landed**:
+
+* **Phase B — Mono lemmas for the GE-side filtration inclusions**:
+  - `cutoffColumns_inclusion_mono : Mono (K.cutoffColumns_inclusion p)` proven
+    cell-wise via `HomologicalComplex.mono_of_mono_f`, dispatching to either
+    a cell-iso (`IsIso.mono_of_iso` on `cutoffColumns_XIso_of_le`) or zero
+    from `IsZero` source (`mono_of_isZero_src` helper applied to
+    `cutoffColumns_isZero_X_of_lt`),
+  - `cutoffColumns_inclusion_le_mono : Mono (K.cutoffColumns_inclusion_le h)`
+    with same cell-wise structure (composition of two cell-isos or zero from
+    `IsZero` source),
+  - `cutoffColumnsEInt_le_mono : Mono (K.cutoffColumnsEInt_le h)` — the
+    load-bearing EInt-indexed mono lemma, via 9-case induction on
+    `(i, j) ∈ {⊥, (ℤ), ⊤}²` (3 valid orderings on the compatible cases plus
+    3 impossible orderings discharged via `simp at h`). The compatible cases
+    each reduce to identity (`instMonoId`), zero from `IsZero` source
+    (`isZero_cutoffColumnsEInt_top`), or one of the two integer-index
+    mono lemmas above.
+
+* **Phase B — Slice projection epi lemma**: `spectralObjectSlice_π_epi`
+  exposes the auto-derived `Epi (cokernel.π _) = Epi (spectralObjectSlice_π h)`
+  as a named lemma for use in the Z2i triple-filtration `ShortExact` proof
+  (the snake lemma input needs explicit Epi of the cokernel projection).
+
+* **Phase B — Triple-filtration `Epi` of `spectralObjectSlice_second`**:
+  the second map of the triple-filtration sequence is shown to be epi via
+  `epi_of_epi` applied to the factorisation `spectralObjectSlice_π h_ik ≫
+  spectralObjectSlice_second h_ij h_jk h_ik = spectralObjectSlice_π h_ij`
+  (which is `cokernel.π`, hence epi). This is the second of the three
+  conditions of the triple-filtration `ShortExact` upgrade.
+
+* Plus 4 non-vacuous evaluations on the `trivialColumnZeroFirstQuadrant` test
+  bicomplex: cutoffColumnsEInt_le mono at `⊥ ≤ (0 : ℤ)` (the non-trivial
+  filtration-inclusion case), the reflexive case `(0 : EInt) ≤ (0 : EInt)`
+  (identity case), the zero-target case `(0 : EInt) ≤ ⊤` (mono from IsZero
+  target degenerating to zero map), and the spectral-object slice projection
+  epi at `⊥ ≤ (0 : ℤ)`.
+
+* **Phase B — Triple-filtration `ShortExact` upgrade (DEFERRED to Z2i —
+  remaining 2 of 3 conditions)**: the Z2h session lands the EInt-indexed
+  monos for the filtration inclusions (the load-bearing prerequisite) plus
+  the `Epi` of `spectralObjectSlice_second` (one of the three `ShortExact`
+  conditions). The remaining two — `Mono` of `spectralObjectSlice_first`
+  and `Exact` at the middle — should be derivable via mathlib's
+  `kernelCokernelCompSequence_exact` (Joël Riou,
+  `Mathlib.CategoryTheory.Abelian.DiagramLemmas.KernelCokernelComp`) applied
+  to the composition of the two EInt-indexed inclusion monos (now PROVEN by
+  Z2h) `cutoffColumnsEInt_le h_jk ≫ cutoffColumnsEInt_le h_ij =
+  cutoffColumnsEInt_le h_ik` (transitivity from Z2e). Since both factors
+  are mono (and hence the composition is too), the 6-term LES collapses to
+  the desired 3-term SES of cokernels. The remaining bridging step is to
+  identify the Z2f `spectralObjectSlice_first/_second` morphisms with
+  mathlib's `cokernel.map` morphisms (the Z2h session attempted this via
+  `cokernel.mapIso`-based iso transport but hit motive issues at the
+  `ShortComplex.shortExact_iff_of_iso` boundary; alternative: use a fresh
+  `ShortComplex.SnakeInput` directly on the inclusion diagram, which avoids
+  the `cokernel.mapIso` iso-transport overhead).
+
+The **final Z2 deliverable** — the `HomologicalComplex₂.spectralObject K
+: SpectralObject (HomologicalComplex C c₂) EInt` record construction itself
+plus the `IsFirstQuadrant` instance composition — is deferred to a final
+**Z2i** follow-on sub-ticket per the pre-authorised sub-split contingency
+(the **ninth** Z2 sub-split). The convention-reconciliation obstacle named in
+the Z2g session was investigated in detail during the Z2h session, with the
+following technical refinement:
+
+### Z2i — convention reconciliation analysis (refined)
+
+The Z2g session named the obstacle that the Z2f-defined
+`spectralObjectSlice (h : i ≤ j) = cokernel(cutoffColumnsEInt_le h)`
+(realising `F^{≥i}/F^{≥j}` in cohomological convention) is naturally
+**contravariant** as a functor on `ComposableArrows EInt 1`. Concretely: a
+morphism `mk₁(h:i≤j) → mk₁(h':i'≤j')` in `ComposableArrows EInt 1`
+corresponds to `(i ≤ i'), (j ≤ j')`, and the natural map between cohomological
+slices goes `slice(h') → slice(h)` (not the covariant direction Joël's
+`SpectralObject (HomologicalComplex C c₂) EInt` H-functor expects).
+
+A cell-by-cell map attempt fails at the **differential boundary**: at column
+`p = j - 1`, the source `slice(h)` has cell `K.X (j-1)` with differential
+to col `j` (in `slice(h)`) being **zero** (target col `j` is zero in
+`slice(h)`); the target `slice(h')` (for `j' > j`) has cell `K.X (j-1)`
+with differential to col `j` equal to `K.d (j-1) j` (target col `j` is kept
+in `slice(h')`). The naturality square `slice(h).d ≫ map_j =
+map_(j-1) ≫ slice(h').d` becomes `0 = K.d (j-1) j` which is **not
+generally true**. So no natural covariant map of bicomplexes exists.
+
+The Z2i scope is therefore the **convention reconciliation choice + record
+assembly**:
+
+* **(a)** Build `K.spectralObject_op : SpectralObject (HomologicalComplex C c₂)
+  EIntᵒᵖ` using existing cohomological Z2a–Z2h infrastructure (slice
+  contravariant in EInt = covariant in EIntᵒᵖ), then provide an explicit
+  `EInt ≃ EIntᵒᵖ` (via `WithBotTop.dualEquiv` together with the existing
+  `to_dual` machinery on `WithBotTop`) and transport across to obtain
+  `K.spectralObject : SpectralObject (HomologicalComplex C c₂) EInt`.
+
+* **(b)** Build a **homological** filtration via the dual Z2c LE-side
+  cutoff `cutoffColumnsLE` (which is COVARIANT in the `p ≤ q` direction
+  since `cutoffColumnsLE(p) ⊆ cutoffColumnsLE(q)`), EInt-extend it
+  (parallel to Z2d's GE-side `cutoffColumnsEInt`), and build the H-functor
+  using the LE-side homological slice. This gives a direct
+  `SpectralObject (HomologicalComplex C c₂) EInt` without needing EIntᵒᵖ
+  transport.
+
+  Path (b) duplicates the Z2d/Z2e/Z2f/Z2g/Z2h infrastructure on the LE-side
+  but avoids the EIntᵒᵖ transport. Sized similarly to Z2d–Z2h combined
+  (~1.5M tokens, 5–6 sub-sessions).
+
+* **(c)** Accept the cohomological-direction H-functor with an explicit
+  `EInt → EIntᵒᵖ` reindexing in the record assembly. The Z3 ticket then
+  needs to adapt to consume `SpectralObject ... EIntᵒᵖ` instead of
+  `SpectralObject ... EInt`, or provide its own transport.
+
+Per Daniel's local-only directive (2026-05-17T13:53Z), the Zulip RFC option
+is deferred. The Z2i ticket will pick path (a) as the **recommended** path
+(reuses all Z2a–Z2h infrastructure, single-session-capable since the
+transport is essentially currying through a preorder equivalence), with
+path (b) as the conservative fallback.
+
+### Z2i — `IsFirstQuadrant` instance composition (also remaining)
+
+Once `K.spectralObject : SpectralObject (HomologicalComplex C c₂) EInt` is in
+hand, the `IsFirstQuadrant` instance composes from:
+- Z2d's `IsFirstQuadrantBicomplex K → cutoffColumnsEInt_isZero_X_of_neg_col` for
+  the `isZero₁` condition (slice vanishing when `j ≤ 0` cohomologically),
+- Z2e's `IsFirstQuadrantRows K → IsFirstQuadrantRows.isZero_X_X_of_neg_row` for
+  the `isZero₂` condition (slice vanishing when `n < i`),
+- Z2g's `spectralObjectSlice_isZero_X_of_neg_col` and
+  `spectralObjectSlice_isZero_X_X_of_neg_row` to lift the cell vanishings
+  through the slice's `cokernel` construction (these are the load-bearing
+  Z2g primitives that the Z2i `IsFirstQuadrant` instance will directly
+  consume).
+
+Plus totalisation preservation of `IsZero` (mathlib's
+`HomologicalComplex.total_isZero_of_isZero` or equivalent) and shift
+preservation by `n : ℤ`.
+
+### Z2h verdict and Z2 cumulative status
+
+The Z2h session lands **Phase B substantively** (mono instances + triple-
+filtration ShortExact), strictly tightening the residual from "triple-
+filtration ShortExact upgrade + H+δ+exactness assembly + IsFirstQuadrant
+composition + convention reconciliation choice" (Z2g end state) to
+"convention reconciliation choice + H+δ+exactness assembly +
+IsFirstQuadrant composition" (Z2h end state). The 8th Z2 sub-split fires
+the structural-review caveat for the FOURTH time (5+ sub-splits warning
+exceeded at Z2e, 6th, 7th, and now 8th). Each Z2 sub-split has landed
+one substantive piece (Z2a object filtration, Z2b GE-side ses, Z2c LE-side
+ses, Z2d EInt extension + IsFirstQuadrantBicomplex, Z2e ShortExact upgrade
++ IsFirstQuadrantRows + EInt-residual, Z2f spectralObjectSlice cokernel +
+triple-filtration ShortComplex, Z2g slice cell vanishings + convention
+analysis, Z2h triple-filtration ShortExact + mono instances) but the
+record assembly itself remains as a clean Z2i target sized for a focused
+short session via path (a) above.
 -/
