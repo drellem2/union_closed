@@ -6,6 +6,38 @@
 
 **Headline state (2026-05-18 evening).** Vacuity-discovery cascade bottomed out at substantive content. Both arcs converge on disclosure-pivot (smallN-unconditional + largeN-paper-axiomatised). Mayor executing both pivots; PM stepped back to high-level orchestration per Daniel discipline correction.
 
+**Daniel directive 2026-05-18T18:05Z**: "paper axiom needs to be closed in lean. I suggest tracking your roadmap for now very explicitly against blockers to zulip delivery for all proofs". Raised bar: disclosure-pivot is INTERIM; FINAL state needs no paper-axioms. New blocker tracking below.
+
+---
+
+## Blockers to Zulip delivery (per Daniel 18:05Z)
+
+**Frankl Zulip-delivery blockers:**
+- BLOCKER F1: SS-derived obstruction paper-axiom (Frankl side). Cause: mathlib v4.29.1 TC-diamond between HomologicalComplex.instHasZeroMorphisms + preadditiveHasZeroMorphisms at second-level HC. Resolution paths: (a) wait for mathlib fix upstream, (b) copy-mathlib + locally-patch per Daniel 07:17Z hint, (c) reproduce non-bicomplex SS path.
+- BLOCKER F2: mg-1b2b execution lands GREEN (interim disclosure-pivot; needed for #print axioms review).
+- BLOCKER F3: LaTeX paper updated to reflect post-mg-1b2b Lean state.
+
+**OneThird Zulip-delivery blockers:**
+- BLOCKER O1: Step7.LayeredWidth3 paper-axiom (OneThird side). Cause: Steps 1-7 cascade is multi-month Lean port per mg-ac13 "don't go there yet" guidance. Resolution path: file Steps 1-7 faithful Lean delivery arc (multi-month).
+- BLOCKER O2: mg-234e execution lands GREEN (closes mg-d5a0 sorry + drops case3Witness_hasBalancedPair_outOfScope axiom).
+- BLOCKER O3: mg-be48 cap-light enumeration extension lands GREEN (closes cap-1 coverage gap from mg-2970).
+- BLOCKER O4: mg-13a5 paper-cleanup revised — currently cites broken mg-5c32 R1+R2 framework; needs revise per mg-ac13 corrected residual.
+- BLOCKER O5: Final end-to-end paper-rigor audit before "confident" (cumulative-vacuity-discovery context).
+
+**Both arcs:**
+- BLOCKER B1: #print axioms output reviewed by Daniel (per his 10:03Z constraint).
+
+## Zulip-readiness scorecard (Daniel 18:01Z + 19:11Z)
+
+1. Width 3 proof mathematically complete + confident: **7/10** (post mg-ac13 cascade; reaches 9 post-mg-234e + paper-rigor audit).
+2. Formalization industry-standard complete: **5/10** (mid-execution; reaches 8 post mg-1b2b + mg-234e).
+3. Axiom due to mathlib bug: **6/10 (misleading)** — TWO axioms not one (Frankl mathlib-bug + OneThird scope-deferral).
+4. Literature citation easy to check: **7/10** (audit-gated; reaches 9 post-execution docstrings).
+5. #print axioms reviewed: **3/10** (haven't reviewed; needs post-execution review).
+6. LaTeX + PDF up to date: **3/10** (mg-13a5 cites broken mg-5c32 framework; needs revise per mg-ac13).
+
+**Zulip-ready when all 6 reach 8/10.** ETA: 1-2 days for interim disclosure-pivot path; 1-3 months for paper-axiom-closed path per Daniel new bar.
+
 ---
 
 ## In flight
