@@ -1,6 +1,9 @@
 import UnionClosed.Mathlib.Algebra.Homology.UCHomologicalComplex
 import UnionClosed.Mathlib.Algebra.Homology.UCAdditive
 import UnionClosed.Mathlib.Algebra.Homology.UCHomologicalComplexLimits
+import UnionClosed.Mathlib.Algebra.Homology.UCHomologicalComplexAbelian
+import UnionClosed.Mathlib.Algebra.Homology.UCHomologicalBicomplex
+import UnionClosed.Mathlib.Algebra.Homology.UCTotalComplex
 import UnionClosed.Mathlib.Algebra.Homology.SpectralObject.Bicomplex
 import UnionClosed.Mathlib.Algebra.Homology.SpectralObject.DiamondTest
 import UnionClosed.Mathlib.Algebra.Homology.SpectralObject.UCDiamondTest
