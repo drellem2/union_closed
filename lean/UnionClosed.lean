@@ -43,6 +43,7 @@ import UnionClosed.UC11.BKSSCohomologyVanishing
 import UnionClosed.UC11.SSConvergence
 import UnionClosed.UC13_PartA.IsotypePreservation
 import UnionClosed.UC13_PartA.CorrectedLanding
+import UnionClosed.UC13_PartA.ObstructionIsotypeLanding
 import UnionClosed.UC13_PartA.DialectCheck
 import UnionClosed.UC14.R1_ThetaMap
 import UnionClosed.PaperAxioms
