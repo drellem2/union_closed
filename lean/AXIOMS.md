@@ -130,7 +130,7 @@ The chain-level conclusion `obstructionCohomClassChain F = 0` under
 `obstructionCohomClassChain_ne_zero_of_counterexample` (in
 `lean/UnionClosed/UC11/SSConvergence.lean:164`), is propositionally
 equivalent to `∀ F, ¬ IsCounterexample F`, i.e. to Frankl's
-union-closed conjecture in counterexample-free form. Mechanically:
+union-closed conjecture in counterexample-free form. Schematically:
 
 ```
 axiom            :  IsCounterexample F → obstructionCohomClassChain F = 0
@@ -138,6 +138,40 @@ PROVEN theorem   :  IsCounterexample F → obstructionCohomClassChain F ≠ 0
 combine          :  IsCounterexample F → False
 hence            :  ∀ F, ¬ IsCounterexample F  = Frankl
 ```
+
+**R1 — the propositional-equivalence derivation, formalised** (mg-6d64,
+applying mg-980f §3.3 R1). The schematic above is realised by the
+following mechanically-checkable Lean derivation. The forward `example`
+is a genuine four-line Lean term — every identifier it names is in
+scope wherever `UnionClosed.UC11.SSConvergence` is imported (that file
+defines the collision theorem `obstructionCohomClassChain_ne_zero_of_counterexample`
+and transitively imports the axiom; open the `UnionClosed`,
+`UnionClosed.UC10`, `UnionClosed.UC11` namespaces) — and Lean accepts
+it with no `sorry` and no axiom beyond `case3_ss_obstruction_paper_axiom`
+itself:
+
+```lean
+-- Forward direction: this axiom + the PROVEN collision theorem
+-- discharge `IsCounterexample F → False` directly.
+example {n : ℕ} (F : IntClosedFam n) (hStar : IsCounterexample F) : False :=
+  obstructionCohomClassChain_ne_zero_of_counterexample F hStar
+    (case3_ss_obstruction_paper_axiom F hStar)
+
+-- Reverse direction: under `¬ IsCounterexample F` the axiom's
+-- hypothesis is never satisfied, so the implication holds vacuously.
+-- Hence the axiom is *equivalent* to — not merely a lemma implying —
+-- `∀ F, ¬ IsCounterexample F`, i.e. Frankl.
+```
+
+This `example` is the load-bearing honest disclosure: it shows in four
+lines of Lean that asserting `case3_ss_obstruction_paper_axiom` is
+*exactly* asserting that no `IsCounterexample` exists — Frankl's
+conjecture itself. The axiom is not a strictly weaker lemma that merely
+implies Frankl; modulo the PROVEN collision it *is* Frankl. The purpose
+of this entry is to state that openly. The companion **R2** axiom-
+dependency map (under "Forum-post draft" below) then shows the
+resulting dependency is isolated to the universal-`F` slice — the
+concrete-witness theorems remain unconditional.
 
 The collision arises because the current Lean chain encoding
 `obstructionClass F x := Finsupp.single (topVertex F) (β_x F)`
@@ -149,13 +183,41 @@ under positive bias.
 The axiom therefore captures **two** substantive substeps
 simultaneously, both deferred to the Z-arc research-track:
 
-1. **SS-vanishing substep (substantive paper content).** The
-   spectral-sequence-derived per-x vanishing on the χ_x-isotype slice
-   per UC10 §5.3 + UC13 §§4.5+7 + UC14 R1. Substantively
-   paper-rigorous; Lean delivery blocked by the mathlib v4.29.1
-   `Abelian (HomologicalComplex (HomologicalComplex C c₂) (ComplexShape.up ℤ))`
-   TC-instance-priority diamond. See `docs/Z-arc-architecture-audit.md`
-   §1 + `docs/state-UC-Lean-Z2j.md`.
+1. **SS-vanishing substep (two-tier delivery status — R3, mg-6d64
+   applying mg-980f §3.3 R3).** The spectral-sequence-derived per-x
+   vanishing on the χ_x-isotype slice has **two distinct tiers**, and
+   it is important not to conflate them:
+
+   * **Narrow Y4 tier — substantively PROVEN in Lean as a theorem.**
+     `BKSSCohomologyVanishing F x`
+     (`lean/UnionClosed/UC11/BKSSCohomologyVanishing.lean:228`, mg-470a
+     Y5 closure) proves
+     `IsZero ((BKIsotypeBicomplex F x).trivialConvergesTo.abutmentFiltration 0 0)`
+     on the SMALL Y4 isotype-slice bicomplex — a *single-column
+     degenerate* bicomplex whose column `0` is Y3's `BKIsotypeColumn F x`
+     and whose columns `p + 1` are `HomologicalComplex.zero`. Its SS
+     collapses at E₁, so the abutment IS the column-`0` chain
+     cohomology; the substantive content is the UC10 §5.3 lower-Walsh
+     null-homotopy threaded at the chain level via mg-b26c + Y3. GREEN
+     today.
+   * **Full-BK tier — paper-rigorous, Lean delivery deferred.** The
+     paper-side SS argument (UC10 §5.3 + UC13 §§4.5+7 + UC14 R1)
+     asserts SS-vanishing on the per-x χ_x-isotype graded piece of
+     `H^{n-1}(Tot)` of the **FULL `BKBicomplexHC₂ n F`** bicomplex —
+     *not* the single-column Y4 abstraction. Substantively
+     paper-rigorous; Lean delivery blocked by the mathlib v4.29.1
+     `Abelian (HomologicalComplex (HomologicalComplex C c₂) (ComplexShape.up ℤ))`
+     TC-instance-priority diamond (`mg-8510` audit + `mg-d079`
+     cascade-fork sub-ticket 2 viability gate RED at the bicomplex-level
+     proxy probe). See `docs/Z-arc-architecture-audit.md` §1 +
+     `docs/state-UC-Lean-Z2j.md`.
+
+   **The Y4 abstraction is a NARROW SS-proxy, not the full BK
+   argument.** The narrow Y4 tier matches the UC10 §5.3 content at the
+   column-`0` isotype slice only; it is a partial proxy for — and NOT
+   the same propositional statement as — the full-BK tier. What this
+   axiom abstracts at substep 1 is the full-BK tier; the narrow Y4
+   tier, though GREEN, does not by itself discharge it.
 
 2. **Chain-encoding-refinement substep (Walsh-isotype chain refactor).**
    Transporting the SS-side vanishing to chain-level
@@ -361,13 +423,41 @@ GREEN-WITH-CONDITIONS audit verdict), and the
 `docs/Z-arc-architecture-audit.md` (the TC-diamond root-cause + 5-option
 analysis behind the strategic disclosure-pivot decision).
 
-The mathlib-style `#print axioms` output anchoring the disclosure is:
+### R2 — axiom-dependency map (mg-6d64, applying mg-980f §3.3 R2)
+
+A reviewer must be able to see **at a glance** which `Frankl_Holds*`
+results are unconditional and which carry the named project axiom. The
+following map records that; every row is independently verifiable by
+running `#print axioms` on the named theorem (outputs below).
+
+| Theorem | Depends on `case3_ss_obstruction_paper_axiom`? | Why / witness |
+| --- | --- | --- |
+| `Frankl_Holds_concrete` | **NO** — mathlib trio only | Takes the Frankl-rare witness as a hypothesis; bypasses the cohomology bridge entirely. |
+| `Frankl_Holds_fullPowerset3` | **NO** — mathlib trio only | Concrete `n = 3` instance; routes through `Frankl_Holds_concrete` via L4's `fullPowerset3_minimal_element` (`x = 0`, `β₀ = 0`). |
+| `Frankl_Holds_fullPowerset4` | **NO** — mathlib trio only | Concrete `n = 4` instance; routes through `Frankl_Holds_concrete` via L4-followup's `fullPowerset4_minimal_element` (`x = 0`, `β₀ = 0`). |
+| `Frankl_Holds_general` | **YES** — mathlib trio **+** the axiom | Universal-`F` slice; routes through the cohomology bridge → `obstructionCohomClassChain_eq_zero_via_y6_transport_residual` → the axiom. |
+| `Frankl_Holds` (dispatch) | **YES** — mathlib trio **+** the axiom | Universal-`F` headline; delegates directly to `Frankl_Holds_general`. |
+
+The axiom dependency is therefore **isolated to the universal-`F`
+slice**: the concrete small-`n` cases (`fullPowerset3`, `fullPowerset4`)
+and the witness-taking `Frankl_Holds_concrete` are fully unconditional.
+This second `#print axioms` artefact — the side-by-side comparison
+between the unconditional concrete-witness theorems and the
+axiom-carrying universal theorems — is the bullet-proof form of the
+disclosure Daniel asked to have "teed up" (2026-05-18T10:03Z). The
+mathlib-style `#print axioms` outputs anchoring the map are:
 
 ```
 #print axioms Frankl_Holds
 -- 'Frankl_Holds' depends on axioms:
 --   [Classical.choice, propext, Quot.sound]
 --   UnionClosed.case3_ss_obstruction_paper_axiom
+
+#print axioms Frankl_Holds_general
+-- 'Frankl_Holds_general' depends on axioms:
+--   [Classical.choice, propext, Quot.sound]
+--   UnionClosed.case3_ss_obstruction_paper_axiom
+-- (Same axiom set as Frankl_Holds — the dispatch delegates here.)
 
 #print axioms Frankl_Holds_concrete
 -- 'Frankl_Holds_concrete' depends on axioms:

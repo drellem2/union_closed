@@ -131,7 +131,7 @@ The chain-level conclusion `obstructionCohomClassChain F = 0` under
 `obstructionCohomClassChain_ne_zero_of_counterexample` in
 `SSConvergence.lean:164`, is propositionally equivalent to
 `∀ F, ¬ IsCounterexample F`, i.e. to **Frankl's union-closed
-conjecture in counterexample-free form**. Mechanically:
+conjecture in counterexample-free form**. Schematically:
 
 ```
 axiom            :  IsCounterexample F → obstructionCohomClassChain F = 0
@@ -140,32 +140,106 @@ combine          :  IsCounterexample F → False
 hence            :  ∀ F, ¬ IsCounterexample F  = Frankl
 ```
 
+**R1 — propositional-equivalence derivation, formalised** (mg-6d64,
+applying mg-980f §3.3 R1). The schematic above is realised by the
+following mechanically-checkable Lean derivation. The forward `example`
+is a genuine four-line Lean term. It cannot be placed in *this* file:
+`PaperAxioms.lean` is imported *by* `UC11/SSConvergence.lean`, not the
+reverse, so the collision theorem
+`obstructionCohomClassChain_ne_zero_of_counterexample` (which lives in
+`SSConvergence.lean`) is not in scope here. A reviewer verifies it by
+appending it to `SSConvergence.lean` itself, or to any file importing
+`UnionClosed.UC11.SSConvergence` (with the `UnionClosed`,
+`UnionClosed.UC10`, `UnionClosed.UC11` namespaces open); Lean then
+accepts it with no `sorry` and no axiom beyond the one being disclosed:
+
+```lean
+-- Forward direction: this axiom + the PROVEN collision theorem
+-- discharge `IsCounterexample F → False` directly.
+example {n : ℕ} (F : IntClosedFam n) (hStar : IsCounterexample F) : False :=
+  obstructionCohomClassChain_ne_zero_of_counterexample F hStar
+    (case3_ss_obstruction_paper_axiom F hStar)
+
+-- Reverse direction: under `¬ IsCounterexample F` the axiom's
+-- hypothesis is never satisfied, so the implication
+-- `IsCounterexample F → obstructionCohomClassChain F = 0` holds
+-- vacuously. Hence the axiom is *equivalent* to — not merely a
+-- lemma implying — `∀ F, ¬ IsCounterexample F`, i.e. Frankl.
+```
+
+The forward `example` is the load-bearing disclosure: it exhibits, in
+four lines of Lean, that asserting this axiom is *exactly* asserting
+that no `IsCounterexample` exists — the union-closed conjecture itself.
+The axiom is not a strictly weaker lemma that happens to imply Frankl;
+modulo the PROVEN collision it *is* Frankl. This is stated openly here
+rather than left for a reviewer to rediscover; see `lean/AXIOMS.md`
+"Honest collision-disclosure" for the same derivation, and the R2
+`Frankl_Holds`-variant axiom-dependency map there for the proof that
+the resulting dependency is isolated to the universal-`F` slice (the
+concrete-witness theorems stay unconditional).
+
 The collision arises because the Lean chain encoding
 `obstructionClass F x := Finsupp.single (topVertex F) (β_x F)` combined
 with **mg-6acd** `topVertex_not_coboundary` (PROVEN augmentation
-injectivity at every `n ≥ 3`, `CohomologyClass.lean:388`) forces
-non-zero cohomology class under positive bias.
+injectivity at every `n ≥ 3`, `CohomologyClass.lean:388`) forces the
+per-x chain cohomology class to be non-zero whenever `β_x F > 0`.
 
 This axiom therefore captures TWO substantive substeps simultaneously,
 both deferred to the Z-arc research-track:
 
-1. **SS-vanishing substep (substantive paper content).** The spectral-
-   sequence-derived per-x vanishing on the χ_x-isotype slice
-   `IsZero (gr_x H^{n-1}(Tot (BKBicomplexHC₂ F)))` per UC10 §5.3 +
-   UC13 §§4.5+7 + UC14 R1. **Substantively paper-rigorous.** Lean
-   delivery is blocked at present by the mathlib v4.29.1
-   `Abelian (HomologicalComplex (HomologicalComplex C c₂) (ComplexShape.up ℤ))`
-   TC-instance-priority diamond between
-   `HomologicalComplex.instHasZeroMorphisms` (priority 1000,
-   `Mathlib/Algebra/Homology/HomologicalComplex.lean:285`) and
-   `preadditiveHasZeroMorphisms` (priority 100,
-   `Mathlib/CategoryTheory/Preadditive/Basic.lean:201`); see
-   `docs/Z-arc-architecture-audit.md` §1 + `docs/state-UC-Lean-Z2j.md`
-   for the independently-corroborated 5-workaround failure pattern.
+1. **SS-vanishing substep (two-tier delivery status — R3, mg-6d64
+   applying mg-980f §3.3 R3).** The spectral-sequence-derived per-x
+   vanishing on the χ_x-isotype slice has **two distinct tiers**, and
+   it is important not to conflate them:
+
+   * **Narrow Y4 tier — substantively PROVEN in Lean as a theorem.**
+     `BKSSCohomologyVanishing F x`
+     (`UC11/BKSSCohomologyVanishing.lean:228`, mg-470a Y5 closure)
+     proves
+     `IsZero ((BKIsotypeBicomplex F x).trivialConvergesTo.abutmentFiltration 0 0)`
+     — SS-vanishing on the **SMALL Y4 isotype-slice bicomplex**.
+     `BKIsotypeBicomplex F x` is a *single-column degenerate*
+     bicomplex: column `0` is Y3's `BKIsotypeColumn F x` and every
+     column `p + 1` is `HomologicalComplex.zero` (see
+     `BKIsotypeBicomplex_X_succ`). Its spectral sequence collapses at
+     E₁, so the abutment IS the column-`0` chain cohomology. The
+     substantive content is threaded at the chain level: UC10 §5.3
+     lower-Walsh twisted-bridge null-homotopy → mg-b26c kernel
+     identification → Y3 chain-homotopy adapter → X5 edge-map
+     identification → SS-abutment `IsZero`. This tier IS delivered
+     substantively in Lean today (GREEN).
+
+   * **Full-BK tier — paper-rigorous, Lean delivery paper-deferred.**
+     The paper-side SS argument (UC10 §5.3 + UC13 §§4.5+7 + UC14 R1)
+     asserts SS-vanishing on the per-x χ_x-isotype graded piece
+     `IsZero (gr_x H^{n-1}(Tot (BKBicomplexHC₂ n F)))` of the **FULL
+     `BKBicomplexHC₂ n F`** bicomplex — *not* the single-column Y4
+     abstraction. This claim is substantively paper-rigorous (the
+     UC10/UC13/UC14 latex artefacts are GREEN-merged internally), but
+     its Lean delivery is blocked by the mathlib v4.29.1
+     `Abelian (HomologicalComplex (HomologicalComplex C c₂) (ComplexShape.up ℤ))`
+     TC-instance-priority diamond between
+     `HomologicalComplex.instHasZeroMorphisms` (priority 1000,
+     `Mathlib/Algebra/Homology/HomologicalComplex.lean:285`) and
+     `preadditiveHasZeroMorphisms` (priority 100,
+     `Mathlib/CategoryTheory/Preadditive/Basic.lean:201`); see
+     `docs/Z-arc-architecture-audit.md` §1 + `docs/state-UC-Lean-Z2j.md`
+     for the independently-corroborated 5-workaround failure pattern,
+     and `mg-d079` (cascade-fork sub-ticket 2, commit 468a348) for the
+     viability gate that RED'd at the bicomplex-level proxy probe even
+     after a namespace-rename fork of the offending mathlib structures.
+
+   **The Y4 abstraction is a NARROW SS-proxy, not the full BK
+   argument.** The narrow Y4 tier matches the underlying UC10 §5.3
+   content *at the column-`0` isotype slice only*; it is a partial
+   proxy for — and NOT the same propositional statement as — the
+   full-BK tier. What this axiom abstracts at substep 1 is precisely
+   the full-BK tier; the narrow Y4 tier, though GREEN, does not by
+   itself discharge it.
 
 2. **Chain-encoding-refinement substep (Walsh-isotype chain refactor).**
-   Transporting the SS-side vanishing to the chain-level
-   `obstructionCohomClassChain F = 0` requires the Walsh-isotype
+   Transporting the full-BK-tier SS-side vanishing (substep 1) to the
+   chain-level `obstructionCohomClassChain F = 0` requires the Walsh-isotype
    refactor of `obstructionClass`'s chain encoding (multi-week
    refactor; the χ_x-isotype piece IS zero in chain cohomology
    *because the topVertex generator is in the χ_{[n]}-isotype, separate

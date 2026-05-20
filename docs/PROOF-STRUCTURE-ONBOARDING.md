@@ -12,7 +12,19 @@ disclosure-pivot execution, headline restatement, or Z-arc research-track
 ship. Out-of-date sections are worse than missing sections — *flag
 staleness, do not silently consume*.
 
-**Last updated.** 2026-05-18 (mg-1b2b). Post-mg-1b2b disclosure-pivot
+**Last updated.** 2026-05-20 (mg-6d64). Post-mg-6d64 axiom
+docstring-refresh: the R1+R2+R3 docstring-only enhancements recommended
+by **mg-980f** (`docs/Frankl-axiom-optimization-research.md`, GREEN
+verdict) applied to `case3_ss_obstruction_paper_axiom` — R1 formalised
+the propositional-equivalence-to-Frankl derivation as a Lean `example`
+in the axiom docstring + `lean/AXIOMS.md`; R2 added the
+`Frankl_Holds`-variant axiom-dependency map to `lean/AXIOMS.md`; R3
+made the narrow-Y4-vs-full-BK distinction explicit in the axiom
+docstring. **No axiom-signature or semantic Lean change; `lake build`
+GREEN unchanged.** See §3.1 (axiom status / replacement path) and §5
+pitfall #6 (narrow Y4 vs full-BK).
+
+**Prior update.** 2026-05-18 (mg-1b2b). Post-mg-1b2b disclosure-pivot
 execution: paper-axiom `case3_ss_obstruction_paper_axiom` landed
 (`lean/UnionClosed/PaperAxioms.lean`), Y6 sorry deleted, `Frankl_Holds`
 restructured into `_concrete` (unconditional) + `_general`
@@ -200,11 +212,64 @@ either in mathlib primitives or in the Y6 sorry.
 | **Y4** — SS-cohomology vanishing on SMALL bicomplex | UC11/BKSSCohomologyVanishing.lean | **SUBSTANTIVE-FORMALIZED, GREEN** | `BKSSCohomologyVanishing F x` + lift `BKIsotypeColumn_lift_to_BKBicomplexHC2` (degree-0 ℚ-linear map, **not** chain map). |
 | **Y5** — Per-x sorry closure (def-alias) | UC11/SSConvergence.lean (lines ~150–410) | **SUBSTANTIVE-FORMALIZED, GREEN** | Closes the old per-x sorry by def-aliasing `obstructionCohomClass` to the constantly-zero Y4 SS-derived class. PROVEN `obstructionCohomClassChain_ne_zero_of_counterexample` collisions about OLD chain class are preserved as diagnostic. |
 | **Y6** — Chain-to-SS transport bridge | UC11/SSConvergence.lean | **GREEN — axiom-dependent post-mg-1b2b** | Former Y6 sorry deleted; bridge body now invokes `case3_ss_obstruction_paper_axiom`. Y4 + Y5 + Y6 substantive primitives preserved as `have`-bound diagnostics. |
-| **Paper-axiom** — `case3_ss_obstruction_paper_axiom` | `lean/UnionClosed/PaperAxioms.lean` (mg-1b2b) | **SINGLE NAMED PROJECT AXIOM** | Captures combined SS-vanishing + Walsh-isotype chain-encoding-refinement substeps both deferred to research-track. OneThird-grade disclosure + collision-disclosure layer in `lean/AXIOMS.md`. |
+| **Paper-axiom** — `case3_ss_obstruction_paper_axiom` | `lean/UnionClosed/PaperAxioms.lean` (mg-1b2b; docstring refreshed mg-6d64) | **SINGLE NAMED PROJECT AXIOM** | Captures combined SS-vanishing + Walsh-isotype chain-encoding-refinement substeps both deferred to research-track. OneThird-grade disclosure + collision-disclosure layer in `lean/AXIOMS.md`. **mg-980f GREEN re-audit = keep this (B2)+(B3) form; mg-6d64 applied R1+R2+R3 docstring-only disclosure enhancements.** See §3.1. |
 | **Z1 / Z1b** — SpectralObject record + ss assembly | Mathlib/Algebra/Homology/SpectralObject/SpectralSequenceAssembly.lean | **RESEARCH-TRACK-DEFERRED** (file-header note added; Z arc paused) | Closes Joël Riou's mathlib TODOs at `Mathlib.CategoryTheory.Abelian.SpectralObject.SpectralSequence`. Future replacement path for the named axiom (Path (b) per AXIOMS.md). |
 | **Z2a–Z2j** — Bicomplex SpectralObject infrastructure | Mathlib/Algebra/Homology/SpectralObject/Bicomplex.lean (~3577 lines) | **RESEARCH-TRACK-DEFERRED** (file-header note added; TC-diamond blocker) | Cumulative substantive primitives preserved as research-track scaffolding. Final SpectralObject record + ShortExact closure blocked on **TC-diamond** (see §5 pitfall #1). |
 | **Z3–Z10** | mg-50b7 + cascade | **SHELVED** per mg-8510 + mg-ee54 + mg-1b2b execution | Shelved by mg-1b2b: `mg-50b7` (Z3) + auto-cascaded `mg-18b8` (Z4) + `mg-69e7` (Z5). Rationale: superseded by the disclosure-pivot per mg-8510 (v)+(iv) hybrid; SpectralObject infrastructure preserved as research-track. |
-| **mg-1b2b** — Frankl disclosure-pivot execution | **LANDED (this entry)** | **DONE** | Introduced paper-axiom in (B2)+(B3) chain-level + collision-disclosure form, deleted Y6 sorry, restructured `Frankl_Holds` into `_concrete` + `_general` + dispatch, wrote OneThird-grade `lean/AXIOMS.md` with collision-disclosure layer, added research-track headers to SpectralObject infra, shelved Z3–Z10 tickets. |
+| **mg-1b2b** — Frankl disclosure-pivot execution | **LANDED** | **DONE** | Introduced paper-axiom in (B2)+(B3) chain-level + collision-disclosure form, deleted Y6 sorry, restructured `Frankl_Holds` into `_concrete` + `_general` + dispatch, wrote OneThird-grade `lean/AXIOMS.md` with collision-disclosure layer, added research-track headers to SpectralObject infra, shelved Z3–Z10 tickets. |
+| **mg-d079** — Frankl cascade-fork sub-ticket 2 | commit 468a348 | **RED at bar-4 viability gate** | Namespace-rename fork of mathlib homological-algebra structures (`UCHomologicalComplex` etc.); the bicomplex `Abelian` instance still carries the TC-diamond after the fork. Fork code (~2586 lines under `lean/UnionClosed/Mathlib/Algebra/Homology/UC*`) preserved research-track; cascade-fork sub-tickets 3–6 shelved. See §3.1 + §5 pitfall #1. |
+| **mg-980f** — Frankl-axiom-optimization-research | `docs/Frankl-axiom-optimization-research.md` (commit b49de37) | **GREEN — keep axiom** | Independent re-audit across 4 criteria (lowest impact radius / lowest risk / most defensible / makes everything GREEN): the current (B2)+(B3) axiom is the GREEN-attainable optimum; recommends docstring-only R1+R2+R3 enhancements. See §3.1. |
+| **mg-6d64** — Frankl-axiom-docstring-refresh | **LANDED (this entry)** | **DONE** | Applied mg-980f R1 (formalised propositional-equivalence Lean `example`), R2 (`Frankl_Holds`-variant axiom-dependency map), R3 (narrow-Y4-vs-full-BK distinction) to `PaperAxioms.lean` docstring + `lean/AXIOMS.md`. Docstring/text-only; no axiom-signature or semantic Lean change; `lake build` GREEN unchanged. |
+
+---
+
+## §3.1 — Axiom status & replacement path (mg-6d64 refresh, 2026-05-20)
+
+**Axiom status.** `case3_ss_obstruction_paper_axiom` is **retained as
+the single named project axiom** in its mg-1b2b (B2)+(B3) form
+(chain-level conclusion + mandatory collision-disclosure docstring).
+It was independently re-audited by **mg-980f**
+(`docs/Frankl-axiom-optimization-research.md`, **GREEN verdict**):
+across the four criteria Daniel specified (lowest impact radius,
+lowest risk, most defensible, makes everything GREEN), the current
+(B2)+(B3) form is the **GREEN-attainable optimum** — every candidate
+strictly tighter on impact/risk/defensibility either cannot be made
+GREEN (the SS-level full-BK forms need a Lean conclusion type the
+TC-diamond blocks) or is defensibility-RED (literal axiomatisation).
+mg-980f recommended **keeping the axiom** and applying docstring-only
+R1+R2+R3 disclosure enhancements; those landed via **mg-6d64** (this
+refresh).
+
+**Cascade-fork status (mg-d079).** The Frankl cascade-fork — a
+namespace-rename fork of the offending mathlib homological-algebra
+structures (`UCHomologicalComplex` etc.), intended to dodge the
+TC-diamond — reached **sub-ticket 2 (`mg-d079`, commit 468a348) and
+RED'd at the bar-4 viability gate**: the bicomplex-level proxy probe
+still RED's at `whnf` even after the diamond is bypassed at the
+single-level `UCHomologicalComplex`. **The bicomplex `Abelian`
+instance still carries the diamond after the namespace-rename fork.**
+The fork code (~2586 lines under
+`lean/UnionClosed/Mathlib/Algebra/Homology/UC*`) is preserved as
+research-track scaffolding; cascade-fork sub-tickets 3–6 are shelved.
+
+**Replacement path — deferred-forward.** The axiom's replacement path
+(swap the (B2) chain-level axiom for the paper-faithful SS-level
+full-BK form, then delete it once the SS↔chain transport is proven)
+is **not closed off — it is deferred-forward**. It **re-opens** if any
+one of the following lands:
+
+* the Z-arc TC-diamond is resolved **upstream in mathlib** (instance
+  priority rebalance, or the bicomplex-level `Abelian` instance chain
+  ships clean);
+* a **structural redesign** per `mg-8510` option (iv) (cell-level
+  reduction architecture) lands;
+* the **cascade-fork is unstuck** (a fork variant clears the bar-4
+  bicomplex-level proxy probe that `mg-d079` failed).
+
+Until one of those lands, the (B2)+(B3) axiom with the R1+R2+R3
+disclosure is the standing form. Full detail: `lean/AXIOMS.md`
+"Replacement path (open)" + `docs/Frankl-axiom-optimization-research.md`
+§4.3.
 
 ---
 
@@ -258,6 +323,16 @@ to priority logic, not heartbeats:
 3. `set_option maxHeartbeats 1600000`.
 4. `set_option synthInstance.maxHeartbeats 800000`.
 5. Full TC-chain section-variable expansion.
+
+**Sixth failed workaround — the cascade-fork (mg-d079, 2026-05).** A
+namespace-rename *fork* of the offending mathlib structures
+(`UCHomologicalComplex` etc., ~2586 lines under
+`lean/UnionClosed/Mathlib/Algebra/Homology/UC*`) cleared the diamond
+at the single-level `UCHomologicalComplex` but **RED'd at the
+bicomplex-level proxy probe** (`whnf` still diverges). The bicomplex
+`Abelian` instance carries the diamond regardless of namespacing.
+Cascade-fork sub-ticket 2 (`mg-d079`, commit 468a348) is the viability
+gate that closed this route; sub-tickets 3–6 are shelved. See §3.1.
 
 **What works.** Cell-level reduction via `shortExact_of_degreewise_shortExact`
 (`Mathlib/Algebra/Homology/HomologicalComplexAbelian.lean:55`) — operates at
@@ -365,6 +440,35 @@ substantive content lives in `obstructionCohomClassSS_eq_zero` /
 class vanishes" must specify *which* class (NEW Y5-aliased / OLD
 chain / SS-derived) — they are not propositionally interchangeable in
 the current encoding.
+
+### Pitfall #6 — Narrow Y4 SS-proxy is NOT the full-BK SS argument
+
+**Symptom.** A polecat reads `BKSSCohomologyVanishing F x` (GREEN,
+`UC11/BKSSCohomologyVanishing.lean:228`) and concludes "the
+spectral-sequence vanishing substep is fully proven in Lean, so the
+paper-axiom only needs the chain-encoding transport". This is wrong.
+
+**Root cause.** `BKSSCohomologyVanishing F x` proves SS-vanishing on
+the **narrow Y4 abstraction** `BKIsotypeBicomplex F x` — a
+*single-column degenerate* bicomplex (column 0 is `BKIsotypeColumn F x`,
+all higher columns are `HomologicalComplex.zero`). Its SS collapses at
+E₁; its abutment is just the column-0 chain cohomology. This is a
+**partial proxy** for — not the same statement as — the paper-side SS
+argument, which asserts vanishing on the per-x χ_x-isotype graded
+piece of `H^{n-1}(Tot)` of the **FULL `BKBicomplexHC₂ n F`** bicomplex.
+
+**Consequence.** `case3_ss_obstruction_paper_axiom`'s SS-vanishing
+substep (substep 1 of its docstring) abstracts the **full-BK tier**,
+which is Lean-delivery-blocked by the TC-diamond (pitfall #1) — not
+the narrow Y4 tier, which is GREEN. The narrow Y4 tier being proven
+does **not** shrink what the axiom abstracts. Audit statements about
+"the SS vanishing is proven" must specify *which tier*.
+
+**Recommendation.** When reasoning about the axiom's substeps, read
+the two-tier framing in `lean/UnionClosed/PaperAxioms.lean` substep 1
+(the R3 enhancement, mg-6d64) and `lean/AXIOMS.md` "Honest
+collision-disclosure" substep 1. Do not treat `BKSSCohomologyVanishing`
+as discharging the axiom's SS substep.
 
 ---
 
