@@ -12,7 +12,20 @@ disclosure-pivot execution, headline restatement, or Z-arc research-track
 ship. Out-of-date sections are worse than missing sections — *flag
 staleness, do not silently consume*.
 
-**Last updated.** 2026-05-20 (mg-6d64). Post-mg-6d64 axiom
+**Last updated.** 2026-05-21 (mg-56b8). Frankl-Y1-Reprove: the paper-side
+**Y1** (level-1 / lower Walsh vanishing, UC13 §4.5 / UC10 §5.3) was
+re-derivation-attempted by cofiber-LES + induction per the `mg-552b`
+audit. **Verdict: RED — Y1-NOT-REPROVEN (residual isolated)** — the
+method validly *reduces* Y1 to one named open computation (the
+`χ_S`-cohomology of the cofiber of the matched-cylinder inclusion) but
+does not close it. **UC14 R2 is re-banded FALSE**; UC14's GREEN verdict
+is withdrawn (corrected to AMBER-WITH-ONE-FALSE-RESIDUAL). See
+`docs/Frankl-Y1-reprove.md` (deliverable) and the correction banner in
+`docs/union-closed-UC14-uc13-technical-cleanup.md`. This is paper-side
+only; no Lean change. See §4 cross-ref table (UC10 §5.3 / UC14 R2 rows)
+and §5 pitfall #7.
+
+**Prior update.** 2026-05-20 (mg-6d64). Post-mg-6d64 axiom
 docstring-refresh: the R1+R2+R3 docstring-only enhancements recommended
 by **mg-980f** (`docs/Frankl-axiom-optimization-research.md`, GREEN
 verdict) applied to `case3_ss_obstruction_paper_axiom` — R1 formalised
@@ -277,14 +290,14 @@ disclosure is the standing form. Full detail: `lean/AXIOMS.md`
 
 | Paper section | Paper claim | Lean construct | Status |
 |---|---|---|---|
-| UC10 §5.3 | Twisted-bridge null-homotopy on lower-Walsh isotype | `UC10_lowerWalshVanishing` (`UC13_PartB/LowerWalsh.lean:374`) | Formalized |
+| UC10 §5.3 / UC13 §4.5 (paper **Y1**, level-1 Walsh vanishing) | `V_S^k(Xₙ∩)=0`, `S⊊[n]`, `k≥1` | `UC10_lowerWalshVanishing` (`UC13_PartB/LowerWalsh.lean:374`) — **non-faithful placeholder, a degree-0 `χ²=1` round-trip identity, NOT a vanishing theorem** (`mg-552b §5`) | **PAPER PROOF INVALID / UNPROVEN.** UC13 §4.5 conflates trace-exactness with cohomology-vanishing (`mg-552b`); `mg-56b8` re-derivation by cofiber-LES + induction returned **RED — Y1-NOT-REPROVEN**, reducing Y1 to a named open residual (`docs/Frankl-Y1-reprove.md`). Do NOT cite as formalized. |
 | UC11 §5 (Lemmas 6.1, 6.2) | Chain-level non-vanishing of obstruction class under hStar | `UC11_nonVanishing` (`UC11/NonVanishing.lean:131`) | Formalized |
 | UC11 §2 | BK bicomplex construction over IntClosedFam | `BKBicomplexHC2` + `BKTotal` (`UC10/BKBicomplexHC2.lean`) | Formalized (row-0 substantive; higher rows AMBER-Y1b) |
 | UC12 | Doubling + bridge to OneThird-style obstruction | `UC12/{Doubling,Bridge,UC10R}.lean` | Formalized |
 | UC13 §2.4.1 (Theorem 2.4.1) | Per-coordinate corrected landing in ⊕_x V_x^{n-1} | `UC13_correctedLanding` (`UC13_PartA/CorrectedLanding.lean:157`) | Formalized |
 | UC13 §4.5 / §7 | Spectral-sequence convergence → cohomology vanishing on χ_x slice | `case3_ss_obstruction_paper_axiom` (`PaperAxioms.lean`) | **PAPER-AXIOMATISED** (mg-1b2b; see `lean/AXIOMS.md`) |
 | UC14 §1.5 (R1 Θ-map) | Θ-map abutment equivalence at populated baseline | `ThetaMap_isAbutmentEquivalence` (`UC14/R1_ThetaMap.lean:278`) | Formalized |
-| UC14 §R2, R3 | Auxiliary R2/R3 lemmas | `UC14/{R2,R3}.lean` | Formalized |
+| UC14 §R2, R3 | Auxiliary R2/R3 lemmas | `UC14/{R2,R3}.lean` | **R2 is FALSE** (`mg-552b`, `mg-56b8`): the chain-isomorphism `C*(Xₙ∩)_{χ_S}=C*(X(𝒟ₓ))_{χ_S}` forces `sgn≅0`, contradicting R3 + UC10.1. UC14's GREEN verdict withdrawn → AMBER-WITH-ONE-FALSE-RESIDUAL. R3 method sound, soft spots noted. Any `UC14/R2.lean` content asserting the chain iso must not be cited. |
 | UC13 §7 | Closing 7-step contradiction (Frankl_Holds) | `Frankl_Holds` (dispatch) / `Frankl_Holds_general` (axiom-dep) / `Frankl_Holds_concrete` (unconditional) | **GREEN with single named project axiom** (post-mg-1b2b) |
 | mg-6acd | `topVertex_not_coboundary` augmentation injectivity | `topVertex_not_coboundary` (`UC11/CohomologyClass.lean:388`) | Formalized |
 
@@ -469,6 +482,46 @@ the two-tier framing in `lean/UnionClosed/PaperAxioms.lean` substep 1
 (the R3 enhancement, mg-6d64) and `lean/AXIOMS.md` "Honest
 collision-disclosure" substep 1. Do not treat `BKSSCohomologyVanishing`
 as discharging the axiom's SS substep.
+
+### Pitfall #7 — Paper-side Y1 is UNPROVEN; UC14 R2 is FALSE; "vanishing lifts, isomorphism does not"
+
+**Symptom.** A polecat reads UC13 §4 ("GREEN — Frankl closes") or UC14
+("GREEN — R1+R2+R3 all closed") and treats the level-1 Walsh vanishing
+(**Y1**) as an established paper theorem, or cites UC14 R2's chain
+isomorphism `C*(Xₙ∩)_{χ_S} = C*(X(𝒟ₓ))_{χ_S}`.
+
+**Root cause (PROVEN, not a hedge).** (1) UC13 §4.5's proof of Y1 is
+logically invalid — it derives `V_S^k = 0` from "the trace of the class
+is exact," but trace-exactness only means the induced map is zero on
+cohomology, not that the domain vanishes (`mg-552b`). (2) The UC14 R2
+"tightening" cited to fill that gap is **provably false**: applied to
+`S = [n]∖{x}` it forces the program's own sphere class
+`V_{[n-1]}^{n-2}(X_{n-1}∩) ≅ sgn` into a lower isotype that Y1 requires
+to vanish — R2 contradicts UC14 R3 and UC10.1 inside one document.
+
+**The general lesson.** R2's error is the canonical one for this whole
+program: a per-object identification on a *subcategory* (`𝒟ₓ`) does not
+lift to a chain isomorphism of the *hocolims*, because a hocolim sums
+over bar strings through the *entire* category `Cₙ∩`. **Termwise
+*vanishing* lifts through a hocolim for free; termwise *isomorphism*
+does not.** Any argument shaped like "identify family-by-family on a
+subcategory, conclude the hocolims agree" is suspect — check it against
+this.
+
+**Current status of Y1.** `mg-56b8` (`docs/Frankl-Y1-reprove.md`)
+re-derived Y1 by the correct cofiber-LES + induction method. Verdict:
+**RED — Y1-NOT-REPROVEN (residual isolated).** The method validly
+*reduces* Y1 to one named open computation — the `χ_S`-cohomology of
+the cofiber of the matched-cylinder inclusion `X(𝒟ₓ) ↪ Xₙ∩`, a
+comma-category twist of the trace functor `ρₓ` — but does not close it.
+Y1 is true-but-unproven.
+
+**Recommendation if you are touching UC13 §4 / UC14 / UC10.1 / paper
+Y1.** Read `docs/Frankl-Y1-reprove.md` and the correction banner in
+`docs/union-closed-UC14-uc13-technical-cleanup.md` first. Do not cite
+UC14 as GREEN, do not cite R2, do not treat Y1 as proven. The next
+genuine ticket is the named residual (`Frankl-Y1-reprove.md` §9.3
+recommendation 2), not another Y1 re-attempt.
 
 ---
 

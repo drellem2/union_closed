@@ -1,10 +1,48 @@
 # UC14 — Three technical-cleanup residuals from UC13 verification (R1 abutment / R2 cohomological covering / R3 iterated-bridge degree count)
 
+> ## ⚠️ CORRECTION BANNER (added 2026-05-21, `mg-56b8`) — R2 IS FALSE; UC14's GREEN VERDICT IS WITHDRAWN
+>
+> The original UC14 verdict below — **"GREEN — R1 + R2 + R3 all closed"** — is
+> **wrong on R2** and is **withdrawn**.
+>
+> - **R2 (§2: Theorem 2.6.2 the hocolim lift, Theorem 2.7.1 the chain
+>   isomorphism `C*(Xₙ∩)_{χ_S} = C*(X(𝒟ₓ))_{χ_S}`) is PROVABLY FALSE.**
+>   Applied to `S = [n]∖{x}` it forces the program's own sphere class
+>   `V_{[n-1]}^{n-2}(X_{n-1}∩) ≅ sgn_{S_{n-1}}` (non-zero — the very class R3
+>   §3.6 uses as a load-bearing input) to be isomorphic to a lower isotype
+>   `V_{[n]∖{x}}^{n-2}(Xₙ∩)` that UC10.1 / Y1 require to **vanish**. A chain
+>   isomorphism cannot carry a non-zero group onto a zero group. So **R2
+>   contradicts R3 and UC10.1 inside this single document.** Concrete at
+>   `n = 3`. Diagnosis: `mg-552b §3` (`docs/Frankl-Y1-walsh-vanishing-audit.md`)
+>   and `mg-56b8 §4–§5` (`docs/Frankl-Y1-reprove.md`).
+> - **Root cause.** R2 §2.4 (the single-family cell-level identification, Lemma
+>   2.2.1 + Theorem 2.4.1) is plausibly correct. R2 §2.6 then claims it lifts
+>   to a chain isomorphism of *hocolims* — false: a hocolim sums over bar
+>   strings through the whole category `Cₙ∩`, so a per-object identification on
+>   the subcategory `𝒟ₓ` does not localize. `𝒟ₓ` is only a categorical
+>   *retraction* (Lemma 2.6.1), giving a direct summand, not an isomorphism.
+>   *Vanishing* lifts through a hocolim; *isomorphism* does not.
+> - **Honest surviving statement.** UC13 Lemma 4.4.1's original cautious
+>   **surjection** (read cohomologically). It is consistent with Y1 but does
+>   **not** prove it.
+> - **R1 and R3** are **not re-audited** by `mg-56b8` (out of scope). R1 left
+>   GREEN-pending; R3's cofiber-LES + induction *method* is sound (it is the
+>   method `mg-56b8` ports) but R3 §3.6 carries `mg-552b`-flagged soft spots.
+> - **Corrected UC14 verdict: AMBER-WITH-ONE-FALSE-RESIDUAL.** R2 must not be
+>   cited. See `docs/Frankl-Y1-reprove.md` §7 for the full re-band table and
+>   the knock-on to UC13 §4 / UC10.1.
+>
+> Everything below this banner is the **original, uncorrected** UC14 text,
+> preserved verbatim for the record. Read it knowing R2 (§2 and every §4
+> sentence asserting "R2 GREEN / R2 closed") is false.
+
+---
+
 **Ticket:** mg-500c. **Polecat:** cat-mg-500c. **Branch:** `polecat-cat-mg-500c`. **Session 5** on the UC10/UC11/UC12/UC13 arc (cumulative state ledger `docs/state-UC10.md`). **Type:** verification-cleanup tightening of UC13 standard-machinery residuals identified by pm-onethird verification 2026-05-16T~03:36Z.
 
 **Status:** UC13 (mg-83f0) merged GREEN 2026-05-16T02:44Z; pm-onethird verified the Frankl-side structural argument and flagged **three** technical-cleanup residuals — none of which affect UC13's GREEN verdict but each of which a future reader / Lean-formalizer would need spelled out. This document tightens them.
 
-**Verdict (current, after Session 5):** **GREEN — R1 + R2 + R3 all closed.** UC13's Frankl-closing verdict is reinforced, not modified. (See §4 for the verdict break-down.)
+**Verdict (current, after Session 5):** ~~**GREEN — R1 + R2 + R3 all closed.**~~ **WITHDRAWN — see correction banner above (`mg-56b8`, 2026-05-21): R2 is FALSE; corrected verdict AMBER-WITH-ONE-FALSE-RESIDUAL.** UC13's Frankl-closing verdict is **not** reinforced — UC13 §4.5 / Theorem 4.5.1 (Y1) stays INVALID-as-written / UNPROVEN. (Original §4 verdict break-down below is superseded.)
 
 ---
 
@@ -141,6 +179,12 @@ UC13 §2.4 Theorem 2.4.1 — the identification $\mathrm{ob}(\mathcal F^\star)\i
 ---
 
 ## §2. R2 — Lemma 4.4.1 cohomological covering (chain-level identification)
+
+> **⚠️ THIS ENTIRE SECTION IS FALSE FROM §2.6 ONWARD.** §2.2–§2.5
+> (single-family, cell-level) is plausibly correct. §2.6 Theorem 2.6.2 (the
+> hocolim lift) and §2.7 Theorem 2.7.1 (the chain isomorphism) are **provably
+> false** — see the correction banner at the head of this document and
+> `docs/Frankl-Y1-reprove.md` §4–§5, §7. Do not cite Theorem 2.7.1.
 
 ### 2.1 What UC13 Lemma 4.4.1 actually proves
 
@@ -427,13 +471,15 @@ This document is paper-and-pencil throughout: no Lean proof object, no new axiom
 
 ### 4.5 Verdict
 
-> **UC14 verdict: GREEN — R1 + R2 + R3 all closed.**
+> **UC14 verdict:** ~~GREEN — R1 + R2 + R3 all closed.~~ **WITHDRAWN — R2 is
+> FALSE; corrected verdict AMBER-WITH-ONE-FALSE-RESIDUAL** (`mg-56b8`,
+> 2026-05-21; see correction banner at head of document).
 
-- **R1 GREEN** (§1.5 Theorem 1.5.1): the abutment identification $\Theta_*\colon H^*(\mathrm{Tot}^*)\cong\widetilde H^*(X_n^{\cap})$ at level-1 Walsh isotypes is via the explicit chain map $\Theta$ (Defn 1.2.1) with both differentials verified (Lemma 1.2.2), Walsh-isotype equivariance verified (Lemma 1.3.1), and the cover-is-good-at-level-1 property verified via the deformation retract to the maximal-trace target (Lemma 1.4.3$'$).
-- **R2 GREEN** (§2.7 Theorem 2.7.1): UC13 Lemma 4.4.1's surjection-modulo-corrections is upgraded to a **chain-level isomorphism** $C^*(X_n^{\cap})_{\chi_S}=C^*(X(\mathcal D_x))_{\chi_S}$ for $x\notin S$. Stronger than UC13 needed; no lower-dimensional corrections required.
-- **R3 GREEN** (§3.8 Theorem 3.8.1): UC13 Theorem 5.2.1's "modulo standard hocolim coherence" hedge is dissolved by (a) explicit multi-bridge graded commutativity (Lemma 3.3.1: $h_xh_y=-h_yh_x$), (b) explicit iterated chain-homotopy identity (Theorem 3.5.1), and (c) explicit induction on $n$ closing the degree count (Theorem 3.6.1).
+- **R1** (§1.5 Theorem 1.5.1): the abutment identification $\Theta_*\colon H^*(\mathrm{Tot}^*)\cong\widetilde H^*(X_n^{\cap})$ at level-1 Walsh isotypes is via the explicit chain map $\Theta$ (Defn 1.2.1) with both differentials verified (Lemma 1.2.2), Walsh-isotype equivariance verified (Lemma 1.3.1), and the cover-is-good-at-level-1 property verified via the deformation retract to the maximal-trace target (Lemma 1.4.3$'$). **Status: not re-audited by `mg-56b8`; left GREEN-pending.**
+- **R2** ~~GREEN~~ **FALSE** (§2.7 Theorem 2.7.1): the claim that UC13 Lemma 4.4.1's surjection upgrades to a **chain-level isomorphism** $C^*(X_n^{\cap})_{\chi_S}=C^*(X(\mathcal D_x))_{\chi_S}$ is **provably false** — applied to $S=[n]\setminus\{x\}$ it forces $\mathrm{sgn}\cong 0$, contradicting R3 §3.6 and UC10.1. The single-family identification (§2.2–§2.5) does NOT lift through the hocolim (§2.6 Theorem 2.6.2 is the false step). See correction banner + `docs/Frankl-Y1-reprove.md` §4–§5, §7. The honest surviving statement is UC13 Lemma 4.4.1's original **surjection**.
+- **R3** (§3.8 Theorem 3.8.1): the cofiber-LES + induction *method* for the top-Walsh degree count is sound (it is the method `mg-56b8` ports for Y1). **Status: not re-audited by `mg-56b8`; R3 §3.6 carries `mg-552b`-flagged soft spots; left GREEN-with-soft-spots.**
 
-**No structural failure was exposed.** UC13's GREEN verdict (Frankl closes via UC10+UC12+UC11+UC13) is unaffected — UC14 is **strictly a tightening of standard-machinery hedges**, not a re-examination of structural conclusions.
+**A structural failure WAS exposed (post-hoc, `mg-552b` + `mg-56b8`):** R2 is false and contradicts R3 + UC10.1 within this document. UC13's Frankl-closing verdict is **not** reinforced by UC14 — UC13 §4.5 / Theorem 4.5.1 (Y1) is INVALID-as-written / UNPROVEN, and the cofiber-LES re-derivation (`mg-56b8`) reduces Y1 to a named open residual rather than closing it.
 
 ### 4.6 Downstream consequences
 
