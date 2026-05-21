@@ -1,0 +1,140 @@
+\section{The named residuals and outlook}
+\label{sec:residual}
+
+The program reduces Frankl, along each of its two arcs, to a single
+precisely named open object. This section collects those objects, says
+what closing each would buy, and records the recommended next steps. It
+introduces no new mathematics.
+
+\subsection{The two residuals}
+\label{ssec:two-residuals}
+
+\begin{description}[leftmargin=1.6em,style=nextline]
+
+\item[The cohomological residual --- the $Y_1$ computation.]
+By Theorem~\ref{thm:y1-reduction} and Open residual~\ref{res:y1},
+closing the cohomological arc reduces to one homotopy-colimit
+computation: the $\walsh S$-isotype cohomology
+$\isotype Sk(\Xn/X(\Dx))$ of the cofiber of the matched-cylinder
+inclusion, for $S\subsetneq[n]$ and $k\ge1$. Concretely this is the
+cohomology of the bar strings of $\Cn$ that exit the matched
+subcategory $\Dx$ --- equivalently, the comma-category twist
+$N(\rho_x/-)$ of the trace functor $\rho_x$, the homotopy type of the
+stuck-family fibres. If this cohomology vanishes, $Y_1$ holds,
+Conjecture~\ref{conj:uc10-1} follows (with the top-Walsh half from
+UC14~$R3$, whose method is sound), Fact Two
+(Proposition~\ref{prop:fact-two}) is established, and the closing
+contradiction of Section~\ref{ssec:closing} goes through. If it does
+not vanish, the two-part contradiction in its current form fails and
+the cohomological arc needs a new idea.
+
+\item[The combinatorial residual --- the boundary inequality.]
+By Theorem~\ref{thm:boundary-conservation} and
+Section~\ref{ssec:combinatorial-status}, closing the combinatorial arc
+reduces to one explicit integer inequality: the global sign of the
+boundary deficit $\sum_R B(R)$ against the rooted mass
+$\sum_R\sum_{S_0}a_{S_0}|S_0|$, together with the excess-co-fibre term
+$\mathcal S(R\cup R')\setminus(\mathcal S(R)\vee\mathcal S(R'))$. Every
+quantity is a finite, explicitly computable count;
+Proposition~\ref{prop:no-per-fibre} shows it is irreducibly a
+sum-level statement. Closing it proves Frankl outright; it is currently
+settled only on the structured hierarchy of
+Section~\ref{ssec:combinatorial-status}.
+
+\end{description}
+
+\begin{remark}[The two residuals are the same difficulty in two languages]
+\label{rem:same-difficulty}
+It is worth recording the program's own reading. The combinatorial
+residual is a statement about the \emph{co-fibres} $\mathcal S(R)$ ---
+union-closed families on the generator $W$ --- and their failure to
+assemble monotonically across the fibre lattice $\mathcal R_W$. The
+cohomological residual is a statement about the \emph{stuck-family
+fibres} of the trace functor and their failure to be contractible. Both
+are, in the end, about the same phenomenon flagged in
+Remark~\ref{rem:asymmetry} and Proposition~\ref{prop:transport-identity}:
+the obstruction to gluing the local coordinate symmetries into a global
+one. Whether the two residuals are formally inter-reducible is itself
+open and would be a natural object of study; the program has not
+established a bridge between them.
+\end{remark}
+
+\subsection{What would, and would not, constitute a proof}
+\label{ssec:what-closes}
+
+For the avoidance of doubt:
+
+\begin{itemize}[leftmargin=1.6em]
+\item Closing the combinatorial residual --- proving the boundary
+  inequality unconditionally --- would prove Frankl, with no
+  dependence on the cohomological arc.
+\item Closing the cohomological residual --- computing
+  $\isotype Sk(\Xn/X(\Dx))$ and finding it zero --- would, \emph{together
+  with} a referee-grade verification of the remaining inputs
+  (Conjecture~\ref{conj:uc10-1}'s top-Walsh half via $R3$; the
+  no-cup-product faithfulness check for $Y_2$,
+  Remark~\ref{rem:source-level1}; and the UC11 Lemma~6.1 equivalence,
+  Remark~\ref{rem:wrapper-risk}), prove Frankl.
+\item Neither residual is closed. Re-banding an internal verdict from
+  amber to green does not close anything; only the mathematics does.
+\item The external input of Remark~\ref{rem:external-input} must be
+  independently verified against its source before the cohomological
+  arc can claim to be self-contained.
+\end{itemize}
+
+\subsection{Recommended next steps}
+\label{ssec:next-steps}
+
+Consistent with the audit (Section~\ref{sec:proof-state}) the program
+record's recommended priorities are:
+
+\begin{enumerate}[leftmargin=1.8em]
+\item \textbf{Attack the $Y_1$ residual directly}
+  (Open residual~\ref{res:y1}). The recommended entry point is to
+  compute the comma categories $\rho_x/(T,\G)$ --- the fibres of the
+  trace to $[n]\setminus\{x\}$ --- and their nerves; the stuck families
+  are exactly the non-contractible-fibre locus. The smallest genuinely
+  open instance is $n=3$, $S=\{1\}$, $k=1$, which should be computed by
+  hand first. Do \emph{not} attempt a cofinality argument for $\rho_x$:
+  by Correction~\ref{corr:r2} that is equivalent to the false $R2$.
+\item \textbf{Do not re-attempt $Y_1$ by the UC13~\S4.5 route.} The
+  trace-exactness error (Correction~\ref{corr:trace-exact}) is
+  structural; the next genuine ticket is the residual, not another
+  bridge-iteration argument.
+\item \textbf{Do not cite UC14~$R2$, and do not cite UC14 or UC13 as
+  ``green''.} $R2$ is false (Correction~\ref{corr:r2}); UC13's closing
+  banner is withdrawn (Status~\ref{status:closing}).
+\item \textbf{Treat the formalisation honestly.} The headline
+  \texttt{Frankl\_Holds} is axiom-dependent and the axiom is
+  Frankl-in-disguise (Proposition~\ref{prop:axiom-is-frankl}); the
+  isotype encodings are answer-steered
+  (Section~\ref{ssec:answer-steered}). A faithful formalisation of
+  $Y_1$ should wait until $Y_1$ has a valid proof --- there is
+  currently nothing valid to formalise.
+\item \textbf{The combinatorial arc is independently publishable as
+  partial progress.} Sections~\ref{sec:setup}--\ref{sec:combinatorial}
+  --- the transport identity, the trace-partition theorem, the
+  large-fibre localisation, the boundary conservation law, the
+  no-per-fibre-sign impossibility result, and the settled structured
+  hierarchy --- are a self-contained body of correct results that do
+  not depend on any disputed step. They are the program's solid
+  deliverable.
+\end{enumerate}
+
+\subsection{Summary}
+\label{ssec:final-summary}
+
+The program is a genuine, structured attack on a hard conjecture, and
+it has produced real mathematics: a clean reduction of Frankl to an
+explicit finitary inequality with a growing settled hierarchy; a native
+recovery of the classical small-generator cases; a genuine
+impossibility result; an equivariant cohomology theory of
+intersection-closed families; one unconditional trace-injectivity
+theorem; and a mechanism-sound isotype-landing result. It has not
+proved Frankl, and the audit consolidated here corrects an earlier
+internal over-claim to that effect: the closing contradiction depends
+on the lower-Walsh vanishing $Y_1$, whose circulated proof is invalid
+and whose advertised repair is false. What the program honestly stands
+on today is two correct reductions to two precisely named open objects.
+The recommended next move is the $Y_1$ residual of
+Open residual~\ref{res:y1}.

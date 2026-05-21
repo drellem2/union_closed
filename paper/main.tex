@@ -1,0 +1,159 @@
+% =====================================================================
+%  A Compatibility-Geometry and Cohomological Program for the
+%  Union-Closed Sets Conjecture: A Consolidated and Honest Account
+%
+%  Consolidation of the UC1-UC14 union-closed development.
+%  Work item mg-335b (Frankl-LaTeX-Paper). Math-before-Lean.
+%
+%  Build:  pdflatex main && bibtex main && pdflatex main && pdflatex main
+%  (the paper also compiles without bibtex; references degrade to [?]).
+% =====================================================================
+\documentclass[11pt,oneside]{amsart}
+
+% ---- packages -------------------------------------------------------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{stmaryrd}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xcolor}
+
+% ---- page geometry --------------------------------------------------
+\usepackage[margin=1.1in]{geometry}
+
+% number subsubsections so cross-references resolve precisely
+\setcounter{secnumdepth}{3}
+
+% ---- theorem environments ------------------------------------------
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{conjecture}[theorem]{Conjecture}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{construction}[theorem]{Construction}
+\newtheorem{problem}[theorem]{Problem}
+
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{notation}[theorem]{Notation}
+
+% Honesty / status callout: a referee-facing environment recording the
+% verified status of a claim (PROVEN / OPEN / FALSE / AXIOMATISED).
+\newtheoremstyle{honeststyle}{6pt}{6pt}{\normalfont}{}%
+  {\bfseries}{.}{.5em}{}
+\theoremstyle{honeststyle}
+\newtheorem{status}[theorem]{Status}
+\newtheorem{openresidual}[theorem]{Open residual}
+\newtheorem{correction}[theorem]{Correction}
+
+% ---- macros ---------------------------------------------------------
+\newcommand{\F}{\mathcal{F}}
+\newcommand{\G}{\mathcal{G}}
+\newcommand{\Fstar}{\F^{\star}}
+\newcommand{\bias}{\beta}
+\newcommand{\Frare}{\mathrm{rare}}
+\newcommand{\stuck}{\mathrm{stuck}}
+\newcommand{\matched}{\mathrm{match}}
+\newcommand{\supp}{\mathrm{supp}}
+\newcommand{\sgn}{\mathrm{sgn}}
+\newcommand{\Sym}{\mathfrak{S}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\powset}{2^{[n]}}
+\newcommand{\cube}{Q_n}
+\newcommand{\walsh}[1]{\chi_{#1}}
+\newcommand{\isotype}[2]{V_{#1}^{#2}}
+\newcommand{\Cn}{\mathcal{C}^{\cap}_n}
+\newcommand{\Xn}{X^{\cap}_n}
+\newcommand{\Xnm}{X^{\cap}_{n-1,x}}
+\newcommand{\Dx}{\mathcal{D}_x}
+\newcommand{\hocolim}{\operatorname*{hocolim}}
+\newcommand{\ob}{\mathrm{ob}}
+\newcommand{\tr}{\mathrm{tr}}
+\newcommand{\BK}{\mathrm{BK}}
+\newcommand{\Tot}{\mathrm{Tot}}
+\newcommand{\fobs}{\mathcal{F}_{\mathrm{obs}}}
+\newcommand{\cofib}{\mathrm{cofib}}
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\DeclareMathOperator{\rk}{rk}
+\DeclareMathOperator{\im}{im}
+
+% verdict colour words used inline
+\newcommand{\GREEN}[1]{\textsf{#1}}
+\newcommand{\AMBER}[1]{\textsf{#1}}
+\newcommand{\RED}[1]{\textsf{#1}}
+
+% ---- title ----------------------------------------------------------
+\title[A Program for the Union-Closed Sets Conjecture]{%
+  A Compatibility-Geometry and Cohomological Program\\
+  for the Union-Closed Sets Conjecture:\\
+  A Consolidated and Honest Account}
+
+\author{The \texttt{union\_closed} development}
+\date{Consolidated \today\\[2pt]
+  \normalfont\small Work item \texttt{mg-335b} --- consolidation of the
+  UC1--UC14 research ledger}
+
+\begin{document}
+
+\begin{abstract}
+This paper consolidates a multi-stage research program attacking the
+Union-Closed Sets (Frankl) Conjecture through a single structural lens
+--- \emph{compatibility geometry} --- together with its cohomological
+continuation. We assemble, into one coherent document, two parallel
+arcs: a native combinatorial reduction that rewrites Frankl's
+conjecture as a sequence of progressively sharper, explicit finitary
+inequalities; and a cohomological program that constructs a genuine
+$(\Z/2)^n\!\rtimes\!\Sym_n$-equivariant cohomology theory of
+intersection-closed families and sets up a two-part contradiction on a
+distinguished obstruction class.
+
+The paper is written to be \emph{honest about its own state}, and that
+honesty is its main contribution to the program record. \textbf{The
+conjecture is not proved here.} The combinatorial arc reduces Frankl to
+one named, explicit integer inequality and settles it on a hierarchy of
+structured sub-families (recovering the classical small-generator cases
+natively). The cohomological arc produces one genuinely unconditional
+theorem --- a trace-injectivity / null-homotopy result --- and a
+correct \emph{reduction} of the remaining work, but its closing
+contradiction depends on a lower-Walsh vanishing statement, here called
+$Y_1$, whose previously circulated proof we show to be invalid. We
+record three corrections to the ledger: the proof of $Y_1$ conflates
+exactness of a trace map with vanishing of cohomology; the auxiliary
+``$R2$'' chain-isomorphism advertised as repairing that gap is provably
+\emph{false}; and the existing machine-checked encodings of the
+load-bearing isotype statements are answer-steered. We isolate the one
+genuine open problem the program now rests on --- the
+$\walsh{S}$-cohomology of the cofiber of a matched-cylinder inclusion,
+a comma-category twist of the trace functor --- and state it precisely
+as the recommended next target.
+\end{abstract}
+
+\maketitle
+
+\setcounter{tocdepth}{2}
+\tableofcontents
+
+\input{sections/00-introduction}
+\input{sections/01-setup}
+\input{sections/02-combinatorial}
+\input{sections/03-cohomology}
+\input{sections/04-obstruction}
+\input{sections/05-proof-state}
+\input{sections/06-residual}
+\input{sections/07-appendix}
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}

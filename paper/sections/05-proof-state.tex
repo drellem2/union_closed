@@ -1,0 +1,387 @@
+\section{The current proof state: an honest audit}
+\label{sec:proof-state}
+
+This section is the corrected account of the program's standing. It
+states and proves the three corrections to the UC13--UC14 ledger,
+isolates $Y_1$ as a precisely named open problem, and reports the state
+of the machine-checked formalisation. It is written so that a future
+reader does not re-propagate the known defects.
+
+\subsection{$Y_2$: the obstruction-class landing is mechanism-sound}
+\label{ssec:y2}
+
+Recall $Y_2$ (Definition~\ref{def:y1-y2}): the obstruction class lands
+in the level-$1$ Walsh isotypes. The ledger carried, at one point,
+specific evidence that $Y_2$ \emph{might be false} --- the natural
+machine encoding placed the obstruction on a cube vertex and proved it
+nonzero. An honest, neutral machine-checked formalisation resolves the
+question. The result is that $Y_2$'s \emph{mechanism} is sound and the
+``evidence against'' was an encoding artefact.
+
+\begin{theorem}[$Y_2$ mechanism, machine-checked]
+\label{thm:y2-mechanism}
+The following hold and have been verified in Lean against
+\texttt{mathlib} \textup(no \texttt{sorry}, no project axiom; the proofs
+depend only on the three \texttt{mathlib} foundational axioms\textup).
+\begin{enumerate}[label=\textup{(\arabic*)},leftmargin=2.4em]
+\item \textup{(landing mechanism)} A $(\Z/2)^n$-equivariant additive
+  $\Q$-linear map preserves the Walsh isotype of every isotypic
+  element. \textup(This is
+  Lemma~\ref{lem:equivariant-preserves}, machine-checked.\textup)
+\item \textup{(no additive level shift)} Multiplication by a Walsh
+  character $\walsh U$ shifts $\walsh S\mapsto\walsh{S\bigtriangleup
+  U}$ and is \emph{not} $(\Z/2)^n$-equivariant; hence no additive
+  equivariant map shifts Walsh level
+  \textup(Lemma~\ref{lem:cup-shifts}\textup). The competing UC11~\S5.3
+  claim --- that the additive \v{C}ech edge map increments Walsh level
+  --- is therefore representation-theoretically \emph{impossible}.
+\item \textup{(encoding diagnosis)} A single cube vertex $\delta_A$ is
+  in \emph{no} Walsh isotype; by Walsh inversion it has a nonzero
+  component of equal magnitude in \emph{every} one of the $2^n$
+  isotypes. The machine encoding \texttt{obstructionClass} used in the
+  formalisation is such a single vertex, hence isotype-blind: it
+  supports neither $Y_2$ nor its negation.
+\item \textup{(label correction)} The Lean lemma
+  \texttt{topVertex\_not\_coboundary} factors through the augmentation,
+  which is the \emph{trivial} $\walsh\emptyset$ coefficient at degree
+  $0$; it detects the $H^0$ connectedness generator, not the top
+  $\walsh{[n]}$ isotype at degree $n-1$. The earlier reading that it
+  ``proved the opposite of $Y_2$'' rested on mislabelling this
+  $\walsh\emptyset$/degree-$0$ statement as a $\walsh{[n]}$/degree-%
+  $(n-1)$ one.
+\end{enumerate}
+\end{theorem}
+
+\begin{status}
+$Y_2$ is \GREEN{mechanism-sound}. Items (1)--(2) establish that the
+landing argument of UC13~\S2.4.1 uses a correct mechanism and that the
+abandoned UC11~\S5.3 alternative is impossible; items (3)--(4) show the
+``formalisation contradicts $Y_2$'' alarm was an artefact of a
+non-faithful single-vertex encoding plus an isotype mislabelling. One
+genuine caveat remains: $Y_2$ as a \emph{complete} statement is
+``mechanism $+$ the source data of $\fobs$ being genuinely level-$1$
+Walsh''. The source-data half is a design property of $\fobs$ --- the
+bias is, up to sign, the level-$1$ $\walsh{\{x\}}$-coefficient of the
+family indicator (Proposition~\ref{prop:four-forms}(O3)) --- and the
+remaining obligation is the structural check that the \v{C}ech double
+complex of $\fobs$ carries no cup product
+(Remark~\ref{rem:source-level1}). That is a checkable structural
+property, not a coin-flip. $Y_2$ is the \emph{sound} half of the
+two-part contradiction.
+\end{status}
+
+\subsection{$Y_1$: the level-$1$ Walsh vanishing is open}
+\label{ssec:y1}
+
+$Y_1$ (Definition~\ref{def:y1-y2}) is the vanishing half. We first
+record why the circulated proof is invalid, then the auxiliary lemma
+that was supposed to repair it and why it is false, then the valid
+reduction that isolates the genuine open problem.
+
+\subsubsection{The trace-exactness error}
+
+\begin{correction}[UC13 \S4.5 conflates trace-exactness with vanishing]
+\label{corr:trace-exact}
+The proof of $Y_1$ given in UC13~\S4.5 (Theorem~4.5.1) is logically
+invalid. It is structured as follows: for $S\subsetneq[n]$ and
+$x\in[n]\setminus S$, a twisted-bridge chain-homotopy identity (the
+$\walsh{\{x\}}$-conjugate of Construction~\ref{constr:bridge}) shows
+that the trace projection of any $\walsh S$-cocycle $\omega$ is a
+coboundary,
+\[
+  \iota_x^{\mathcal D\,*}\omega
+  \;=\;\pm\tfrac12\,d\bigl(h_x^{\mathrm{tw}}\omega\bigr);
+\]
+\S4.5 then iterates this across all $n-|S|$ coordinates outside $S$ and
+concludes ``each class is exact at every level'', hence
+$\isotype Sk(\Xn)=0$.
+
+\emph{The defect.} The identity says the \emph{induced map}
+$\iota_x^{\mathcal D\,*}$ is the \emph{zero map} on
+$\walsh S$-cohomology --- a statement about the \emph{image} of a map
+out of $\isotype Sk(\Xn)$. It says nothing about whether the
+\emph{domain} $\isotype Sk(\Xn)$ is zero: a zero map out of a nonzero
+group is perfectly possible. Composing zero maps down the iteration
+yields, again, only that each trace is zero, never that $\omega$
+itself is a coboundary. To convert ``$\iota_x^{\mathcal D\,*}=0$ on
+cohomology'' into ``$\isotype Sk(\Xn)=0$'' one needs
+$\iota_x^{\mathcal D\,*}$ to be \emph{injective}; \S4.5's parenthetical
+justification of injectivity (``at most isomorphic by the same argument
+at $n-1$'') is circular. The gap is real and unfilled. This is the
+same ``trace exact $\neq$ class zero'' distinction flagged in
+Remark~\ref{rem:bridge-vs-y1}; the sibling top-Walsh argument
+(UC13~\S5.2) was honest about it (``we need a more careful argument''),
+\S4.5 was not.
+\end{correction}
+
+\subsubsection{The false repair}
+
+\begin{correction}[UC14 ``$R2$'' is provably false]
+\label{corr:r2}
+UC14~$R2$ (Theorems~2.6.2 and~2.7.1) is the lemma advertised as
+repairing Correction~\ref{corr:trace-exact}'s gap. It upgrades the
+cohomological \emph{surjection} of UC13 Lemma~4.4.1 to a chain-level
+\emph{isomorphism} on the $\walsh S$-isotype,
+\[
+  C^*(\Xn)_{\walsh S}\;=\;C^*\bigl(X(\Dx)\bigr)_{\walsh S}
+  \qquad(S\subsetneq[n],\ x\notin S),
+\]
+which would make $\iota_x^{\mathcal D\,*}$ an isomorphism, hence
+injective, closing \S4.5. \textbf{The isomorphism is false.}
+
+\emph{The refutation.} Apply $R2$ at $S=[n]\setminus\{x\}$ (a legal
+instance: $R2$ is asserted for every $S\subsetneq[n]$) and $k=n-2$.
+The matched subcategory $\Dx$ has $X(\Dx)\cong\Xnm\times I$, a
+cylinder; cohomology is homotopy-invariant, and $[n]\setminus\{x\}$ is
+the \emph{full} ground set of $\Xnm$, so $\walsh{[n]\setminus\{x\}}$ is
+its \emph{top} character. Hence
+\[
+  \widetilde H^{n-2}\bigl(X(\Dx)\bigr)_{\walsh{[n]\setminus\{x\}}}
+  \;\cong\;V^{n-2}_{[n-1]}(X^{\cap}_{n-1})
+  \;\cong\;\sgn_{\Sym_{n-1}}\;\neq\;0,
+\]
+the program's own sphere class --- the very class
+Theorem~\ref{thm:trace-injectivity} and UC14~$R3$ use as a load-bearing
+\emph{nonzero} input. But the target $\isotype{[n]\setminus\{x\}}{n-2}
+(\Xn)$ is a \emph{lower} isotype, which $Y_1$ (and
+Conjecture~\ref{conj:uc10-1}) require to vanish. A chain-level
+isomorphism cannot carry a nonzero group onto a zero group. So $R2$
+contradicts both $Y_1$ and its own sibling $R3$, inside one document;
+the contradiction is concrete already at $n=3$.
+
+\emph{The root cause.} $R2$'s single-family, cell-level identification
+$C^*(X(\F))_{\walsh S}=C^*(X(\Dx\F))_{\walsh S}$ is plausibly correct.
+The fatal step is the \emph{hocolim lift} (Theorem~2.6.2): it claims a
+per-object identification on the subcategory $\Dx$ lifts to a chain
+isomorphism of the homotopy colimits. It does not. A hocolim is a
+Bousfield--Kan complex summed over bar strings through the
+\emph{entire} category $\Cn$; UC14 Lemma~2.6.1 establishes only that
+$\Dx$ is a categorical \emph{retraction}, which makes $X(\Dx)$ a
+\emph{direct summand} of $\Xn$, not an isomorph. The general principle:
+\textbf{termwise \emph{vanishing} lifts through a hocolim for free;
+termwise \emph{isomorphism} does not.} Any argument shaped like
+``identify family-by-family on a subcategory, conclude the hocolims
+agree'' is suspect, and should be checked against this.
+\end{correction}
+
+\begin{remark}
+\label{rem:r2-lesson}
+Correction~\ref{corr:r2} retracts the internal ``\GREEN{$R1+R2+R3$ all
+closed}'' verdict of UC14: a document containing a provably false
+theorem that contradicts its own sibling cannot be green. The honest
+re-band is \AMBER{one false residual}: $R2$ is false; $R1$ (the
+abutment identification) and $R3$ (the top-Walsh cofiber-LES argument)
+were not re-audited and are left, respectively, at provisional and
+``method-sound, soft spots noted''. The surviving honest statement of
+UC13 Lemma~4.4.1 is its \emph{original} cautious \emph{surjection}
+$\widetilde H^k(X(\Dx))_{\walsh S}\twoheadrightarrow\isotype
+Sk(\Xn)$ --- consistent with $Y_1$, but not a proof of it (a surjection
+onto a group does not show the group is zero).
+\end{remark}
+
+\subsubsection{The valid reduction}
+
+The correct method --- the one UC14~$R3$ used for the sibling
+top-Walsh statement --- is a cofiber long exact sequence with induction
+on $n$. Carried out honestly for $Y_1$, it does not close $Y_1$, but it
+\emph{validly reduces} it.
+
+\begin{theorem}[Valid cofiber-LES reduction of $Y_1$]
+\label{thm:y1-reduction}
+Fix $n$, $S\subsetneq[n]$ with $|S|\le n-2$, $k\ge1$, and
+$x\in[n]\setminus S$. Assume Conjecture~\ref{conj:uc10-1} for all
+ground sets of size $<n$. The pair $(\Xn,\Xnm)$ has a
+$(\Z/2)^n$-equivariant cohomology long exact sequence; projecting to
+the $\walsh S$-isotype \textup(Maschke\textup) and substituting
+$\iota_x^{\mathcal D\,*}=0$ \textup(Theorem~\ref{thm:trace-injectivity},
+twisted form: the trace is null-homotopic\textup) collapses it to an
+isomorphism
+\[
+  j^{*}\colon\;\isotype Sk(\cofib\iota_x)\;\xrightarrow{\ \cong\ }\;
+  \isotype Sk(\Xn),\qquad \cofib\iota_x=\Xn/\Xnm.
+\]
+Hence, for $|S|\le n-2$, $Y_1$ holds \emph{if and only if}
+$\isotype Sk(\cofib\iota_x)=0$ for all $k\ge1$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+The twisted bridge gives $\iota_x^{\mathcal D\,*}=0$ on
+$\walsh S$-cohomology in every degree $k\ge1$ (the honest output of
+Correction~\ref{corr:trace-exact}'s identity, \emph{fed into} the LES
+rather than misread as vanishing). Substituting the zero map into the
+isotype-projected LES makes the restriction map $j^{*}$ surjective with
+kernel the image of the connecting map $\delta$, and $\delta$ injective;
+the smaller-cube term $\isotype S{k-1}(\Xnm)$ vanishes by the inductive
+hypothesis (it is a \emph{lower} isotype of a size-$(n-1)$ cube,
+because $|S|\le n-2$ permits $S\subsetneq[n]\setminus\{x\}$ strictly).
+The short exact sequence collapses to the stated isomorphism. The
+$|S|=n-1$ sub-case is genuinely different: there $[n]\setminus S=\{x\}$
+is forced, the smaller-cube term is the \emph{top} isotype of the
+$(n-1)$-cube --- the nonzero sphere class --- and the argument requires
+the separate $R3$-style machinery plus a sharp no-collision constraint.
+\end{proof}
+
+\begin{openresidual}[The $Y_1$ residual]
+\label{res:y1}
+$Y_1$ is reduced, by Theorem~\ref{thm:y1-reduction}, to the
+\emph{vanishing of $\isotype Sk(\cofib\iota_x)$} --- the
+$\walsh S$-isotype cohomology of the homotopy cofiber of the
+matched-cylinder inclusion $X(\Dx)\hookrightarrow\Xn$. Stripping the
+contractible cylinder, this is $\isotype Sk(\Xn/X(\Dx))$: the
+cohomology of the Bousfield--Kan double complex of $\Cn$ indexed by the
+bar strings that \emph{exit} the matched subcategory $\Dx$.
+Equivalently, it is the reduced contribution of the non-contractible
+\emph{comma categories} $\rho_x/(T,\G)$ of the trace functor $\rho_x$
+--- the homotopy type of the ``stuck-family fibres'', the genuine
+core of the program that has never been computed. \textbf{This is the
+single open computation the cohomological closure of Frankl now rests
+on.}
+\end{openresidual}
+
+\begin{remark}[Why the residual has no free vanishing]
+\label{rem:no-free-vanishing}
+Residual~\ref{res:y1} is not closeable by any of the program's
+free mechanisms.
+\emph{Not by family-by-family vanishing}: the cofiber
+$\Xn/X(\Dx)$ is a hocolim, and at a bar string exiting $\Dx$ the
+relative term is the \emph{entire} cochain group of a family, generically
+nonzero --- termwise vanishing fails, exactly as in
+Correction~\ref{corr:r2}.
+\emph{Not by degree truncation}: $Y_1$'s range $1\le k\le n-2$ is the
+middle range, with no dimension cap.
+\emph{Not by the induction on $n$}: the inductive hypothesis controls
+the smaller cube and the cylinder, not the cofiber, which has no
+size-$(n-1)$ model.
+\emph{Not by cofinality of $\rho_x$}: assuming $\rho_x$ homotopy-cofinal
+is logically equivalent to $R2$, hence false
+(Correction~\ref{corr:r2}). The residual must be \emph{computed}.
+\end{remark}
+
+\begin{status}
+$Y_1$ is \RED{open}. It is true-but-unproven: no counterexample is
+known, the statement is plausibly true (it is the cube-side analogue of
+Remark~\ref{rem:external-input}), but its only circulated proof is
+invalid (Correction~\ref{corr:trace-exact}) and the lemma cited to
+repair it is false (Correction~\ref{corr:r2}). The honest standing is
+Theorem~\ref{thm:y1-reduction} plus Open residual~\ref{res:y1}: a
+\emph{correct reduction} to one named homotopy-colimit computation,
+estimated to be substantial (not a hypothesis-check). Until that
+computation is done, the two-part contradiction of
+Section~\ref{ssec:closing} does not close, and the headline conjecture
+is not proved.
+\end{status}
+
+\subsection{The machine-checked formalisation: honest state}
+\label{ssec:lean-state}
+
+A formalisation of the program exists in Lean~4 against
+\texttt{mathlib}. We report its state honestly; it does not change any
+mathematical verdict above.
+
+\subsubsection{What is genuinely formalised}
+\label{ssec:lean-genuine}
+
+The following are real, machine-checked, and \texttt{sorry}-free:
+the combinatorial bias arithmetic and the non-vanishing direction of
+the obstruction (Theorem~\ref{thm:fact-one}); the
+trace-injectivity / null-homotopy theorem
+(Theorem~\ref{thm:trace-injectivity}); the $Y_2$ mechanism
+(Theorem~\ref{thm:y2-mechanism}); and the concrete small cases of
+Section~\ref{ssec:lean-unconditional}. The build is green.
+
+\subsubsection{The headline theorem rests on one named axiom}
+\label{ssec:axiom-is-frankl}
+
+The formalised headline \texttt{Frankl\_Holds} --- the universal
+statement, every nontrivial intersection-closed family has a rare
+coordinate --- type-checks at every $n$, but its general branch routes
+through a single named project axiom,
+\texttt{case3\_ss\_obstruction\_paper\_axiom}. We must be precise about
+what that axiom is.
+
+\begin{proposition}[The project axiom is Frankl-in-disguise]
+\label{prop:axiom-is-frankl}
+The Lean development proves a theorem $X$ and assumes an axiom $Y'$,
+both statements about the \emph{same} cohomology object
+$\texttt{obstructionCohomClassChain}\,F$ under the hypothesis
+$\texttt{IsCounterexample}\,F$:
+\[
+  X\ \textup{(proved)}:\ \texttt{IsCounterexample}\,F\Rightarrow
+  \texttt{obstructionCohomClassChain}\,F\neq0,
+\]
+\[
+  Y'\ \textup{(axiom)}:\ \texttt{IsCounterexample}\,F\Rightarrow
+  \texttt{obstructionCohomClassChain}\,F=0.
+\]
+$X$ and $Y'$ are exact negations under the same hypothesis. In any
+proof by contradiction, axiomatising one horn of a contradiction whose
+other horn is proved is axiomatising the goal: $Y'$ together with the
+proved $X$ yields $\forall F,\ \neg\,\texttt{IsCounterexample}\,F$
+\textup(i.e.\ Frankl\textup) directly, and Frankl makes $Y'$ vacuously
+true. Hence $Y'$ is propositionally equivalent to Frankl.
+\end{proposition}
+
+\begin{status}
+\texttt{Frankl\_Holds} is \AMBER{axiom-dependent}, and the axiom is
+\emph{not} a genuine sub-lemma --- it is Frankl itself, stated at the
+chain level. This is not a framing accident: it is the mechanical
+consequence of axiomatising one horn of a contradiction. A genuine
+sub-lemma would have to be a statement about a \emph{different} object
+than the one $X$ lives in --- the spectral-sequence abutment, or a
+Walsh-isotype-refined chain group --- and that object does not exist in
+the formalisation today (its construction is blocked by a
+\texttt{mathlib} typeclass-instance diamond at the bicomplex level).
+The formalisation discloses this honestly in its own axioms file. The
+correct description of the artefact is therefore: \emph{the
+combinatorial half is formalised; the homological half is assumed, and
+as assumed it is --- given the formalised half --- equivalent to Frankl
+itself.} It is not ``$X$ and $Y$ together prove Frankl''.
+\end{status}
+
+\subsubsection{The answer-steered isotype encodings}
+\label{ssec:answer-steered}
+
+Two further formalisation artefacts must not be cited as evidence.
+First, the existing Lean ``formalisation of $Y_2$'' defines the
+isotype projection as a hand-coded conditional
+(\texttt{cechIsotypeProjection F x T := if T = \{x\} then \dots\ else 0})
+--- it applies no group action and computes no projection, so proving
+``the obstruction lands in level $1$'' from it is circular. Second, the
+Lean ``formalisation of $Y_1$'' (\texttt{UC10\_lowerWalshVanishing})
+proves a degree-$0$ identity of the form $(\text{operator})\,g=g$ whose
+entire content is the Walsh involution $\chi^2=1$; it is a non-faithful
+placeholder, with no $d$, no cocycle, no homology --- it neither
+supports nor contradicts $Y_1$. Both are \emph{answer-steered}
+encodings; the genuine, neutral $Y_2$ determination is
+Theorem~\ref{thm:y2-mechanism}, and there is no faithful formalisation
+of $Y_1$ (there is no valid proof to formalise).
+
+\subsubsection{The genuinely unconditional slice}
+\label{ssec:lean-unconditional}
+
+The formalisation \emph{does} contain genuinely unconditional,
+axiom-free machine-checked content: the concrete cases. For the full
+powerset families on $[3]$ and on $[4]$ --- nontrivial
+intersection-closed families, not degenerate --- the conclusion
+``some coordinate is rare'' is verified directly, with the explicit
+witness $x=0$ (where the bias is exactly $0$), computed by
+decision procedure. These route through the unconditional concrete
+slice \texttt{Frankl\_Holds\_concrete} (which takes a rare-coordinate
+witness as a hypothesis) and \emph{bypass the obstruction bridge and
+the project axiom entirely}; an audit of their axiom dependencies
+confirms only the three \texttt{mathlib} foundational axioms.
+
+\begin{status}
+The honest unconditional machine-checked content is exactly this: the
+full-powerset families at $n=3$ and $n=4$, and any family for which a
+rare coordinate can be exhibited directly. The \emph{universal}
+statement at $n=3$ and $n=4$ (every intersection-closed family on those
+ground sets) is, in the present formalisation, routed through the
+dispatch to the general branch and is therefore axiom-dependent. We
+state this precisely to avoid overclaiming: ``$n=3$ and $n=4$ are
+unconditional'' is true of the \emph{concrete full-powerset families},
+not yet of the universally quantified statement, in the formalisation
+as it stands. (Frankl is of course classically known for small ground
+sets by other means~\cite{bruhn-schaudt}; that is not what the
+formalisation encodes.)
+\end{status}

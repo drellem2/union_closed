@@ -1,0 +1,224 @@
+\section{Setup: bias, transport, and the two dialects}
+\label{sec:setup}
+
+This section fixes the objects used throughout, proves the elementary
+\emph{transport identity}, records the four equivalent forms of a
+hypothetical Frankl counterexample, and introduces the two technical
+devices the program runs on: the intersection-closed dialect and the
+Walsh (harmonic) decomposition.
+
+\subsection{Union-closed families and the bias}
+\label{ssec:bias}
+
+Fix a finite ground set $U$ with $|U|=n$; we identify $U$ with
+$[n]=\{1,\dots,n\}$ and write $\powset$ for its power set, regarded as
+the vertex set of the Boolean cube $\cube$.
+
+\begin{definition}
+\label{def:uc-family}
+A family $\F\subseteq\powset$ is \emph{union-closed} if $A,B\in\F$
+implies $A\cup B\in\F$. We exclude the degenerate cases
+$\F=\emptyset$ and $\F=\{\emptyset\}$, and (harmlessly, by passing to
+$\bigcup\F$) assume $U=\bigcup\F\in\F$. For $x\in U$ write
+$\F_x=\{A\in\F:x\in A\}$ and $\F_{\bar x}=\F\setminus\F_x$. The
+\emph{abundance} of $x$ is $a(x)=|\F_x|/|\F|$ and the \emph{bias} is
+\[
+  \bias_x \;=\; \bias_x(\F)\;=\;|\F_x|-|\F_{\bar x}|\;\in\;\Z.
+\]
+\end{definition}
+
+In bias language Conjecture~\ref{conj:frankl} reads: every union-closed
+$\F$ has a coordinate with $\bias_x\ge0$. We call such a coordinate
+\emph{abundant}; a \emph{Frankl counterexample} is a union-closed
+family with $\bias_x<0$ for every $x$.
+
+\subsection{The transport identity}
+\label{ssec:transport}
+
+The $n$ coordinate involutions $\sigma_x\colon A\mapsto A\bigtriangleup
+\{x\}$ generate the cube's structure group $(\Z/2)^n$ acting on
+$\cube$. Restricted to a union-closed $\F$, each $\sigma_x$ is only a
+\emph{partial} matching --- it pairs $A$ with $A\setminus\{x\}$ exactly
+when both lie in $\F$. This partiality is the program's central object.
+
+\begin{definition}
+\label{def:transport}
+The \emph{$x$-transport matching} is
+$M_x=\{\{A,A\setminus\{x\}\}:A\in\F_x,\ A\setminus\{x\}\in\F\}$, the
+direction-$x$ edges of the induced subgraph $G(\F)\subseteq\cube$. The
+\emph{stuck sets} are
+\[
+  \F^{\stuck}_x=\{A\in\F_x:A\setminus\{x\}\notin\F\},\qquad
+  \F^{\stuck}_{\bar x}=\{A'\in\F_{\bar x}:A'\cup\{x\}\notin\F\};
+\]
+these are the members \emph{needing} $x$, respectively \emph{rejecting}
+$x$. The matched parts are $\F^{\matched}_x=\F_x\setminus\F^{\stuck}_x$
+and $\F^{\matched}_{\bar x}=\F_{\bar x}\setminus\F^{\stuck}_{\bar x}$.
+\end{definition}
+
+\begin{proposition}[Transport identity]
+\label{prop:transport-identity}
+For every union-closed $\F$ and every $x\in U$,
+\[
+  \bias_x \;=\; |\F^{\stuck}_x|-|\F^{\stuck}_{\bar x}|.
+\]
+\end{proposition}
+
+\begin{proof}
+The matching $M_x$ pairs $\F^{\matched}_x$ bijectively with
+$\F^{\matched}_{\bar x}$, so $|\F^{\matched}_x|=|\F^{\matched}_{\bar
+x}|=|M_x|$. Hence $|\F_x|=|M_x|+|\F^{\stuck}_x|$ and
+$|\F_{\bar x}|=|M_x|+|\F^{\stuck}_{\bar x}|$; subtract.
+\end{proof}
+
+Proposition~\ref{prop:transport-identity} says the bias is carried
+\emph{entirely} by the stuck sets: the part of $\F$ on which the
+coordinate toggle is defined contributes nothing. This is the precise
+sense in which Frankl is about the \emph{failure} of the local symmetry
+$\sigma_x$ to extend, and it motivates the whole program.
+
+\begin{remark}
+\label{rem:asymmetry}
+The two sides of a coordinate are structurally \emph{different}
+objects: $\F_x$ is a filter and is itself union-closed, whereas
+$\F_{\bar x}$ is an order ideal and is a union-closed family on
+$U\setminus\{x\}$. This asymmetry --- absent in the symmetric
+$1/3$--$2/3$ setting --- is what the program exploits: union closure
+\emph{orients} the obstruction. We return to it in
+Section~\ref{ssec:uc1-uc2}.
+\end{remark}
+
+\subsection{Four equivalent forms of the obstruction}
+\label{ssec:obstruction-forms}
+
+A Frankl counterexample admits four equivalent descriptions, each the
+entry point for a different technique. Let $\widehat{\mathbf
+1_{\F}}(\{x\})$ denote the level-$1$ Walsh--Fourier coefficient of the
+indicator $\mathbf1_\F\colon\powset\to\{0,1\}$ (see
+Section~\ref{ssec:walsh}), and let $c(\F)\in[0,1]^n$ be the centroid,
+$c(\F)_x=a(x)$.
+
+\begin{proposition}
+\label{prop:four-forms}
+For a union-closed family $\F$ the following are equivalent.
+\begin{enumerate}[label=\textup{(O\arabic*)},leftmargin=3em]
+\item \textup{(combinatorial)} $a(x)<\tfrac12$ for every $x$;
+\item \textup{(transport)}
+  $|\F^{\stuck}_x|<|\F^{\stuck}_{\bar x}|$ for every $x$;
+\item \textup{(harmonic)}
+  $\widehat{\mathbf1_{\F}}(\{x\})>0$ for every $x$, using
+  $\bias_x=-2^n\,\widehat{\mathbf1_{\F}}(\{x\})$;
+\item \textup{(centroidal)} $c(\F)\in[0,\tfrac12)^n$.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+(O1)$\Leftrightarrow$(O2) is Proposition~\ref{prop:transport-identity};
+(O1)$\Leftrightarrow$(O3) is the standard expansion
+$\widehat{\mathbf1_\F}(\{x\})=2^{-n}\sum_A\mathbf1_\F(A)\,(-1)^{[x\in
+A]}=2^{-n}(|\F_{\bar x}|-|\F_x|)$; (O1)$\Leftrightarrow$(O4) is the
+definition of $a(x)$.
+\end{proof}
+
+Form (O4) is the slogan: \emph{Frankl says the centroid of a
+union-closed family cannot lie strictly inside the small corner of the
+cube.} Form (O3) exposes a feature with no $1/3$--$2/3$ analogue --- the
+bias \emph{is}, up to scale and sign, a level-$1$ Fourier coefficient.
+The harmonic form drives the entropy method~\cite{gilmer,sawin} and,
+in a refined way, the entire cohomological arc.
+
+\subsection{The intersection-closed dialect}
+\label{ssec:flip}
+
+The cohomological arc works with the order-dual presentation.
+
+\begin{definition}
+\label{def:int-closed}
+A family $\F\subseteq\powset$ is \emph{intersection-closed} if
+$A,B\in\F$ implies $A\cap B\in\F$. The \emph{flip}
+$\tau(A)=[n]\setminus A$ sends a family $\F$ to $\F^c=\tau(\F)$.
+\end{definition}
+
+\begin{lemma}
+\label{lem:flip}
+$\F$ is union-closed if and only if $\F^c$ is intersection-closed;
+moreover $|\F^c|=|\F|$ and $\bias_x(\F^c)=-\bias_x(\F)$.
+\end{lemma}
+
+\begin{proof}
+$\tau$ is an order-reversing involution carrying $\cup$ to $\cap$;
+$\tau(A)\ni x\iff x\notin A$, so $\bias_x$ changes sign.
+\end{proof}
+
+Hence Conjecture~\ref{conj:frankl} is equivalent to its
+intersection-closed form: \emph{every intersection-closed family
+$\F\neq\emptyset,\{[n]\}$ has a coordinate $x$ with $\bias_x\le0$}
+(a \emph{rare} coordinate). The cohomological arc
+(Sections~\ref{sec:cohomology}--\ref{sec:obstruction}) uses this
+dialect because intersection-closed families form a category under
+\emph{trace} maps (Definition~\ref{def:cn-category}) and because the
+relevant symmetry group acts more transparently on it. The
+combinatorial arc (Section~\ref{sec:combinatorial}) stays in the
+union-closed dialect. Throughout, ``Frankl'' refers to either form via
+Lemma~\ref{lem:flip}; we name the dialect when it matters.
+
+\subsection{The Walsh decomposition}
+\label{ssec:walsh}
+
+The cube carries the regular representation of $(\Z/2)^n$, and its
+irreducible characters are the Walsh characters.
+
+\begin{definition}
+\label{def:walsh}
+For $S\subseteq[n]$ the \emph{Walsh character} $\walsh{S}\colon
+\powset\to\{\pm1\}$ is $\walsh{S}(A)=(-1)^{|S\cap A|}$. The
+characters $\{\walsh S\}_{S\subseteq[n]}$ are the $2^n$ irreducible
+characters of $(\Z/2)^n$; under the coordinate toggle $\sigma_y$ one
+has $\sigma_y\cdot\walsh S=(-1)^{[y\in S]}\walsh S$, and the
+relabelling action of $\Sym_n$ permutes them by
+$\pi\cdot\walsh S=\walsh{\pi(S)}$. We call $|S|$ the \emph{Walsh level}
+of $\walsh S$; $\walsh{[n]}$ (every toggle acts by $-1$) is the
+\emph{top} character.
+\end{definition}
+
+Two facts about the Walsh decomposition are used repeatedly and are
+worth isolating now, because the audit in Section~\ref{sec:proof-state}
+turns on them.
+
+\begin{lemma}[Equivariant maps preserve isotype]
+\label{lem:equivariant-preserves}
+Let $V,W$ be $\Q$-representations of the finite abelian group
+$(\Z/2)^n$ and let $f\colon V\to W$ be a $(\Z/2)^n$-equivariant
+$\Q$-linear map. Then $f$ sends the $\walsh S$-isotypic subspace of $V$
+into the $\walsh S$-isotypic subspace of $W$, for every $S$.
+\end{lemma}
+
+\begin{proof}
+If $\sigma\cdot v=\walsh S(\sigma)\,v$ for all $\sigma$, then
+$\sigma\cdot f(v)=f(\sigma\cdot v)=\walsh S(\sigma)\,f(v)$. (This is
+Maschke / Schur for a finite abelian group: every representation
+splits canonically into character isotypes, and an equivariant map is
+block-diagonal for that splitting.)
+\end{proof}
+
+\begin{lemma}[Only multiplication shifts Walsh level]
+\label{lem:cup-shifts}
+Pointwise multiplication by a Walsh character, $v\mapsto\walsh U\cdot
+v$, carries the $\walsh S$-isotype to the $\walsh{S\bigtriangleup
+U}$-isotype, and is the \emph{only} natural operation that changes
+Walsh level: it is not $(\Z/2)^n$-equivariant (it is $\walsh
+U$-twisted-equivariant), so by Lemma~\ref{lem:equivariant-preserves}
+no additive equivariant map can shift the level.
+\end{lemma}
+
+\begin{proof}
+$\walsh S\cdot\walsh U=\walsh{S\bigtriangleup U}$, and
+$\sigma_y\cdot(\walsh U\cdot v)=(-1)^{[y\in U]}\walsh U\cdot(\sigma_y
+\cdot v)$.
+\end{proof}
+
+Lemmas~\ref{lem:equivariant-preserves} and~\ref{lem:cup-shifts} are
+elementary, but they are exactly the mechanism on which the
+obstruction-class landing ($Y_2$, Section~\ref{ssec:y2}) is sound and
+the abandoned competing claim is impossible. We have stated them here
+so that the audit can cite them without re-deriving them.

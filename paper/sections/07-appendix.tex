@@ -1,0 +1,119 @@
+\appendix
+
+\section{Notation index}
+\label{sec:appendix-notation}
+
+\begin{longtable}{p{0.20\textwidth}p{0.74\textwidth}}
+\toprule
+Symbol & Meaning \\
+\midrule
+\endfirsthead
+\toprule
+Symbol & Meaning \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+$[n]$, $U$ & finite ground set, $|U|=n$ \\
+$\powset$, $\cube$ & power set / Boolean cube on $[n]$ \\
+$\F$ & a family; union-closed (Sec.~\ref{sec:combinatorial}) or intersection-closed (Sec.~\ref{sec:cohomology}ff.) \\
+$\F_x$, $\F_{\bar x}$ & members containing / not containing $x$ \\
+$\bias_x$ & bias $|\F_x|-|\F_{\bar x}|$; Frankl: some $\bias_x\ge0$ (union form) / $\le0$ (intersection form) \\
+$a(x)$, $c(\F)$ & abundance $|\F_x|/|\F|$; centroid, $c(\F)_x=a(x)$ \\
+$\sigma_x$ & coordinate toggle $A\mapsto A\bigtriangleup\{x\}$ \\
+$G(\F)$ & transport graph: subgraph of $\cube$ induced on $\F$ \\
+$M_x$ & $x$-transport matching (direction-$x$ edges of $G(\F)$) \\
+$\F^{\stuck}_x$, $\F^{\stuck}_{\bar x}$ & members needing / rejecting $x$ \\
+$\tau$, $\F^c$ & flip $\tau(A)=[n]\setminus A$; flipped family \\
+$\walsh S$ & Walsh character $\walsh S(A)=(-1)^{|S\cap A|}$; level $|S|$ \\
+$\widehat{\mathbf1_\F}$ & Walsh--Fourier transform of the family indicator \\
+$W$, $k$ & minimal generator; $k=|W|=m(\F)$, the open regime is $k\ge3$ \\
+$\F^S$ & trace-class $\{A\in\F:A\cap W=S\}$ \\
+$\phi(S)$, $\Phi(\G)$ & potential $2|S|-k$; $\Phi(\G)=\sum_{S\in\G}\phi(S)$ \\
+$\sigma(W)$ & per-generator target $\sum_{x\in W}\bias_x$ \\
+$\mathcal R_S$, $\mathcal S(R)$ & $S$-fibre; co-fibre \\
+$\mathcal R_W^{\mathrm{lg}}$ & large fibres $\{R:|R|>\lfloor k/2\rfloor\}$ \\
+$\widetilde{\mathcal R}_S$, $q_S$, $d_S$ & cumulative fibre; its size; trace-defect $q_S-|\F^S|$ \\
+$Q(W)$, $D(W)$ & monotone part $\langle q,\phi\rangle\ge0$; trace-defect $\langle d,\phi\rangle$; $\sigma(W)=Q(W)-D(W)$ \\
+$\bar\jmath_R$, $\delta_R(S)$ & defect retraction; deficiency $S\setminus\bar\jmath_R(S)$ \\
+$\mathcal D(R)$, $B(R)$ & co-fibre defect; boundary-edge count \\
+$\mathcal W$, $N$, $\Gamma$ & set of minimal generators; $N=|\mathcal W|$; far-pair graph \\
+$\Cn$ & category of pointed intersection-closed families, trace morphisms \\
+$X(\F)$, $\Xn$ & cubical Walsh-defect complex; $\hocolim_{(\Cn)^{\mathrm{op}}}X(\F)$ \\
+$\Gamma_n$ & hyperoctahedral group $(\Z/2)^n\rtimes\Sym_n$ \\
+$\isotype Sk$ & $\walsh S$-isotype multiplicity complex in degree $k$ \\
+$\BK^{p,q}$, $\Tot$ & Bousfield--Kan double complex; total complex \\
+$\mathrm{db}$, $\rho_n$ & doubling functor; trace projection \\
+$\Dx$ & matched-in-$x$ subcategory; $X(\Dx)\cong\Xnm\times I$ \\
+$\iota^{\cap}_n$, $\delta^{\cap}_n$ & canonical inclusion $\Xn\hookrightarrow X^{\cap}_{n+1}$; cofiber connecting map \\
+$h$, $h_x^{\mathrm{tw}}$ & cubical-bridge null-homotopy; twisted bridge \\
+$\Fstar$ & minimal counterexample (all $\bias_x>0$) \\
+$U_x$, $\fobs$, $m_{xy}$ & rare-coordinate stratum; \v{C}ech sheaf; mismatch cochain \\
+$\ob(\Fstar)$ & obstruction class in $\widetilde H^{n-1}(\Xn;\Q)$ \\
+$\sgn_{\Sym_n}$ & sign representation of $\Sym_n$ \\
+$\cofib\iota_x$ & homotopy cofiber $\Xn/\Xnm$ \\
+$Y_1$, $Y_2$ & lower-Walsh vanishing (open); obstruction-class landing (mechanism-sound) \\
+\end{longtable}
+
+\section{Component status ledger}
+\label{sec:appendix-status}
+
+The table records the verified standing of each load-bearing component
+and its source note in the UC1--UC14 ledger. ``Proved'' means a
+referee-grade or machine-checked proof exists; ``mechanism-sound''
+means the argument's mechanism is verified but a faithfulness input
+remains; ``reduced'' means correctly reduced to a named open object;
+``open'' means no valid proof exists; ``false'' means provably
+refuted.
+
+\begin{longtable}{p{0.27\textwidth}p{0.13\textwidth}p{0.52\textwidth}}
+\toprule
+Component & Status & Note \\
+\midrule
+\endfirsthead
+\toprule
+Component & Status & Note \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+Transport identity (Prop.~\ref{prop:transport-identity}) & Proved & UC1; elementary. \\
+Globalisation defect orthogonal (Prop.~\ref{prop:globalisation-orthogonal}) & Proved & UC2; disciplines the arc. \\
+Trace-partition theorem (Thm.~\ref{thm:trace-partition}) & Proved & UC2; settles $m(\F)\le2$ natively. \\
+Large-fibre localisation (Thm.~\ref{thm:uc3-localisation}) & Proved & UC3. \\
+Up-closure decomposition / interlock (Thm.~\ref{thm:uc4-interlock}) & Proved & UC4; isolates $D(W)$. \\
+Boundary conservation law (Thm.~\ref{thm:boundary-conservation}) & Proved & UC6. \\
+No per-fibre sign theorem (Prop.~\ref{prop:no-per-fibre}) & Proved & UC6; genuine impossibility result. \\
+Lever-signing on structured classes & Proved & UC7--UC8; settles a hierarchy, not all families. \\
+Combinatorial residual (boundary inequality) & Open & terminal residual of the combinatorial arc. \\
+U1 wall / direct functorial proof & False route & UC9; pullback is family-independent. \\
+Walsh decomposition (Thm.~\ref{thm:walsh-decomposition}) & Proved & UC10; Maschke, not in dispute. \\
+Sphere-concentration target UC10.1 (Conj.~\ref{conj:uc10-1}) & Open & UC10; depends on $Y_1$ + $R3$. \\
+Trace-injectivity (Thm.~\ref{thm:trace-injectivity}) & Proved & UC12; unconditional; machine-checked clean. \\
+Non-vanishing / Fact One (Thm.~\ref{thm:fact-one}) & Proved$^\ast$ & UC11; $\ast$ modulo UC11 Lemma 6.1 faithfulness (Rem.~\ref{rem:wrapper-risk}). \\
+$Y_2$ obstruction-class landing & Mechanism-sound & UC13 \S2.4.1; machine-checked (Thm.~\ref{thm:y2-mechanism}); no-cup-product input remains. \\
+$Y_1$ lower-Walsh vanishing & Open / reduced & UC10 \S5.3 / UC13 \S4.5; proof invalid (Corr.~\ref{corr:trace-exact}); reduced (Thm.~\ref{thm:y1-reduction}, Res.~\ref{res:y1}). \\
+UC14 $R2$ chain-isomorphism & False & Corr.~\ref{corr:r2}; transports the sphere class into a zero group. \\
+UC14 $R1$ abutment identification & Provisional & not re-audited. \\
+UC14 $R3$ top-Walsh concentration & Method-sound & cofiber-LES + induction; soft spots noted. \\
+Closing contradiction (UC13 \S7) & Conditional & valid modulo $Y_1$; internal ``green'' banner withdrawn. \\
+Lean \texttt{Frankl\_Holds} (general) & Axiom-dependent & rests on \texttt{case3\_ss\_obstruction\_paper\_axiom} = Frankl (Prop.~\ref{prop:axiom-is-frankl}). \\
+Lean concrete $n=3,4$ (full powerset) & Proved & unconditional, axiom-free, machine-checked. \\
+Lean isotype encodings & Answer-steered & not citable as evidence (Sec.~\ref{ssec:answer-steered}). \\
+\end{longtable}
+
+\section*{Acknowledgement of provenance}
+\addcontentsline{toc}{section}{Acknowledgement of provenance}
+
+The mathematical content consolidated here was developed in the
+internal notes UC1--UC14 and audited in four further notes
+(the $Y_2$ determination, the $Y_1$ audit, the $Y_1$ re-derivation, and
+the axiom-restructure investigation). This paper is a consolidation and
+correction of that ledger, not new research. The two structural inputs
+imported from the sibling $1/3$--$2/3$ program
+(Remark~\ref{rem:external-input}, Section~\ref{ssec:u1-wall}) are used
+as black boxes and flagged at the point of use. The internal
+verdict banners attached to UC13 (``Frankl closes unconditionally'')
+and UC14 (``$R1+R2+R3$ all closed'') are \textbf{withdrawn} by this
+consolidation; the corrected status is the ledger of
+Appendix~\ref{sec:appendix-status}.

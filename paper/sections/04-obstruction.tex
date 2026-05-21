@@ -1,0 +1,218 @@
+\section{The \v{C}ech obstruction and the two-part contradiction (UC11, UC13)}
+\label{sec:obstruction}
+
+This section assembles the obstruction class and states the intended
+closing argument. We present the architecture faithfully and then mark,
+precisely, which of its parts are established and which are not. The
+detailed audit of the two contested inputs is
+Section~\ref{sec:proof-state}; here we state where they enter.
+
+\subsection{The minimal counterexample and the trace cover (UC11)}
+\label{ssec:trace-cover}
+
+Work in the intersection-closed dialect. Suppose, for contradiction,
+that Frankl fails. Among all intersection-closed counterexamples choose
+one minimal:
+
+\begin{definition}
+\label{def:minimal-cex}
+A \emph{minimal counterexample} $\Fstar$ is an intersection-closed
+family on $[n]$ with $\bias_x(\Fstar)>0$ for every $x\in[n]$ (no rare
+coordinate), minimising $|\Fstar|$ and then $n$.
+\end{definition}
+
+\begin{theorem}[Minimality-element theorem, UC11]
+\label{thm:minimality-element}
+Every \emph{proper} trace $\Fstar|_T$, $T\subsetneq[n]$, has a rare
+coordinate: some $x\in T$ with $\bias_x(\Fstar|_T)\le0$.
+\end{theorem}
+
+\begin{proof}
+$\Fstar|_T$ is a strictly smaller intersection-closed family; if it had
+no rare coordinate it would be a smaller counterexample, contradicting
+minimality.
+\end{proof}
+
+Theorem~\ref{thm:minimality-element} gives a partial section of a
+``rare-coordinate'' assignment, defined on every object of the trace
+subcategory $\Cn(\Fstar)$ \emph{except} the top object $\Fstar$ itself.
+The cohomological machine measures the obstruction to extending it to
+$\Fstar$.
+
+\begin{definition}
+\label{def:cech-sheaf}
+For $x\in[n]$ let $U_x$ be the stratum of proper traces in which $x$ is
+rare, $U_x=\{(T,\G)\neq\Fstar:x\in T,\ \bias_x(\G)\le0\}$. By
+Theorem~\ref{thm:minimality-element} the strata $\{U_x\}_{x\in[n]}$
+cover $\Cn(\Fstar)\setminus\{\Fstar\}$. On $U_x$ put the local Walsh
+bias cochain $\widehat b_x=b_x\cdot[\walsh{\{x\}}]$ with
+$b_x(\G)=-\bias_x(\G)\ge0$, and on overlaps the \emph{mismatch cochain}
+$m_{xy}=\widehat b_x-\widehat b_y$. These data assemble into the
+\v{C}ech sheaf $\fobs$ of the obstruction, and into the \v{C}ech
+double complex
+\[
+  \check C^{p,q}(\mathfrak U;\fobs)=\bigoplus_{x_0<\cdots<x_p}
+  \fobs^{q}(U_{x_0}\cap\cdots\cap U_{x_p}),
+\]
+with \v{C}ech differential $\check d$ and cochain differential $d$.
+\end{definition}
+
+\begin{lemma}[Cocycle condition, UC11]
+\label{lem:cocycle}
+$m_{xy}+m_{yz}+m_{zx}=0$ on triple overlaps, so $\{m_{xy}\}$ is a
+\v{C}ech $1$-cocycle. Promoted through the edge map of the
+\v{C}ech-to-cohomology spectral sequence, it defines a class
+\[
+  \ob(\Fstar)\in\widetilde H^{n-1}(\Xn;\Q).
+\]
+\end{lemma}
+
+\begin{remark}
+\label{rem:source-level1}
+By construction every cochain of $\check C^{p,q}(\mathfrak U;\fobs)$ is
+built from level-$1$ Walsh data: $\widehat b_x$ carries the character
+$\walsh{\{x\}}$. The \v{C}ech and cochain differentials are additive
+and $(\Z/2)^n$-equivariant, so by
+Lemma~\ref{lem:equivariant-preserves} the whole double complex --- and
+hence $\ob(\Fstar)$ --- stays in level-$1$ isotypes \emph{unless} some
+operation multiplies by a Walsh character. The double complex carries
+no cup product (it is purely additive). This is the mechanism behind
+$Y_2$; see Section~\ref{ssec:y2}.
+\end{remark}
+
+\subsection{Fact One: the obstruction is nonzero}
+\label{ssec:fact-one}
+
+\begin{theorem}[Non-vanishing, UC11 Lemmas 6.1--6.2]
+\label{thm:fact-one}
+$\ob(\Fstar)\neq0$ in $\widetilde H^{n-1}(\Xn;\Q)$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+If $\ob(\Fstar)=0$ the mismatch cocycle is a \v{C}ech coboundary, so
+the local rare-coordinate data $\{\widehat b_x\}$ glue into a global
+section: the partial rare-coordinate assignment of
+Theorem~\ref{thm:minimality-element} extends to the top object
+$\Fstar$, producing a coordinate $x_\ast$ with
+$\bias_{x_\ast}(\Fstar)\le0$. But a minimal counterexample has
+$\bias_x(\Fstar)>0$ for every $x$. Hence $\ob(\Fstar)\neq0$.
+\end{proof}
+
+\begin{status}
+Theorem~\ref{thm:fact-one} is argued cleanly at the level of the
+\v{C}ech-cohomology / gluing formalism, modulo
+Conjecture~\ref{conj:uc10-1} being available to identify the abutment.
+Its load-bearing content is the equivalence ``$\ob(\Fstar)=0\iff$ a
+global rare-coordinate section exists'' (UC11 Lemma~6.1). A referee
+should note that this equivalence \emph{is} the assertion that the
+obstruction theory is faithful; see Remark~\ref{rem:wrapper-risk}.
+\end{status}
+
+\subsection{Fact Two: the obstruction is zero --- and where it depends on $Y_1$, $Y_2$}
+\label{ssec:fact-two}
+
+The competing claim is that $\ob(\Fstar)$ lands in a part of
+$\widetilde H^{n-1}(\Xn;\Q)$ that vanishes. This is a conjunction of
+two statements.
+
+\begin{definition}[The two contested inputs]
+\label{def:y1-y2}
+\leavevmode
+\begin{description}[leftmargin=2.6em,style=nextline]
+\item[$Y_2$ (landing).] The obstruction class lands in the level-$1$
+  Walsh isotypes: $\ob(\Fstar)\in\bigoplus_{x\in[n]}\isotype{\{x\}}{n-1}$
+  (UC13~\S2.4.1).
+\item[$Y_1$ (lower-Walsh vanishing).] Every lower Walsh isotype
+  vanishes in positive degree: $\isotype Sk(\Xn)=0$ for all
+  $S\subsetneq[n]$ and $k\ge1$; in particular
+  $\isotype{\{x\}}{n-1}=0$ for every $x$ (UC10~\S5.3 / UC13~\S4.5,
+  Theorem~4.5.1).
+\end{description}
+\end{definition}
+
+\begin{proposition}[Fact Two, conditional]
+\label{prop:fact-two}
+$Y_1\wedge Y_2$ implies $\ob(\Fstar)=0$.
+\end{proposition}
+
+\begin{proof}
+$Y_2$ places $\ob(\Fstar)$ in $\bigoplus_x\isotype{\{x\}}{n-1}$; $Y_1$
+(at $|S|=1$, $k=n-1$) makes each summand zero.
+\end{proof}
+
+\begin{status}
+Proposition~\ref{prop:fact-two} is a correct two-line deduction; its
+\emph{hypotheses} are the issue.
+\begin{itemize}[leftmargin=1.4em]
+\item $Y_2$ is \emph{mechanism-sound}: the landing rests on
+  Lemmas~\ref{lem:equivariant-preserves}--\ref{lem:cup-shifts} and
+  Remark~\ref{rem:source-level1}, and this has been machine-checked
+  (Section~\ref{ssec:y2}). The earlier competing claim of UC11~\S5.3
+  --- a top-isotype landing --- is machine-checked impossible.
+\item $Y_1$ is \emph{open}. The proof of $Y_1$ given in UC13~\S4.5 is
+  logically invalid (Correction~\ref{corr:trace-exact}); the auxiliary
+  lemma UC14~$R2$ advertised as repairing it is false
+  (Correction~\ref{corr:r2}). The honest re-derivation reduces $Y_1$ to
+  a named open computation (Open residual~\ref{res:y1}). $Y_1$ is
+  true-but-unproven.
+\end{itemize}
+Consequently Fact Two is \emph{not established}: one hypothesis is
+mechanism-sound, the other is open.
+\end{status}
+
+\subsection{The intended closing argument (UC13 \S7)}
+\label{ssec:closing}
+
+The two facts are intended to collide. The closing argument of UC13~\S7
+is the following seven steps.
+
+\begin{enumerate}[label=\textup{(C\arabic*)},leftmargin=3.1em]
+\item Assume Frankl fails; fix a minimal counterexample $\Fstar$
+  (Definition~\ref{def:minimal-cex}).
+\item Conjecture~\ref{conj:uc10-1} (UC10.1): the lower isotypes
+  $\isotype{\{x\}}{n-1}$ vanish.
+\item Lemma~\ref{lem:cocycle}: $\ob(\Fstar)$ is defined in
+  $\widetilde H^{n-1}(\Xn;\Q)$.
+\item Theorem~\ref{thm:fact-one} (Fact One): $\ob(\Fstar)\neq0$.
+\item $Y_2$: $\ob(\Fstar)\in\bigoplus_x\isotype{\{x\}}{n-1}$.
+\item Steps (C2),(C5): $\ob(\Fstar)=0$ (this is Fact Two,
+  Proposition~\ref{prop:fact-two}).
+\item Steps (C4),(C6) contradict; hence no minimal counterexample;
+  hence Frankl.
+\end{enumerate}
+
+This is a clean two-part contradiction: \emph{must-be-nonzero} (from
+minimality) versus \emph{must-be-zero} (from the isotype landing plus
+the lower-Walsh vanishing). It is the program's intended proof of
+Frankl.
+
+\begin{status}
+\label{status:closing}
+The architecture (C1)--(C7) is coherent, and steps (C1), (C3), (C4),
+(C5) are sound or mechanism-sound. The argument does \emph{not} close,
+because step (C2) --- equivalently the $Y_1$ half of (C6) --- depends on
+Conjecture~\ref{conj:uc10-1}, whose lower-Walsh half $Y_1$ is open
+(Section~\ref{ssec:y1}). The UC13 note carried an internal banner
+``\GREEN{Frankl closes unconditionally}''; that banner is
+\textbf{withdrawn} by the audit of Section~\ref{sec:proof-state}. The
+honest status of the closing argument is: a valid proof \emph{modulo}
+$Y_1$, with $Y_1$ a precisely isolated open problem.
+\end{status}
+
+\begin{remark}[A structural caution for the referee]
+\label{rem:wrapper-risk}
+The vanishing side of the contradiction uses only the shape of the
+\v{C}ech double complex of $\fobs$, never the counterexample
+hypothesis $\bias_x(\Fstar)>0$. So, \emph{if} the vanishing argument is
+correct, $\ob(\F)$ is identically zero for \emph{every} family, and all
+the Frankl-specific content is carried by Fact One --- specifically by
+the UC11 Lemma~6.1 equivalence ``$\ob=0\iff$ a global rare-coordinate
+section exists''. That equivalence is itself close to a restatement of
+Frankl. This is the classic failure mode of cohomological-obstruction
+attacks on hard combinatorial problems: the obstruction is
+\emph{defined}, \emph{asserted} faithful, and \emph{asserted} to lie in
+a zero group; slack in any of the three voids the proof. A referee
+should weigh whether UC11 Lemma~6.1 is pinned down to referee standard
+independently of the cohomological wrapper. The present paper does not
+claim it is.
+\end{remark}

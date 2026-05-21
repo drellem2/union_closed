@@ -1,0 +1,216 @@
+\section{Introduction}
+\label{sec:intro}
+
+\subsection{The conjecture}
+\label{ssec:conjecture}
+
+A finite family $\F$ of finite sets is \emph{union-closed} if
+$A,B\in\F$ implies $A\cup B\in\F$. The Union-Closed Sets Conjecture,
+attributed to Péter Frankl around 1979, asserts:
+
+\begin{conjecture}[Frankl, union-closed form]
+\label{conj:frankl}
+For every finite union-closed family $\F$ with $\F\neq\{\emptyset\}$,
+there is an element $x$ of the ground set belonging to at least half
+the members of $\F$.
+\end{conjecture}
+
+The conjecture is elementary to state and notoriously resistant. After
+four decades in which only sporadic special cases were known --- see
+the survey of Bruhn and Schaudt~\cite{bruhn-schaudt} --- the first
+unconditional constant lower bound was obtained by
+Gilmer~\cite{gilmer} in 2022 via an entropy argument, showing that some
+element lies in at least a $0.01$ fraction of the family; the entropy
+method was then sharpened by Sawin and others to a fraction of
+$(3-\sqrt5)/2\approx0.382$~\cite{sawin}, which is also where the
+entropy method, in its decoupled form, provably stalls. The threshold
+$\tfrac12$ remains open.
+
+This paper consolidates a research program --- recorded across fourteen
+internal notes, here referred to as the \emph{UC1--UC14 ledger} --- that
+attacks Conjecture~\ref{conj:frankl} from a structural rather than an
+analytic direction. The program has two arcs. The first
+(Sections~\ref{sec:setup}--\ref{sec:combinatorial}) is a native
+combinatorial reduction: it rewrites Frankl's conjecture as an
+increasingly sharp sequence of explicit finitary inequalities. The
+second (Sections~\ref{sec:cohomology}--\ref{sec:obstruction}) is a
+cohomological program: it builds an equivariant cohomology theory of
+intersection-closed families and aims to close Frankl by a two-part
+contradiction on a distinguished obstruction class.
+
+\subsection{What this paper is, and what it is honest about}
+\label{ssec:honesty}
+
+\textbf{The Union-Closed Sets Conjecture is not proved in this paper,
+and the program does not currently prove it.} The UC1--UC14 ledger is a
+chain of internally generated, \emph{unrefereed} research notes; at
+various points it carried internal verdict banners claiming a complete
+proof. An audit pass over the ledger (recorded in four further notes,
+consolidated here in Section~\ref{sec:proof-state}) found that those
+banners overstated the state. The present document is the corrected
+consolidation: it presents the genuine mathematical content of the
+program --- which is substantial --- and marks, explicitly and at each
+load-bearing step, what is proved, what is reduced, what is
+axiomatised, and what is false.
+
+To that end we use three referee-facing environments throughout. A
+\emph{Status} paragraph records the verified standing of the
+immediately preceding claim. An \emph{Open residual} environment states
+a precisely isolated open problem. A \emph{Correction} environment
+records a place where the earlier ledger was wrong and explains why, so
+that the error is not re-propagated. The reader who wants only the
+bottom line should read Section~\ref{ssec:status-summary} below and
+then Section~\ref{sec:proof-state}.
+
+A companion machine-checked formalisation exists (in the Lean~4 proof
+assistant, against \texttt{mathlib}); its current state is reported
+honestly in Section~\ref{ssec:lean-state}. This paper follows a
+\emph{math-before-Lean} discipline: the careful mathematical account is
+primary, and the formalisation is treated as a witness to be reported
+on, not as a source of authority. Where the formalisation and the paper
+disagree, Section~\ref{sec:proof-state} says so.
+
+\subsection{The structural analogy}
+\label{ssec:analogy}
+
+The program's organising idea is that Frankl's conjecture is an
+instance of a recurring pattern --- \emph{compatibility constraints
+plus local symmetry force a global bias} --- shared with the
+$1/3$--$2/3$ (Kahn--Saks) conjecture for finite posets. The two
+problems are not formally reducible to one another, but they admit a
+common structural template:
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+$1/3$--$2/3$ (Kahn--Saks) & Union-Closed (Frankl)\\
+\midrule
+linear extensions $L(P)$ & members $A\in\F$\\
+adjacent transpositions & coordinate transports / toggles\\
+Bruhat / weak-order geometry & cubical geometry of the Boolean cube\\
+order constraints & union closure\\
+pair-balance & coordinate-frequency balance\\
+conductance obstruction & pairing obstruction\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+In both settings the ambient geometry is highly symmetric, the
+admissible moves preserve only part of that symmetry, local
+cancellation looks possible, and global cancellation is conjecturally
+obstructed. The program's wager is that the obstruction is
+cohomological: it arises because a family of local symmetries fails to
+globalise coherently. Section~\ref{sec:setup} makes the dictionary
+precise; the manifesto note (UC1) records that, while the framework
+transfers cleanly, \emph{neither} of the two proof engines used on the
+$1/3$--$2/3$ side transfers, so the program had to build a native
+engine. Sections~\ref{sec:combinatorial}
+and~\ref{sec:cohomology}--\ref{sec:obstruction} are the two native
+engines it built.
+
+\subsection{Status summary}
+\label{ssec:status-summary}
+
+We summarise the standing of every load-bearing component. The
+detailed account is Section~\ref{sec:proof-state}; the cross-reference
+ledger is Appendix~\ref{sec:appendix-status}.
+
+\begin{description}[leftmargin=1.4em,style=nextline]
+
+\item[The combinatorial arc (UC1--UC8), Section~\ref{sec:combinatorial}.]
+\emph{Genuine partial results; a complete reduction; not a proof.} The
+arc rewrites Frankl as a single explicit integer inequality on the
+trace data of a minimal generator (Theorems~\ref{thm:trace-partition}
+and~\ref{thm:boundary-conservation}) and settles that
+inequality on a strictly growing hierarchy of structured
+sub-families. The cases of generator size $\le2$ --- equivalently
+families with a set of size $\le2$ --- are settled
+\emph{unconditionally and natively} (Theorem~\ref{thm:trace-partition}),
+recovering classically known results. No structural class settled so
+far exhausts union-closure, and the program proves a genuine negative
+result --- no per-fibre sign theorem can exist
+(Proposition~\ref{prop:no-per-fibre}) --- showing the residual is
+irreducibly a global statement.
+
+\item[The cohomological arc, trace-injectivity, Section~\ref{sec:cohomology}.]
+\emph{One genuinely unconditional theorem.} The doubling functor and
+the matched-cylinder null-homotopy yield an honest, unconditional
+proof that the canonical trace map vanishes on the top Walsh isotype
+(Theorem~\ref{thm:trace-injectivity}). This is the UC12 result; it does
+not depend on any of the disputed steps below.
+
+\item[$Y_2$ --- the obstruction-class landing, Section~\ref{ssec:y2}.]
+\emph{Mechanism sound.} The claim that the obstruction class lands in
+the level-$1$ Walsh isotypes rests on a representation-theoretic
+mechanism --- an additive equivariant map preserves Walsh isotype, and
+only a cup product can shift isotype level --- which has been
+machine-checked (Theorem~\ref{thm:y2-mechanism}). The competing earlier
+claim (a top-isotype landing) is machine-checked to be impossible. A
+caveat remains on the faithfulness of one input; see
+Section~\ref{ssec:y2}.
+
+\item[$Y_1$ --- the level-$1$ Walsh vanishing, Section~\ref{ssec:y1}.]
+\emph{Open. Not proved.} The previously circulated proof
+(UC13 \S4.5) is logically invalid: it conflates exactness of a trace
+map with vanishing of cohomology (Correction~\ref{corr:trace-exact}).
+The honest re-derivation by cofiber long-exact-sequence and induction
+\emph{validly reduces} $Y_1$ to a single named open computation, but
+does not close it (Open residual~\ref{res:y1}). $Y_1$ is
+true-but-unproven.
+
+\item[UC14 ``$R2$''. ]
+\emph{False.} The chain-isomorphism lemma advertised as repairing the
+$Y_1$ gap is provably false; it transports the program's own nonzero
+sphere class into a group it requires to vanish
+(Correction~\ref{corr:r2}).
+
+\item[The Lean headline, Section~\ref{ssec:lean-state}.]
+\emph{Axiom-dependent.} The formalised theorem \texttt{Frankl\_Holds}
+rests on one named project axiom, \texttt{case3\_ss\_obstruction\_%
+paper\_axiom}, which --- combined with a proved companion theorem ---
+is propositionally equivalent to Frankl itself
+(Section~\ref{ssec:axiom-is-frankl}). The genuinely unconditional
+machine-checked content is the concrete full-powerset families at
+$n=3$ and $n=4$ (Section~\ref{ssec:lean-unconditional}).
+
+\end{description}
+
+\noindent The single sentence that captures the state: \emph{the
+program reduces Frankl, on the cohomological side, to one named
+homotopy-colimit computation, and on the combinatorial side to one
+named integer inequality; both reductions are correct; neither
+residual is closed.}
+
+\subsection{Organisation}
+\label{ssec:organisation}
+
+Section~\ref{sec:setup} fixes notation, proves the transport identity,
+gives the four equivalent forms of the obstruction, and introduces the
+intersection-closed dialect and the Walsh picture.
+Section~\ref{sec:combinatorial} is the combinatorial reduction arc
+(UC1--UC8). Section~\ref{sec:cohomology} builds the equivariant
+cohomology of intersection-closed families (UC9--UC12) and proves the
+trace-injectivity theorem. Section~\ref{sec:obstruction} assembles the
+\v{C}ech obstruction class and states the intended two-part
+contradiction (UC11, UC13). Section~\ref{sec:proof-state} is the honest
+audit: it states and proves the corrections, isolates $Y_1$ as open,
+and reports the Lean state. Section~\ref{sec:residual} states the named
+open residuals and the outlook. Appendix~\ref{sec:appendix-notation}
+is a notation index; Appendix~\ref{sec:appendix-status} is the
+component-by-component status ledger.
+
+\subsection{Provenance and scope}
+\label{ssec:provenance}
+
+The mathematical content consolidated here was developed in the notes
+UC1--UC14 and audited in four further notes. This paper is a
+\emph{consolidation and correction}, not new research: it does not
+attempt to close either named residual. Its purpose is to render the
+program's genuine content in one referee-readable document and to
+record its honest state so that the known defects are not
+re-propagated. Two structural inputs are imported from a sibling
+program on the $1/3$--$2/3$ conjecture and used as black boxes; they
+are flagged at the point of use (Section~\ref{ssec:u1-wall} and
+Remark~\ref{rem:external-input}). A referee assessing the cohomological
+arc should treat those imports as hypotheses to be checked against
+their stated sources.

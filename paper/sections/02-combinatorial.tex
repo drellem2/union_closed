@@ -1,0 +1,386 @@
+\section{The combinatorial reduction arc (UC1--UC8)}
+\label{sec:combinatorial}
+
+This section consolidates the program's native combinatorial attack. It
+is a chain of \emph{reductions}: each note replaces the residual
+difficulty of its predecessor by a strictly smaller, more explicit
+object, until Frankl becomes a single finitary integer inequality. The
+arc proves real theorems --- it settles Frankl on a growing hierarchy
+of structured sub-families and recovers the classical small-generator
+cases natively --- but it does \emph{not} prove the conjecture. We say
+so precisely in Section~\ref{ssec:combinatorial-status}.
+
+Throughout this section $\F$ is union-closed with $U=\bigcup\F\in\F$.
+
+\subsection{The compatibility-geometry framework (UC1)}
+\label{ssec:uc1-uc2}
+
+The founding manifesto (UC1) is a feasibility study. It checks whether
+the two proof engines used on the $1/3$--$2/3$ conjecture --- a
+Bousfield--Kan / Cheeger-expansion engine and a cohomological
+moduli-space engine --- transfer to Frankl. Its honest verdict is
+\emph{partial}: the structural framework transfers cleanly (the
+dictionary of Section~\ref{ssec:analogy}; the transport graph $G(\F)$;
+the Walsh picture), but \emph{neither engine} transfers. The transport
+graph $G(\F)$ is disconnected in general (already
+$\F=\{\emptyset,\{1,2\}\}$), so there is no irreducible transport chain
+to run an expansion argument on; and the natural moduli space of all
+union-closed families on $[n]$ is doubly exponential, with no
+homology-sphere structure, so the moduli engine has nothing to act on.
+
+The manifesto's lasting contributions are three. First, it pins the
+intrinsic object: $\F\subseteq\cube$ with its induced transport graph
+$G(\F)$, with the level-$1$ Walsh spectrum carrying the obstruction's
+content (Proposition~\ref{prop:four-forms}). Second, it isolates the
+\emph{orientation} of union closure as the engine to build a native
+argument around (Remark~\ref{rem:asymmetry}): $\F_x$ is a filter,
+$\F_{\bar x}$ an ideal. Third, it records a genuine negative result
+that disciplines everything downstream.
+
+\begin{proposition}[Globalisation defect is orthogonal to the bias, UC2 \S4]
+\label{prop:globalisation-orthogonal}
+Let $\mathrm{Def}(\F)=n|\F|-2|E(G(\F))|$ be the total number of
+coordinate-toggle pairs at which $\sigma_x$ fails to be defined on
+$\F$. Then $\mathrm{Def}(\F)$ cancels identically out of $\sum_x
+\bias_x$: one has
+$\sum_x|\F^{\stuck}_x|=\sum_{A\in\F}|A|-|E(G(\F))|$ and
+$\sum_x|\F^{\stuck}_{\bar x}|=n|\F|-\sum_{A\in\F}|A|-|E(G(\F))|$, and
+the edge term cancels in the difference.
+\end{proposition}
+
+\begin{proof}
+Count edges of $G(\F)$ by direction: $|M_x|$ direction-$x$ edges, and
+$|M_x|=|\F_x|-|\F^{\stuck}_x|$. Sum over $x$ and use
+$\sum_x|\F_x|=\sum_A|A|$, $\sum_x|\F_{\bar x}|=n|\F|-\sum_A|A|$. The
+difference is $\sum_x\bias_x=2\sum_A|A|-n|\F|$, with $|E(G(\F))|$
+absent.
+\end{proof}
+
+Proposition~\ref{prop:globalisation-orthogonal} rules out the naive
+mechanism ``failure to globalise forces the bias'': the \emph{unsigned}
+globalisation defect is provably independent of $\sum_x\bias_x$. A
+native argument must therefore use the \emph{signed} / \emph{oriented}
+defect --- the filter/ideal structure --- not the raw count. This is
+the discipline the rest of the arc obeys.
+
+\subsection{Transport-deficiency and the trace-partition theorem (UC2)}
+\label{ssec:uc2}
+
+Fix a $\subseteq$-minimal nonempty member $W\in\F$ and put
+$k=|W|=m(\F):=\min\{|A|:A\in\F,A\neq\emptyset\}$. We call $W$ a
+\emph{minimal generator}. Every $A\in\F$ splits as
+$A=S\sqcup R$ with $S=A\cap W\subseteq W$ and $R=A\setminus W$.
+
+\begin{definition}
+\label{def:trace-class}
+The \emph{trace-classes} of $\F$ relative to $W$ are
+$\F^S=\{A\in\F:A\cap W=S\}$ for $S\subseteq W$; they partition $\F$
+into $2^k$ blocks. Write the \emph{level-$1$ potential}
+$\phi(S)=2|S|-k$ and, for a family $\G$ of subsets of $W$,
+$\Phi(\G)=\sum_{S\in\G}\phi(S)$.
+\end{definition}
+
+\begin{theorem}[Trace-partition theorem, UC2 \S3]
+\label{thm:trace-partition}
+For any minimal generator $W$,
+\[
+  \sum_{x\in W}\bias_x \;=\; \sum_{S\subseteq W}|\F^S|\,\phi(S)
+  \;=\;\sum_{S\subseteq W}|\F^S|\,(2|S|-k).
+\]
+Consequently:
+\begin{enumerate}[label=\textup{(\arabic*)},leftmargin=2.4em]
+\item the map $A'\mapsto A'\cup W$ is an injection
+  $\F^\emptyset\hookrightarrow\F^W$;
+\item if $k\le2$ then $\sum_{x\in W}\bias_x\ge0$, so some $x\in W$ is
+  abundant;
+\item if $k\ge3$ then
+  $\sum_{x\in W}\bias_x=k\bigl(|\F^W|-|\F^\emptyset|\bigr)
+   +\sum_{0<|S|<k}|\F^S|\,(2|S|-k)$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+For $x\in W$, $\bias_x=\sum_S|\F^S|\,\varepsilon_x(S)$ with
+$\varepsilon_x(S)=+1$ if $x\in S$ and $-1$ otherwise; summing over
+$x\in W$ replaces $\varepsilon_x(S)$ by $|S|-(k-|S|)=\phi(S)$. (1):
+$A'\cup W\in\F$ by union closure, and $A'\mapsto A'\cup W$ is injective
+on $\F^\emptyset$. (2): for $k\le2$ the coefficient $\phi(S)$ is
+nonnegative on $S\in\{\emptyset,W\}$ and the only intermediate level
+$|S|=1$ occurs only for $k=2$, where $\phi=0$; combined with (1) the
+sum is $\ge0$. (3) isolates the extremes.
+\end{proof}
+
+Part~(2) settles Frankl \emph{unconditionally} whenever $\F$ contains a
+set of size at most $2$; part~(1) likewise settles the singleton case.
+These recover classically known results (\cite{bruhn-schaudt}), but
+natively, inside the program's own framework.
+
+\begin{status}
+Theorem~\ref{thm:trace-partition} is an exact identity and is correct.
+Part~(2) is a genuine unconditional theorem; it reproduces, but does not
+improve on, known small-set results. Part~(3) isolates the open case:
+the intermediate trace-classes $\{\F^S:0<|S|<k\}$ of a minimal
+generator with $k\ge3$.
+\end{status}
+
+\subsection{The sub-cube Walsh spectrum and large-fibre localisation (UC3)}
+\label{ssec:uc3}
+
+UC3 analyses the intermediate trace-classes via the fibre structure.
+Write $U'=U\setminus W$.
+
+\begin{definition}
+\label{def:fibre}
+For $S\subseteq W$ the \emph{$S$-fibre} is
+$\mathcal R_S=\{R\subseteq U':S\sqcup R\in\F\}$, so $|\F^S|=|\mathcal
+R_S|$. For $R\subseteq U'$ the \emph{co-fibre} is
+$\mathcal S(R)=\{S\subseteq W:S\sqcup R\in\F\}$. The \emph{ambient
+fibre} is $\mathcal R_W$.
+\end{definition}
+
+\begin{proposition}[UC3 \S2]
+\label{prop:fibre-structure}
+Each fibre $\mathcal R_S$ and each co-fibre $\mathcal S(R)$ is itself a
+union-closed family (on $U'$, respectively on $W$); one has the
+graded union laws $\mathcal R_S\vee\mathcal R_{S'}\subseteq\mathcal
+R_{S\cup S'}$ and $\mathcal S(R)\vee\mathcal S(R')\subseteq\mathcal
+S(R\cup R')$, the universal inclusion $\mathcal R_S\subseteq\mathcal
+R_W$ for all $S$, and
+\[
+  \sum_{x\in W}\bias_x \;=\;\sum_{R\in\mathcal R_W}\Phi\bigl(\mathcal
+  S(R)\bigr).
+\]
+\end{proposition}
+
+The identity reorganises $\sum_{x\in W}\bias_x$ as a sum over the
+ambient fibre of the potential of each co-fibre. The co-fibres are
+themselves union-closed families on $W$, so --- in the program's phrase
+--- the sub-cube Walsh spectrum is ``Frankl about families of
+Frankl-families.''
+
+\begin{theorem}[Per-fibre sign theorem and large-fibre localisation, UC3 \S3]
+\label{thm:uc3-localisation}
+If $|R|\le\lfloor k/2\rfloor$ then $\Phi(\mathcal S(R))\ge0$. Hence the
+sign of $\sum_{x\in W}\bias_x$ is governed entirely by the
+\emph{large} fibres $\mathcal R_W^{\mathrm{lg}}=\{R:|R|>\lfloor
+k/2\rfloor\}$:
+\[
+  \sum_{x\in W}\bias_x\ge0
+  \quad\Longleftarrow\quad
+  \sum_{R\in\mathcal R_W^{\mathrm{lg}}}\Phi(\mathcal S(R))
+  \;\ge\;-\sum_{R\in\mathcal R_W^{\mathrm{sm}}}\Phi(\mathcal S(R)).
+\]
+\end{theorem}
+
+\begin{proof}
+By minimality of $W$, for $0<|S|<k$ every $R\in\mathcal R_S$ has
+$|R|\ge k-|S|$; equivalently, for a small fibre $|R|\le\lfloor
+k/2\rfloor$ the co-fibre $\mathcal S(R)$ contains no $S$ with
+$0<|S|<\lceil k/2\rceil$, so all its intermediate traces carry
+nonnegative potential, and the contributions of $\emptyset$ (if
+present) and $W$ are $-k$ and $+k$. The localisation is immediate.
+\end{proof}
+
+\begin{corollary}[Bounded generator spread, UC3 \S3]
+\label{cor:bounded-spread}
+Let $W^+=\bigcup\{A\in\F:A\supseteq W\}$. If $|W^+|\le\lfloor
+3k/2\rfloor$ then $\sum_{x\in W}\bias_x\ge0$.
+\end{corollary}
+
+This is a genuinely new unconditional region of the open $k\ge3$
+frontier: bounded spread forces $\mathcal R_W^{\mathrm{lg}}=\emptyset$.
+
+\begin{remark}
+\label{rem:past-sawin}
+UC3 argues that the large-fibre object is a \emph{strict refinement} of
+the input the entropy method consumes --- it retains the coordinate
+coupling that the decoupled entropy relaxation discards --- and is
+therefore not subject to the structural reason the entropy method
+stalls at $(3-\sqrt5)/2$. We record this carefully: the program does
+\emph{not} claim to prove a bound past $(3-\sqrt5)/2$; it claims only to
+remove the structural obstruction that prevents the entropy method from
+doing so. The distinction is load-bearing and must not be elided.
+\end{remark}
+
+\subsection{The trace-defect scalar and the interlock (UC4)}
+\label{ssec:uc4}
+
+UC4 isolates the residual into a single scalar. Define the
+\emph{cumulative fibre} $\widetilde{\mathcal R}_S=\bigcup_{S_0\subseteq
+S}\mathcal R_{S_0}$ with size $q_S=|\widetilde{\mathcal R}_S|$, and the
+\emph{trace-defect profile} $d_S=q_S-|\F^S|\ge0$.
+
+\begin{lemma}[Monotone aggregate-sign lemma, UC4 \S1]
+\label{lem:monotone-sign}
+If $g\colon2^W\to\R$ is monotone non-decreasing then $\langle
+g,\phi\rangle=\sum_S g(S)\,\phi(S)\ge0$; if non-increasing then
+$\le0$.
+\end{lemma}
+
+\begin{proof}
+Telescope: $\langle g,\phi\rangle=\sum_{x\in W}\sum_{S\not\ni
+x}\bigl(g(S\cup\{x\})-g(S)\bigr)$, each summand $\ge0$.
+\end{proof}
+
+\begin{theorem}[Up-closure decomposition and the interlock, UC4 \S2--4]
+\label{thm:uc4-interlock}
+Write $\sigma(W)=\sum_{x\in W}\bias_x$ and $D(W)=\langle d,\phi\rangle$.
+Then $S\mapsto q_S$ is monotone, so by Lemma~\ref{lem:monotone-sign}
+the quantity $Q(W):=\langle q,\phi\rangle\ge0$ unconditionally, and
+\[
+  \sigma(W)\;=\;Q(W)-D(W),\qquad Q(W)\ge0.
+\]
+Hence $\sigma(W)\ge0$ whenever $D(W)\le Q(W)$, and in particular
+whenever $D(W)\le0$. Moreover, ranging $W$ over the set $\mathcal W$ of
+all minimal generators,
+\[
+  \sum_{W\in\mathcal W}\sigma(W)\;=\;\sum_{x}\deg_{\mathcal W}(x)\,
+  \bias_x,\qquad \deg_{\mathcal W}(x)=|\{W\in\mathcal W:x\in W\}|,
+\]
+so $\sum_{W}D(W)\le\sum_{W}Q(W)$ already implies Frankl for $\F$.
+\end{theorem}
+
+The identity $\sigma(W)=Q(W)-D(W)$ with $Q(W)\ge0$
+\emph{unconditional} compresses the entire residual into the single
+trace-defect scalar $D(W)$. The \emph{interlock} (the last display)
+relaxes the requirement from a per-generator inequality to a global
+one: bad generators may be carried by good ones.
+
+\begin{status}
+Theorem~\ref{thm:uc4-interlock} is an exact identity plus a correct
+sign on $Q(W)$. It is not a proof of Frankl: $D(W)\le0$ for a single
+minimal generator at $k=3$ would already settle Frankl on the open
+$m(\F)=3$ frontier, so no single-generator argument can close $D(W)$.
+\end{status}
+
+\subsection{Cross-coupling: retraction and Gram form (UC5)}
+\label{ssec:uc5}
+
+UC5 quantifies the two couplings the interlock leaves implicit. The
+\emph{defect retraction} $\bar\jmath_R(S)=\max(\mathcal S(R)\cap 2^S)$
+is the largest trace contained in $S$ still seeing $R$; it is an
+interior operator on the up-closure $\mathcal S(R)^\uparrow$, with
+fixed-point set $\mathcal S(R)$. This yields an exact closed form for
+the cross-trace coupling,
+\[
+  D(W)\;=\;\sum_{R}\sum_{S_0\in\mathcal S(R)}
+  \bigl[(a_{S_0}-1)\,\phi(S_0)+2\,\Sigma(I_{R,S_0})\bigr],
+\]
+where $I_{R,S_0}$ is an order ideal counting the traces retracting to
+$S_0$ and $a_{S_0}=|I_{R,S_0}|$. The cross-generator coupling becomes a
+Gram quadratic form: with the generator incidence matrix $M\in
+\{0,1\}^{\mathcal W\times U}$ and $G=MM^{\mathsf T}$
+($G_{W,W'}=|W\cap W'|$),
+\[
+  \Sigma_{\mathcal W}\;:=\;\sum_{x}\deg_{\mathcal W}(x)\bigl(2
+  \deg_{\mathcal W}(x)-N\bigr)\;=\;2\lVert M^{\mathsf
+  T}\mathbf1\rVert^2-kN^2,\qquad N=|\mathcal W|.
+\]
+UC5 settles two further structured classes --- the
+\emph{large-fibre-monotone} class (every large co-fibre is a filter)
+and the \emph{concentrated-generator} class ($|U_{\mathcal W}|\le2k$,
+via Cauchy--Schwarz on the degree sequence) --- each properly
+containing the classes settled in UC3--UC4.
+
+\subsection{The boundary conservation law (UC6)}
+\label{ssec:uc6}
+
+UC6 is the terminal note of the combinatorial arc. It converts the
+trace-defect into an exact boundary count.
+
+\begin{theorem}[Boundary conservation law, UC6 \S1]
+\label{thm:boundary-conservation}
+For each large fibre $R$, with the defect $\mathcal
+D(R)=\mathcal S(R)^\uparrow\setminus\mathcal S(R)$,
+\[
+  \Phi(\mathcal D(R))\;=\;\sum_{S_0\in\mathcal S(R)}
+  \bigl[a_{S_0}|S_0|-\phi(S_0)\bigr]\;-\;B(R),
+\]
+where $B(R)\ge|\mathcal S(R)|-1\ge0$ is the number of inter-fibre
+Hasse edges of the tiling of $\mathcal S(R)^\uparrow$ by the retraction
+fibres. Consequently the large-fibre residual is
+\[
+  D^{\mathrm{lg}}(W)\;=\;\sum_{R\in\mathcal R_W^{\mathrm{lg}}}
+  \Bigl[\sum_{S_0\in\mathcal S(R)}a_{S_0}|S_0|
+  -\Phi(\mathcal S(R))-B(R)\Bigr].
+\]
+\end{theorem}
+
+\begin{proposition}[No per-fibre sign theorem, UC6 \S1]
+\label{prop:no-per-fibre}
+$\Phi(\mathcal D(R))$ is not sign-definite on the class of large
+fibres: both signs occur for union-closure-compatible data. Hence no
+theorem of the form ``$\Phi(\mathcal D(R))\le0$ for every large
+fibre'' can hold, and the residual is irreducibly a cross-fibre
+(sum-level) statement.
+\end{proposition}
+
+Proposition~\ref{prop:no-per-fibre} is a genuine negative result: it
+proves that the residual \emph{cannot} be closed one fibre at a time.
+UC6 also proves a \emph{deficiency-contraction theorem} --- deficiency
+is anti-monotone along the fibre lattice $\mathcal R_W$ --- and settles
+the $\Gamma$-sparse and low-rooted-shallow classes.
+
+\subsection{Lever-signing on structured classes (UC7--UC8)}
+\label{ssec:uc7-uc8}
+
+UC7 and UC8 ``sign the levers'': they take the three exact identities
+UC6 produced --- the boundary deficit, the non-generator block, the
+excess co-fibre (the failure of the graded union law $\mathcal
+S(R)\vee\mathcal S(R')\subseteq\mathcal S(R\cup R')$ to be an
+equality) --- and determine the sign of each on progressively larger
+structured classes. UC7 works from union closure alone; UC8 admits one
+structural input per lever (a cross-fibre persistence invariant; a
+cumulative-incidence identity; a square-defect bound). The net output
+is a strictly increasing family of structural conditions --- half-level
+deficient, $1$-rich, uniformly $W$-balanced and $\Gamma$-sparse,
+graded-equal --- each of which implies Frankl, together with worked
+witnesses showing the conditions are independent and that none is
+implied by union closure alone.
+
+\begin{status}
+UC7--UC8 prove genuine implications ``\,structural condition $\Rightarrow$
+Frankl for $\F$\,'', and prove (Propositions UC7~4.2, UC8~4.3) that
+each condition admits a union-closed family violating it. They enlarge
+the settled region; they do not exhaust it. Several separating
+witnesses are recorded as structural existence claims rather than fully
+written out --- a write-up debt, not an error.
+\end{status}
+
+\subsection{Honest terminal status of the combinatorial arc}
+\label{ssec:combinatorial-status}
+
+The combinatorial arc is a genuine, monotone chain of reductions. Each
+note strictly sharpens its predecessor's residual; no internal
+mathematical contradiction was found across UC1--UC8. The arc's honest
+terminal state is:
+
+\begin{enumerate}[leftmargin=1.6em]
+\item \emph{A complete reduction.} Frankl for $\F$ is equivalent to a
+  single explicit integer inequality --- the global sign of the
+  boundary deficit $\sum_R B(R)$ against the rooted mass $\sum_R
+  \sum_{S_0}a_{S_0}|S_0|$ (Theorem~\ref{thm:boundary-conservation}),
+  together with the excess-co-fibre term. Every quantity in it is a
+  finite, explicitly computable count.
+\item \emph{Genuine unconditional theorems.} The cases $m(\F)\le2$ and
+  the singleton case are settled natively
+  (Theorem~\ref{thm:trace-partition}); these recover, but do not
+  improve, known results.
+\item \emph{A growing settled hierarchy.} Bounded generator spread,
+  $W$-monotone, low-defect, large-fibre-monotone, concentrated
+  generator, $\Gamma$-sparse, low-rooted-shallow, half-level-deficient,
+  $1$-rich, uniformly $W$-balanced --- a strictly increasing family of
+  structured sub-classes, each settled.
+\item \emph{A genuine impossibility result.} No per-fibre sign theorem
+  exists (Proposition~\ref{prop:no-per-fibre}); the residual is
+  irreducibly global.
+\item \emph{Not a proof.} No settled class exhausts union closure; the
+  $k=3$ frontier is provably immune to single-generator arguments. The
+  final inequality is reduced, explicit, and \emph{open}.
+\end{enumerate}
+
+\noindent The combinatorial arc thus delivers a clean, honest
+reduction and a real partial-progress hierarchy. It is the conservative
+half of the program. The cohomological arc, to which we now turn, is
+the half that aimed at a full proof --- and the half where the audit of
+Section~\ref{sec:proof-state} finds the live defects.
