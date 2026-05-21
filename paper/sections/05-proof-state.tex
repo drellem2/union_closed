@@ -257,6 +257,82 @@ is logically equivalent to $R2$, hence false
 (Correction~\ref{corr:r2}). The residual must be \emph{computed}.
 \end{remark}
 
+\subsubsection{The Phase-1 sharpening: $Y_1$ as coefficient-blindness}
+
+Theorem~\ref{thm:y1-reduction} and Open residual~\ref{res:y1} are the
+standing of $Y_1$ after the cofiber-LES re-derivation. A subsequent
+paper-and-pencil phase --- the $Y_1$-closure Phase~1 --- did \emph{not}
+close the residual, but sharpened it. We record the sharpening, because it
+reframes what a closure must do.
+
+\begin{proposition}[The residual diagram is Walsh-index-independent]
+\label{prop:y1-S-independent}
+Fix $x$. The cofiber double complex $\cofib\iota_x=\Xn/X(\Dx)$ is
+assembled from two pieces of data: the \emph{diagram shape} --- the
+Bousfield--Kan bar strings of $\Cn$ that exit the matched subcategory
+$\Dx$, with their bar differentials, together with the trace functor
+$\rho_x$ and its comma categories --- and the \emph{coefficient system}
+$G_S(\G):=C^*(X(\G);\Q)_{\walsh S}$ on $\mathcal C^{\cap}_{n-1,x}$. The
+$\walsh S$-isotype cochain complex is
+\[
+  \BK^{p,q}\bigl(\Xn/X(\Dx)\bigr)_{\walsh S}\;=\;
+  \bigoplus_{\text{bar strings exiting }\Dx}\;G_S(\rho_x\F_p),
+\]
+the pullback $\rho_x^{*}G_S$ restricted to the $\Dx$-exiting strings. The
+diagram shape is \emph{independent of $S$}; only the coefficient system
+$G_S$ depends on $S$.
+\end{proposition}
+
+\begin{proof}
+The matched subcategory $\Dx$, the trace functor $\rho_x$, the property
+``exits $\Dx$'', and the bar differentials are defined from $\Cn$ and the
+choice of $x\in[n]\setminus S$ alone; none refers to $S$. The Walsh index
+enters only through the isotype projection $(-)_{\walsh S}$ defining
+$G_S$. The displayed identity is the cofiber quotient of the
+Bousfield--Kan double complex (Definition~\ref{def:cubical-defect-complex})
+intersected with the $\walsh S$-isotype: by UC14 Lemma~2.2.1 (the
+cell-level Walsh-support lemma, sound at the single-family level) the
+$\walsh S$-value $C^*(X(\F_p))_{\walsh S}$ depends only on the matched
+part, hence only on the trace $\rho_x\F_p$.
+\end{proof}
+
+\begin{remark}[$Y_1$ as a coefficient-blindness statement]
+\label{rem:y1-coefficient-blindness}
+Proposition~\ref{prop:y1-S-independent} reframes $Y_1$. The residual must
+\emph{vanish} for $|S|\le n-2$, yet at $S=[n]\setminus\{x\}$ it must carry
+\emph{exactly} the sphere class $\sgn$ --- the genuine nonzero class of
+Correction~\ref{corr:r2}. By Proposition~\ref{prop:y1-S-independent} this
+contrast is \emph{not} a difference in the homotopy type of the
+stuck-family fibres: that type is one fixed object, the same for every
+$S$. It is a difference in which coefficient systems can \emph{see} it.
+So $Y_1$, for $|S|\le n-2$, is precisely the assertion that \emph{every
+lower-Walsh coefficient system $G_S$ with $|S|\le n-2$ is blind to the
+fixed residual diagram} --- its reduced $G_S$-twisted cohomology vanishes
+--- whereas the top-of-the-smaller-cube system $G_{[n]\setminus\{x\}}$ is
+not blind (it sees $\sgn$). This is a representation-theoretic question
+about the family $\{G_S\}$ of coefficient systems on one fixed diagram,
+not a bare nerve computation: the comma-category nerves, being
+$S$-independent, cannot by themselves account for the $|S|$-stratification
+--- the coefficient system must be carried through. The residual is
+sharpened, not closed.
+\end{remark}
+
+\begin{remark}[A foundational prerequisite]
+\label{rem:y1-prerequisite}
+Computing $\isotype Sk(\cofib\iota_x)$ --- by hand at the smallest open
+instance $n=3$, $S=\{1\}$, $k=1$, or by machine, or in a faithful Lean
+model --- requires the Bousfield--Kan model of $\Cn$ at \emph{cell} level:
+the trace-induced structure map $X(\F|_T)\to X(\F)$, and the single-family
+$\sigma_y$-action on $C^*(X(\F))$. Both are \emph{asserted} in the source
+development (UC10~\S3.3; UC12~\S3.3) but not pinned to the precision a
+verified computation needs. They are pinnable --- the trace map has a
+canonical minimal-lift description, $A\mapsto\bigcap\{B\in\F:B\cap T=A\}$
+--- but pinning them is a bounded prerequisite standing upstream of any
+honest computation, independent validation, or formalisation of the
+residual. A computation reported on un-pinned foundations would repeat the
+failure mode of Corrections~\ref{corr:trace-exact}--\ref{corr:r2}.
+\end{remark}
+
 \begin{status}
 $Y_1$ is \RED{open}. It is true-but-unproven: no counterexample is
 known, the statement is plausibly true (it is the cube-side analogue of
@@ -265,8 +341,12 @@ invalid (Correction~\ref{corr:trace-exact}) and the lemma cited to
 repair it is false (Correction~\ref{corr:r2}). The honest standing is
 Theorem~\ref{thm:y1-reduction} plus Open residual~\ref{res:y1}: a
 \emph{correct reduction} to one named homotopy-colimit computation,
-estimated to be substantial (not a hypothesis-check). Until that
-computation is done, the two-part contradiction of
+estimated to be substantial (not a hypothesis-check). The $Y_1$-closure
+Phase~1 did not close that computation: it re-verified the reduction,
+sharpened the residual to the coefficient-blindness statement of
+Remark~\ref{rem:y1-coefficient-blindness}, and isolated the foundational
+prerequisite of Remark~\ref{rem:y1-prerequisite}; $Y_1$ stays
+\RED{open}. Until the residual is computed, the two-part contradiction of
 Section~\ref{ssec:closing} does not close, and the headline conjecture
 is not proved.
 \end{status}

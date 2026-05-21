@@ -20,7 +20,15 @@ inclusion, for $S\subsetneq[n]$ and $k\ge1$. Concretely this is the
 cohomology of the bar strings of $\Cn$ that exit the matched
 subcategory $\Dx$ --- equivalently, the comma-category twist
 $N(\rho_x/-)$ of the trace functor $\rho_x$, the homotopy type of the
-stuck-family fibres. If this cohomology vanishes, $Y_1$ holds,
+stuck-family fibres. The $Y_1$-closure Phase~1 did not compute it, but
+sharpened it (Proposition~\ref{prop:y1-S-independent},
+Remark~\ref{rem:y1-coefficient-blindness}): the residual diagram is the
+\emph{same} for every $S$, so the computation is the
+representation-theoretic question of whether the lower-Walsh coefficient
+systems are blind to one fixed diagram --- and it isolated a foundational
+prerequisite (Remark~\ref{rem:y1-prerequisite}), the cell-level
+Bousfield--Kan structure maps, that stands upstream of the computation.
+If this cohomology vanishes, $Y_1$ holds,
 Conjecture~\ref{conj:uc10-1} follows (with the top-Walsh half from
 UC14~$R3$, whose method is sound), Fact Two
 (Proposition~\ref{prop:fact-two}) is established, and the closing
@@ -90,13 +98,18 @@ record's recommended priorities are:
 
 \begin{enumerate}[leftmargin=1.8em]
 \item \textbf{Attack the $Y_1$ residual directly}
-  (Open residual~\ref{res:y1}). The recommended entry point is to
-  compute the comma categories $\rho_x/(T,\G)$ --- the fibres of the
-  trace to $[n]\setminus\{x\}$ --- and their nerves; the stuck families
-  are exactly the non-contractible-fibre locus. The smallest genuinely
+  (Open residual~\ref{res:y1}). First pin the cell-level Bousfield--Kan
+  structure maps (Remark~\ref{rem:y1-prerequisite}) --- a bounded
+  prerequisite standing upstream of any honest computation. Then, by the
+  Phase-1 sharpening (Remark~\ref{rem:y1-coefficient-blindness}), the
+  object to study is the family of coefficient systems $\{G_S\}$ on the
+  fixed residual diagram, not the bare nerves of the comma categories
+  $\rho_x/(T,\G)$: those nerves are $S$-independent and so cannot alone
+  yield the $|S|$-stratified answer $Y_1$ needs. The smallest genuinely
   open instance is $n=3$, $S=\{1\}$, $k=1$, which should be computed by
-  hand first. Do \emph{not} attempt a cofinality argument for $\rho_x$:
-  by Correction~\ref{corr:r2} that is equivalent to the false $R2$.
+  hand first (once the foundations are pinned). Do \emph{not} attempt a
+  cofinality argument for $\rho_x$: by Correction~\ref{corr:r2} that is
+  equivalent to the false $R2$.
 \item \textbf{Do not re-attempt $Y_1$ by the UC13~\S4.5 route.} The
   trace-exactness error (Correction~\ref{corr:trace-exact}) is
   structural; the next genuine ticket is the residual, not another
