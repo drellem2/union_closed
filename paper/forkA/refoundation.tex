@@ -7,6 +7,14 @@
 %  Fork A re-foundation, the route the vision-check (mg-6edc) and the
 %  n=3 Fork-D probe (mg-565a) resolved to.
 %
+%  REVISED under work item mg-365e (Frankl-ForkA-Phase2-Revision) per
+%  the mg-d300 independent Phase-2 validation (AMBER): two surviving
+%  over-claims corrected by honest re-statement -- the Y1 cofiber-LES
+%  reduction is only Stab(x) = S_{n-1} equivariant (not S_n), so R1
+%  acquires an S_{n-1}->S_n branching sub-residual; and the residual
+%  set is not "exactly three" -- R3 is a three-part edge-map debt
+%  (existence, degree, injectivity). See Status~\ref{status:mg365e-revision}.
+%
 %  This is a STANDALONE document. It is Phase 1 (math-before-Lean) of a
 %  multi-phase arc: Phase 1 LaTeX (this document), Phase 2 independent
 %  validation, Phase 3 Lean. It does not modify the consolidated paper
@@ -90,7 +98,8 @@
   \normalsize Phase 1: the LaTeX re-foundation}
 
 \author{The \texttt{union\_closed} development}
-\date{Work item \texttt{mg-c15b} --- \today\\[2pt]
+\date{Work items \texttt{mg-c15b} (Phase 1) and \texttt{mg-365e}
+  (revision per the \texttt{mg-d300} Phase-2 validation) --- \today\\[2pt]
   \normalfont\small Phase 1 of the Fork A re-foundation arc
   (LaTeX $\to$ independent validation $\to$ Lean)}
 
@@ -126,21 +135,28 @@ two-part contradiction. \textbf{We are honest about what the
 re-foundation does and does not buy.} It buys a sound, well-defined
 framework that clears both Phase-1.5 walls. It does \emph{not} close
 Frankl, and Phase~1 was never meant to. The closing contradiction is
-re-established as a conditional theorem resting on three precisely
-named open residuals: the vanishing statement $Y_1$ (the cofiber
-computation, unchanged from the pre-Fork-A state); the landing
-statement $Y_2$ (whose pre-Fork-A mechanism rested on the now-dropped
-$(\Z/2)^n$-equivariance and which Fork~A re-states as an $\Sym_n$
-question, localized to the representation theory of the obstruction
-sheaf); and faithfulness (whether the cohomology genuinely detects the
-counterexample --- the vision's clause $V_3$ --- localized to the
-injectivity of one edge map). The first owed debt, the re-grading, is
-discharged at the structural level and its remaining open part ($Y_2$)
-is precisely localized; the second owed debt, faithfulness, is
-precisely localized. \textbf{The verdict is GREEN for the Phase-1
-scope --- the re-foundation is delivered and sound --- with the
-explicit accounting that Frankl is not proved and three open residuals
-remain.}
+re-established as a conditional theorem, and its open inputs are named
+precisely and in full: the vanishing statement $Y_1$ (the cofiber
+computation --- its target object unchanged from the pre-Fork-A state,
+but its reduction now carrying a genuine $\Sym_{n-1}\to\Sym_n$
+branching step the $(\Z/2)^n\to\Sym_n$ re-grading creates); the
+landing statement $Y_2$ (whose pre-Fork-A mechanism rested on the
+now-dropped $(\Z/2)^n$-equivariance and which Fork~A re-states as an
+$\Sym_n$ question, localized to the representation theory of the
+obstruction sheaf); and a three-part faithfulness debt (whether the
+\v{C}ech-to-cohomology edge map that promotes the obstruction class
+\emph{exists}, lands in \emph{degree $n-1$}, and is \emph{injective}
+--- the vision's clause $V_3$). The first owed debt, the re-grading, is
+discharged at the structural level and its remaining open parts ($Y_2$
+and the new branching step) are precisely localized; the second owed
+debt, faithfulness, is precisely localized as the three-part residual.
+\textbf{The verdict is GREEN for the Phase-1 scope --- the
+re-foundation is delivered and sound --- with the explicit accounting
+that Frankl is not proved and that the conditional theorem rests on
+the open residuals R1 (cofiber plus branching), R2, and R3 (three-part
+faithfulness).} This document has been revised following the
+\texttt{mg-d300} independent Phase-2 validation; see
+Status~\ref{status:mg365e-revision}.
 \end{abstract}
 
 \maketitle
@@ -175,21 +191,27 @@ The verdict GREEN means: the Phase-1 scope --- construct the object,
 re-grade, re-establish the framework, localize the two debts --- is
 accomplished, and the re-foundation is internally sound. It does
 \emph{not} mean the conjecture is closer to proved than the
-pre-Fork-A state recorded. Three objects remain genuinely open and are
-each precisely named:
+pre-Fork-A state recorded. The genuine open content remains, and
+Phase~1's task is to name it precisely and in full --- as the
+residuals R1 (two-part), R2, and R3 (three-part):
 \begin{itemize}[leftmargin=1.6em]
 \item[\textbf{R1}] \emph{The $Y_1$ residual} (Open
-  residual~\ref{res:y1}): the isotype cohomology of the cofiber of the
-  matched-cylinder inclusion. Unchanged from the pre-Fork-A state.
+  residual~\ref{res:y1}), in two parts: \textbf{R1a}, the
+  $\Sym_{n-1}$-isotype cohomology of the cofiber of the
+  matched-cylinder inclusion --- as a target object unchanged from the
+  pre-Fork-A state; and \textbf{R1b}, a new $\Sym_{n-1}\to\Sym_n$
+  branching step created by the $(\Z/2)^n\to\Sym_n$ re-grading
+  (Remark~\ref{rem:y1-branching}).
 \item[\textbf{R2}] \emph{The $Y_2$ residual} (Open
   residual~\ref{res:y2}): whether the obstruction class avoids the
   $\sgn$ sphere-isotype. The pre-Fork-A $Y_2$ mechanism rested on the
   now-dropped $(\Z/2)^n$-equivariance; Fork~A re-states the landing as
   an $\Sym_n$ question and localizes it.
 \item[\textbf{R3}] \emph{Faithfulness} (Owed
-  debt~\ref{debt:faithful-localized}): the injectivity of the
-  \v{C}ech-to-cohomology edge map --- the vision's clause $V_3$, the
-  wrapper-risk.
+  debt~\ref{debt:faithful-localized}), a three-part debt: the
+  \emph{existence}, the \emph{degree-$(n-1)$ behaviour}, and the
+  \emph{injectivity} of the \v{C}ech-to-cohomology edge map --- the
+  vision's clause $V_3$, the wrapper-risk.
 \end{itemize}
 
 \subsection*{0.2\quad The Fork A scorecard}
@@ -214,14 +236,20 @@ $\Sym_n$-grading by isotype
  & Theorem~\ref{thm:maschke}. Genuine $\Sym_n$-action; Maschke.
    The sphere class is the $\sgn_{\Sym_n}$ isotype
    (\S\ref{ssec:sphere-class}).\\
-The obstruction class $\ob(\Fstar)$
- & \textsf{GREEN} (as a construction)
- & \S\ref{sec:obstruction}. Re-founded on $H^{*}(\Cn;X)$ verbatim from
-   the \v{C}ech double complex of $\fobs$.\\
+The obstruction \emph{cocycle} $\{m_{xy}\}$
+ & \textsf{GREEN} (as a \v{C}ech cocycle)
+ & \S\ref{sec:obstruction}. The mismatch cocycle is constructed
+   verbatim from the \v{C}ech double complex of $\fobs$. Its
+   \emph{promotion} into $\widetilde H^{n-1}(\Cn;X)$ as $\ob(\Fstar)$
+   is the three-part R3 debt (Owed
+   debt~\ref{debt:faithful-localized}).\\
 $Y_1$-A (the vanishing) --- residual R1
  & \textsf{RED --- open}
- & \S\ref{ssec:y1a}. The cofiber-LES reduction ports to Fork~A; the
-   residual (Open residual~\ref{res:y1}) is unchanged and open.\\
+ & \S\ref{ssec:y1a}. The cofiber-LES reduction ports to Fork~A as an
+   $\Sym_{n-1}$-equivariant statement
+   (Theorem~\ref{thm:y1-reduction}); the residual is two-part (Open
+   residual~\ref{res:y1}) --- R1a, the cofiber, unchanged as a target
+   object; R1b, a new $\Sym_{n-1}\to\Sym_n$ branching step.\\
 $Y_2$-A (the landing) --- residual R2
  & \textsf{AMBER --- open}
  & \S\ref{ssec:y2a}. Mechanism re-stated in $\Sym_n$ terms; the
@@ -231,11 +259,13 @@ Owed debt 1 --- the re-grading
  & \textsf{ADDRESSED}
  & \S\ref{ssec:debt1}. Structural re-grading discharged
    (Theorem~\ref{thm:maschke}, \S\ref{ssec:sphere-class}); the open
-   part is residual R2.\\
+   part is residual R2 \emph{and} the new branching sub-residual
+   R1b.\\
 Owed debt 2 --- faithfulness ($V_3$ / wrapper-risk) --- residual R3
  & \textsf{LOCALIZED}
- & Owed debt~\ref{debt:faithful-localized}. Reduced to one named
-   object: the injectivity of the \v{C}ech-to-cohomology edge map.\\
+ & Owed debt~\ref{debt:faithful-localized}. Reduced to one named edge
+   map, but a three-part debt on it: \emph{existence},
+   \emph{degree-$(n-1)$ landing}, and \emph{injectivity}.\\
 \bottomrule
 \end{longtable}}
 
@@ -245,14 +275,53 @@ Phase~1 is the LaTeX re-foundation: construct the Fork~A object, do the
 re-grading, re-establish the obstruction class and the two-part
 contradiction, and discharge or precisely localize the two owed debts.
 It is \emph{not} a proof of Frankl, and it is not a closure of any of
-the three residuals R1--R3. A RED verdict --- Fork~A hitting a genuine
+the residuals R1--R3 (R1 itself two-part, R3 itself three-part). A
+RED verdict --- Fork~A hitting a genuine
 wall --- was an allowed outcome (the \texttt{mg-c15b} brief sanctions
 it); Phase~1 does not return RED, because nothing in the re-foundation
 is refuted: the construction is well-defined, the re-grading goes
 through, and the contradiction re-assembles as a conditional theorem.
 The honest one-sentence summary is \S\ref{ssec:final}. The arc
-continues with Phase~2 (independent validation of this document) and
-Phase~3 (Lean), each gated on the previous returning GREEN.
+continues with an independent re-validation of this revised document
+and then Phase~3 (Lean), each gated on the previous returning GREEN.
+
+\begin{status}[Revision following the \texttt{mg-d300} Phase-2 validation]
+\label{status:mg365e-revision}
+This document has been revised (work item \texttt{mg-365e}) following
+the independent Phase-2 validation \texttt{mg-d300}, which returned
+\textsf{AMBER}: the Fork~A core was independently confirmed sound, but
+two over-claims were caught that the Phase-1 self-audit had missed.
+\begin{enumerate}[label=\textup{(\Alph*)},leftmargin=2.4em]
+\item \emph{The $Y_1$-A reduction does not port unchanged.} Theorem~%
+  \ref{thm:y1-reduction} was stated as carrying an
+  $\Sym_n$-equivariant cohomology long exact sequence. It does not:
+  the smaller object $\Xbb_{n-1,x}$ is stable only under the point
+  stabiliser $\mathrm{Stab}(x)\cong\Sym_{n-1}$, so the LES is only
+  $\Sym_{n-1}$-equivariant. The pre-Fork-A reduction split
+  isotype-by-isotype only because the abelian $(\Z/2)^n$ has a
+  quotient acting on the smaller cube; $\Sym_n$ has no such quotient.
+  The reduction therefore acquires a genuine $\Sym_{n-1}\to\Sym_n$
+  branching step, recorded here as the new sub-residual R1b
+  (Remark~\ref{rem:y1-branching}, Open residual~\ref{res:y1}).
+\item \emph{The residual set is not ``exactly three.''} The
+  obstruction class is promoted into $H^{*}(\Cn;X)$ through an edge
+  map whose \emph{existence} and \emph{degree-$(n-1)$ behaviour} are
+  load-bearing but were not in the formal accounting --- the formerly
+  stated R3 named only \emph{injectivity}. R3 is in fact a three-part
+  edge-map debt (R3a existence, R3b degree, R3c injectivity; Owed
+  debt~\ref{debt:faithful-localized}), and
+  Theorem~\ref{thm:contradiction} now lists every input in full.
+\end{enumerate}
+A minor point --- the proof of Proposition~\ref{prop:sphere-sgn}
+assumed more than its stated hypothesis --- is also corrected
+(Remark~\ref{rem:sphere-sgn-hyp}). Both findings are honest
+re-statements, not refutations: the Fork~A strategy and its core
+constructions (Theorems~\ref{thm:projection},
+\ref{thm:welldefined}, \ref{thm:maschke}) are unchanged and were
+independently confirmed sound by \texttt{mg-d300}. The verdict GREEN
+above is for the Phase-1 scope as corrected; an independent
+re-validation is the next gate.
+\end{status}
 
 % =====================================================================
 \section{Scope, method, and what Fork A is}
@@ -688,10 +757,18 @@ sphere carries $\sgn$ --- is a statement about the $\Sym_n$-action,
 which is genuine (Notation~\ref{not:sn}). With no $(\Z/2)^n$-action in
 the construction, \emph{there is nothing left for refutation (b) to
 refute.} This step is \textsf{GREEN}. \emph{Caveat, recorded honestly:}
-the pre-Fork-A landing argument $Y_2$ used the $(\Z/2)^n$-action (it
-split the obstruction off by Walsh isotype); dropping the action means
-$Y_2$ must be genuinely re-derived, not merely re-graded ---
-see~\S\ref{ssec:y2a}.
+dropping the $(\Z/2)^n$-action has a downstream cost on \emph{both}
+halves of the contradiction. The pre-Fork-A landing argument $Y_2$
+used the $(\Z/2)^n$-action (it split the obstruction off by Walsh
+isotype); dropping the action means $Y_2$ must be genuinely
+re-derived, not merely re-graded (see~\S\ref{ssec:y2a}, residual~R2).
+And the pre-Fork-A $Y_1$ cofiber-LES reduction split
+isotype-by-isotype using the same $(\Z/2)^n$-action, which --- being
+abelian, with a quotient acting on the smaller cube --- descends to
+that cube; $\Sym_n$ has no such quotient, so the $Y_1$ reduction
+acquires an $\Sym_{n-1}\to\Sym_n$ branching step
+(see~\S\ref{ssec:y1a}, Remark~\ref{rem:y1-branching}, residual~R1b).
+Phase~1 records both costs.
 \end{status}
 
 The Walsh apparatus is not discarded wholesale --- only its
@@ -789,7 +866,11 @@ forced to be the sign:
 \label{prop:sphere-sgn}
 Suppose $H^{*}(\Cn;X)$ is rationally a homotopy $(n-1)$-sphere:
 $\widetilde H^{k}(\Cn;X)=0$ for $0\le k\le n-2$ and $\widetilde
-H^{n-1}(\Cn;X)$ one-dimensional. Then, as a $\Q[\Sym_n]$-module,
+H^{n-1}(\Cn;X)$ one-dimensional. Suppose moreover that the top class
+is realised $\Sym_n$-equivariantly as the orientation class of an
+$(n-1)$-sphere on which $\Sym_n$ acts by permuting $n$ coordinate
+directions --- equivalently, that some transposition acts on
+$\widetilde H^{n-1}(\Cn;X)$ by $-1$. Then, as a $\Q[\Sym_n]$-module,
 \[
   \widetilde H^{n-1}(\Cn;X)\;\cong\;\sgn_{\Sym_n}.
 \]
@@ -797,16 +878,39 @@ H^{n-1}(\Cn;X)$ one-dimensional. Then, as a $\Q[\Sym_n]$-module,
 
 \begin{proof}
 A one-dimensional $\Q$-representation of $\Sym_n$ is either the trivial
-or the sign representation. An element of $\Sym_n$ acts on the
-orientation class of a sphere built $\Sym_n$-symmetrically from $n$
-coordinate directions by the degree of the induced self-map, which is
-the sign of the permutation of those directions; a transposition acts
-by $-1$. Hence the one-dimensional module is $\sgn_{\Sym_n}$, not the
-trivial one. (This is the cube-side analogue of the F-series fact that
-$\widetilde H^{n-2}(\Delta(\mathrm{PPF}_n);\Q)\cong\sgn_{\Sym_n}$: the
-top cohomology of an $\Sym_n$-symmetric sphere is the orientation
+or the sign representation, and the two are distinguished exactly by
+whether a transposition acts by $+1$ or by $-1$. The added hypothesis
+fixes the latter: a transposition, permuting two of the $n$ coordinate
+directions of the equivariant sphere, acts on the orientation class by
+the degree of the induced self-map, which is the sign of that
+transposition, namely $-1$. Hence the one-dimensional module is
+$\sgn_{\Sym_n}$, not the trivial one. (This is the cube-side analogue
+of the F-series fact that $\widetilde
+H^{n-2}(\Delta(\mathrm{PPF}_n);\Q)\cong\sgn_{\Sym_n}$: the top
+cohomology of an $\Sym_n$-symmetric sphere is the orientation
 character, the sign.)
 \end{proof}
+
+\begin{remark}[Why the strengthened hypothesis]
+\label{rem:sphere-sgn-hyp}
+The bare dimension count --- $\widetilde H^{n-1}(\Cn;X)$
+one-dimensional --- does \emph{not} by itself force the sign: a
+one-dimensional $\Q[\Sym_n]$-module may a priori be trivial, and
+ruling that out requires the genuine $\Sym_n$-action on the class, not
+an analogy with coordinate spheres. An earlier draft's proof appealed
+to ``a sphere built $\Sym_n$-symmetrically from $n$ coordinate
+directions'' without that structure being part of the hypothesis;
+Proposition~\ref{prop:sphere-sgn} now takes the equivariant
+coordinate-sphere structure (equivalently, the action of one
+transposition) as an explicit hypothesis. It is not load-bearing for
+the contradiction: Theorem~\ref{thm:contradiction} does not use
+Proposition~\ref{prop:sphere-sgn} but input~(v)/$Y_1$-A
+(Conjecture~\ref{conj:y1a}), which asserts $\widetilde
+H^{n-1}(\Cn;X)\cong\sgn_{\Sym_n}$ directly. Proposition~%
+\ref{prop:sphere-sgn} records only \emph{what} the top class is, and
+on \emph{what} hypothesis; closing $Y_1$-A is what would supply that
+hypothesis genuinely.
+\end{remark}
 
 \begin{remark}[The $\sgn$ was always an $\Sym_n$-fact]
 \label{rem:sgn-always-sn}
@@ -937,24 +1041,39 @@ class}
 \[
   \ob(\Fstar)\;\in\;\widetilde H^{n-1}(\Cn;X).
 \]
+This membership is \emph{conditional}: it presupposes that the edge map
+exists and lands in degree $n-1$ (parts R3a, R3b of Owed
+debt~\ref{debt:faithful-localized}). Unconditionally, Phase~1
+constructs $\{m_{xy}\}$ as a \v{C}ech $1$-cocycle
+(Lemma~\ref{lem:cocycle}); see Remark~\ref{rem:promotion}.
 \end{definition}
 
 \begin{remark}[The promotion, stated honestly]
 \label{rem:promotion}
 The spectral sequence of the double complex
 $\check C^{*,*}(\mathfrak U;\fobs)$ has $E_2^{p,q}=\check
-H^{p}(\mathfrak U;\mathcal H^{q}(\fobs))$ and abuts to the total
-cohomology, which an edge map carries into $H^{*}(\Cn;X)$. The
-mismatch cocycle sits in \v{C}ech degree $p=1$, and the total degree
-$n-1$ of $\ob(\Fstar)$ is the cube-side dimension count inherited from
-the pre-Fork-A development. The precise pinning of this edge map ---
-its existence, its degree behaviour, and (crucially) its injectivity
---- is \emph{not} discharged here; it is the content of Owed
-debt~\ref{debt:faithful} and is localized in \S\ref{ssec:debt2}. What
-Phase~1 does establish, and uses, is only that the edge map and the
-whole double complex are $\Sym_n$-equivariant --- which is structural,
-since every ingredient (the cover indexed by $[n]$, the sheaf $\fobs$,
-the differentials) is natural in the ground set.
+H^{p}(\mathfrak U;\mathcal H^{q}(\fobs))$ and abuts to its own total
+cohomology. Promoting the mismatch class from there into
+$H^{*}(\Cn;X)$ requires a further comparison map, and that comparison
+crosses a genuine object mismatch: the \v{C}ech double complex lives
+on the punctured trace poset $\Cn(\Fstar)\setminus\{\Fstar\}$, whereas
+$H^{*}(\Cn;X)$ is the cohomology of the \emph{whole} category $\Cn$.
+The mismatch cocycle sits in \v{C}ech degree $p=1$, and the total
+degree $n-1$ asserted for $\ob(\Fstar)$ is the cube-side dimension
+count inherited from the pre-Fork-A development --- a count performed
+in the now-defunct object $X^{\cap}_n$, not re-verified in the
+genuinely different Fork~A object. The precise pinning of this edge
+map --- its \emph{existence}, its \emph{degree behaviour}, and
+(crucially) its \emph{injectivity} --- is \emph{not} discharged here;
+it is exactly the three-part Owed debt~\ref{debt:faithful-localized}
+(R3a existence, R3b degree, R3c injectivity) and is localized in
+\S\ref{ssec:debt2}. Consequently $\ob(\Fstar)$ is, in Phase~1, a
+well-defined \emph{\v{C}ech cocycle}; its promotion into a genuine
+element of $\widetilde H^{n-1}(\Cn;X)$ is conditional on R3a and R3b.
+What Phase~1 does establish, and uses, is only that the \v{C}ech
+double complex --- and any edge map natural in the ground set --- is
+$\Sym_n$-equivariant, since every ingredient (the cover indexed by
+$[n]$, the sheaf $\fobs$, the differentials) is natural in $[n]$.
 \end{remark}
 
 % =====================================================================
@@ -974,9 +1093,12 @@ are open.
 
 \begin{proposition}[Fact One, conditional]
 \label{prop:fact-one}
-If the \v{C}ech-to-cohomology edge map of Definition~\ref{def:ob} is
-injective on the class of the mismatch cocycle, then
-$\ob(\Fstar)\neq0$ in $\widetilde H^{n-1}(\Cn;X)$.
+Suppose the \v{C}ech-to-cohomology edge map of Definition~\ref{def:ob}
+exists and carries the mismatch class into degree $n-1$ (so that
+$\ob(\Fstar)$ is a well-defined element of $\widetilde
+H^{n-1}(\Cn;X)$), and suppose it is injective on the class of the
+mismatch cocycle. Then $\ob(\Fstar)\neq0$ in $\widetilde
+H^{n-1}(\Cn;X)$.
 \end{proposition}
 
 \begin{proof}
@@ -993,15 +1115,22 @@ $\ob(\Fstar)\neq0$.
 
 \begin{status}
 \label{status:fact-one}
-Fact One is \emph{conditional on the edge-map injectivity}. This is not
-a defect introduced by Fork~A --- the pre-Fork-A development carried
-exactly the same conditionality, recorded there as ``the load-bearing
-content is the equivalence $\ob=0\iff$ a global section exists, and
-that equivalence is the assertion that the obstruction theory is
-faithful.'' Fork~A inherits it unchanged and names it precisely:
-edge-map injectivity is residual R3, Owed
-debt~\ref{debt:faithful-localized} (\S\ref{ssec:debt2}). Phase~1 does
-not discharge it.
+Fact One is \emph{conditional on the edge map} --- on its existence,
+its degree-$(n-1)$ behaviour, and its injectivity, the three parts of
+residual R3 (Owed debt~\ref{debt:faithful-localized},
+\S\ref{ssec:debt2}). The \emph{injectivity} is not a defect introduced
+by Fork~A --- the pre-Fork-A development carried exactly the same
+conditionality, recorded there as ``the load-bearing content is the
+equivalence $\ob=0\iff$ a global section exists, and that equivalence
+is the assertion that the obstruction theory is faithful.'' The
+\emph{existence} and \emph{degree} parts, by contrast, are the honest
+residue of the fact that Definition~\ref{def:ob} promotes the mismatch
+cocycle through an edge map that Remark~\ref{rem:promotion} constructs
+only at the level of the \v{C}ech double complex, not as a pinned map
+into $H^{*}(\Cn;X)$ --- so Fact One, like Theorem~\ref{thm:contradiction},
+presupposes that $\ob(\Fstar)$ is a genuine element of $\widetilde
+H^{n-1}(\Cn;X)$ in the first place. Phase~1 discharges none of the
+three.
 \end{status}
 
 \subsection{Fact Two, part 1: the landing ($Y_2$-A)}
@@ -1143,7 +1272,10 @@ This is the re-graded form of the pre-Fork-A target ``UC10.1'': it is
 the same spherical-cohomology statement, now stated for the genuine
 $\Sym_n$-grading rather than the unconstructed Walsh grading.
 $Y_1$-A is \emph{open}. The honest reduction available is the cofiber
-long-exact-sequence method, which ports to Fork~A.
+long-exact-sequence method, which ports to Fork~A as an
+$\Sym_{n-1}$-equivariant reduction --- not, as an earlier draft
+claimed, an $\Sym_n$-equivariant one (Theorem~\ref{thm:y1-reduction},
+Remark~\ref{rem:y1-branching}).
 
 \begin{construction}[The matched-cylinder bridge]
 \label{constr:bridge}
@@ -1167,61 +1299,166 @@ reduction uses.
 \label{thm:y1-reduction}
 Fix $n$ and $x\in[n]$. Let $\Cnm\hookrightarrow\Cn$ induce a
 cofibration $\iota_x\colon\Xbb_{n-1,x}\hookrightarrow\Xbb_n$ of Fork~A
-complexes. The pair has an $\Sym_n$-equivariant cohomology long exact
-sequence; projecting to any isotype $[\lambda]$ (Maschke,
-Theorem~\ref{thm:maschke}) and substituting the null-homotopy
-$\iota_x^{*}\simeq0$ (Construction~\ref{constr:bridge}) collapses it,
-in each degree, to a relation expressing
-$\widetilde H^{k}(\Cn;X)_{[\lambda]}$ through the isotype cohomology of
-the cofiber $\cofib\iota_x=\Xbb_n/\Xbb_{n-1,x}$ and the
-smaller-ground-set term $\widetilde H^{k-1}(\Xbb_{n-1,x})_{[\lambda]}$.
-Hence $Y_1$-A reduces to control of the isotype cohomology of
-$\cofib\iota_x$, with the smaller-ground-set terms supplied by the
-simultaneous induction on $n$.
+complexes. Then:
+\begin{enumerate}[label=\textup{(\arabic*)},leftmargin=2.4em]
+\item The pair $(\Xbb_n,\Xbb_{n-1,x})$ has a cohomology long exact
+  sequence equivariant for the point stabiliser
+  $\mathrm{Stab}(x)\cong\Sym_{n-1}$ --- and \emph{only} for that
+  subgroup, not for all of $\Sym_n$ (Remark~\ref{rem:y1-branching}).
+\item Projecting that LES to any $\Sym_{n-1}$-isotype $[\mu]$ (Maschke
+  for $\Sym_{n-1}$) and substituting the null-homotopy
+  $\iota_x^{*}\simeq0$ (Construction~\ref{constr:bridge}) collapses it,
+  in each degree, to a relation expressing the $[\mu]$-isotype of the
+  restriction $\mathrm{Res}^{\Sym_n}_{\Sym_{n-1}}\widetilde
+  H^{k}(\Cn;X)$ through the $[\mu]$-isotype cohomology of the cofiber
+  $\cofib\iota_x=\Xbb_n/\Xbb_{n-1,x}$ and the smaller-ground-set term
+  $\widetilde H^{k-1}(\Xbb_{n-1,x})_{[\mu]}$.
+\end{enumerate}
+Hence $Y_1$-A reduces to \emph{two} steps: \textup{(a)} control of the
+$\Sym_{n-1}$-isotype cohomology of $\cofib\iota_x$, with the
+smaller-ground-set terms supplied by the simultaneous induction on
+$n$; and \textup{(b)} an induction--restriction (branching) step
+recovering the $\Sym_n$-isotype structure of $\widetilde
+H^{n-1}(\Cn;X)$ --- in particular its $\sgn_{\Sym_n}$-content, which
+the $\sgn_{\Sym_n}$ target of $Y_1$-A (Conjecture~\ref{conj:y1a})
+requires --- from the $\Sym_{n-1}$-equivariant data of step~(a). Both
+steps are genuinely open (Open residual~\ref{res:y1}: R1a and R1b
+respectively).
 \end{theorem}
 
 \begin{proof}[Proof sketch]
-The cofiber long exact sequence of the pair
-$(\Xbb_n,\Xbb_{n-1,x})$ is standard; every map is $\Sym_n$-equivariant
-(the inclusion $\Cnm\hookrightarrow\Cn$ and the cofiber are natural in
-$[n]$), so by Theorem~\ref{thm:maschke} the LES splits into isotypes.
-The bridge (Construction~\ref{constr:bridge}) gives $\iota_x^{*}=0$ on
-cohomology in the relevant degrees; substituting the zero map makes
-the restriction $j^{*}$ surjective with kernel the image of the
-connecting map $\delta$, and $\delta$ injective. The argument is the
-$\Sym_n$-graded port of the pre-Fork-A cofiber-LES re-derivation
+The cofiber long exact sequence of the pair $(\Xbb_n,\Xbb_{n-1,x})$ is
+standard. Every map in it is equivariant for the point stabiliser
+$\mathrm{Stab}(x)\cong\Sym_{n-1}$ --- the inclusion
+$\Cnm\hookrightarrow\Cn$ and the cofiber are natural for relabellings
+\emph{that fix $x$} (Remark~\ref{rem:y1-branching}) --- so by Maschke
+for $\Sym_{n-1}$ the LES splits into $\Sym_{n-1}$-isotypes. It does
+\emph{not} split into $\Sym_n$-isotypes: $\Sym_n$ does not act on the
+pair (Remark~\ref{rem:y1-branching}), so Theorem~\ref{thm:maschke},
+which is Maschke for $\Sym_n$, does not apply to this LES. The bridge
+(Construction~\ref{constr:bridge}) gives $\iota_x^{*}=0$ on cohomology
+in the relevant degrees; substituting the zero map makes the
+restriction $j^{*}$ surjective with kernel the image of the connecting
+map $\delta$, and $\delta$ injective. This is the
+$\Sym_{n-1}$-graded port of the pre-Fork-A cofiber-LES re-derivation
 (\texttt{mg-56b8} Theorem ``Valid cofiber-LES reduction of $Y_1$'');
 it carries over the \emph{same} sub-case structure, including the
 delicate sub-case where the smaller-ground-set term meets the sphere
-class of the $(n-1)$-cube. Phase~1 does not claim Fork~A removes that
-delicacy; it claims only that the reduction ports and the residual is
-the cofiber.
+class of the $(n-1)$-cube. The pre-Fork-A re-derivation split into
+\emph{Walsh} isotypes, for which the $(\Z/2)^n$-action does descend to
+the smaller cube; the $\Sym_n$ re-grading has no such descent, which
+is the source of the branching step~(b)
+(Remark~\ref{rem:y1-branching}). Phase~1 does not claim Fork~A removes
+the cofiber delicacy, nor that the reduction ports unchanged: it
+claims the reduction ports \emph{to an $\Sym_{n-1}$-equivariant
+statement}, and that closing $Y_1$-A then needs both the cofiber and
+the branching step.
 \end{proof}
 
-\begin{openresidual}[The $Y_1$ residual --- R1]
+\begin{remark}[Why the LES is only $\Sym_{n-1}$-equivariant, and the
+branching step this costs]
+\label{rem:y1-branching}
+The reduction of Theorem~\ref{thm:y1-reduction} acquires, under
+Fork~A, a representation-theoretic step the pre-Fork-A reduction did
+not have. The smaller object $\Xbb_{n-1,x}$ is the Fork~A complex of
+the subcategory $\Cnm\subseteq\Cn$ of pointed families with ground set
+inside $[n]\setminus\{x\}$. A relabelling $\pi\in\Sym_n$ carries a
+family with ground set $S\subseteq[n]\setminus\{x\}$ to one with
+ground set $\pi S\subseteq[n]\setminus\{\pi(x)\}$, so $\pi$ preserves
+$\Cnm$ \emph{iff} $\pi(x)=x$: the subcategory $\Cnm$, the inclusion
+$\iota_x$, the pair $(\Xbb_n,\Xbb_{n-1,x})$, and its whole cofiber LES
+are stable exactly under the point stabiliser
+$\mathrm{Stab}(x)\cong\Sym_{n-1}$, not under $\Sym_n$. The
+\emph{family} $\{\iota_x\}_{x\in[n]}$ is $\Sym_n$-equivariant (a
+permutation carries $\iota_x$ to $\iota_{\pi(x)}$); the
+\emph{individual} $\iota_x$, which Theorem~\ref{thm:y1-reduction}
+fixes, is only $\mathrm{Stab}(x)$-equivariant.
+
+This is genuinely a cost of dropping $(\Z/2)^n$. The pre-Fork-A
+reduction split the cofiber LES into \emph{Walsh} isotypes, and the
+$(\Z/2)^n$-action \emph{does} descend to the smaller cube: $(\Z/2)^n$
+is abelian and factors as the direct product
+$(\Z/2)^{[n]\setminus\{x\}}\times(\Z/2)_x$, so it has a
+\emph{quotient} $(\Z/2)^n\twoheadrightarrow(\Z/2)^{[n]\setminus\{x\}}$
+acting on $\Xbb_{n-1,x}$ (the $x$-toggle acts trivially --- there is
+no $x$-coordinate). $\Sym_n$ has no analogous quotient:
+$\mathrm{Stab}(x)\cong\Sym_{n-1}$ is a \emph{subgroup} of $\Sym_n$,
+not a quotient, and there is no surjection
+$\Sym_n\twoheadrightarrow\Sym_{n-1}$. The abelian product structure
+that made the pre-Fork-A cofiber-LES reduction split
+isotype-by-isotype is exactly what Fork~A discards when it drops the
+$(\Z/2)^n$-action --- so dropping $(\Z/2)^n$ damages the $Y_1$
+reduction just as it re-opens the $Y_2$ landing
+(Status~\ref{status:c-block}, \S\ref{ssec:y2a}); Phase~1 records both.
+
+\smallskip\noindent\emph{The branching step.} The $\sgn_{\Sym_n}$
+target of $Y_1$-A (Conjecture~\ref{conj:y1a}) is an
+$\Sym_n$-isotype statement, but Theorem~\ref{thm:y1-reduction}
+delivers only $\Sym_{n-1}$-isotype information. Recovering the
+$\Sym_n$-isotype content from the $\Sym_{n-1}$-restriction is a
+genuine induction--restriction step. It is lossy:
+$\sgn_{\Sym_{n-1}}=\mathrm{Res}^{\Sym_n}_{\Sym_{n-1}}\sgn_{\Sym_n}$,
+but by the branching rule $\sgn_{\Sym_{n-1}}$ is \emph{also} a
+constituent of the restriction of other $\Sym_n$-irreducibles, so an
+$\Sym_{n-1}$-isotype computation does not by itself determine the
+$\Sym_n$-isotype decomposition --- in particular it does not, by
+itself, pin the $\sgn_{\Sym_n}$-content of $\widetilde
+H^{n-1}(\Cn;X)$. The branching step is not carried out in Phase~1; it
+is a genuine new sub-residual of R1, recorded as R1b (Open
+residual~\ref{res:y1}), the $Y_1$-side mirror of the way dropping
+$(\Z/2)^n$ re-opens the $Y_2$ landing as R2.
+\end{remark}
+
+\begin{openresidual}[The $Y_1$ residual --- R1, in two parts]
 \label{res:y1}
-$Y_1$-A reduces, by Theorem~\ref{thm:y1-reduction}, to the isotype
-cohomology of the homotopy cofiber of the matched-cylinder inclusion
-$X(\Dx)\hookrightarrow\Xbb_n$. Stripping the contractible cylinder,
-this is the cohomology of the bar strings of $\Cn$ that \emph{exit}
-the matched subcategory $\Dx$ --- the comma-category twist
-$N(\rho_x/-)$ of the trace functor $\rho_x$, the homotopy type of the
-stuck-family fibres. \textbf{This residual is unchanged from the
-pre-Fork-A state.} The cofiber-LES re-derivation (\texttt{mg-56b8})
-had already isolated exactly this object; Fork~A houses it correctly
-on a well-defined cohomology object, but does not close it and does
-not claim to. It is the genuine open Frankl content and is
-multi-week-plus work for a later phase.
+$Y_1$-A reduces, by Theorem~\ref{thm:y1-reduction}, to \emph{two}
+genuinely open sub-residuals.
+\begin{itemize}[leftmargin=1.7em]
+\item[\textbf{R1a}] \emph{(the cofiber).} The $\Sym_{n-1}$-isotype
+  cohomology of the homotopy cofiber of the matched-cylinder inclusion
+  $X(\Dx)\hookrightarrow\Xbb_n$. Stripping the contractible cylinder,
+  this is the cohomology of the bar strings of $\Cn$ that \emph{exit}
+  the matched subcategory $\Dx$ --- the comma-category twist
+  $N(\rho_x/-)$ of the trace functor $\rho_x$, the homotopy type of
+  the stuck-family fibres. \emph{As a target object} this is
+  unchanged from the pre-Fork-A state: the cofiber-LES re-derivation
+  (\texttt{mg-56b8}) had already isolated exactly this object, and
+  Fork~A houses it correctly on a well-defined cohomology object. It
+  is the genuine open Frankl content and is multi-week-plus work for a
+  later phase.
+\item[\textbf{R1b}] \emph{(the branching step --- new under Fork~A).}
+  The induction--restriction step recovering the $\Sym_n$-isotype
+  structure of $\widetilde H^{n-1}(\Cn;X)$ --- in particular whether
+  it is the single $\sgn_{\Sym_n}$ isotype --- from the
+  $\Sym_{n-1}$-equivariant cofiber data of R1a
+  (Remark~\ref{rem:y1-branching}). This sub-residual \emph{did not
+  exist} in the pre-Fork-A development, where the cofiber LES split
+  into Walsh isotypes via the abelian-quotient structure of
+  $(\Z/2)^n$; it is created by the $(\Z/2)^n\to\Sym_n$ re-grading and
+  is the $Y_1$-side mirror of the way dropping $(\Z/2)^n$ re-opens the
+  $Y_2$ landing (R2, Open residual~\ref{res:y2}).
+\end{itemize}
+\textbf{The honest statement of R1 is therefore: its target object
+(R1a) is unchanged from the pre-Fork-A state, but its reduction
+acquires, under Fork~A, the new $\Sym_{n-1}\to\Sym_n$ branching
+sub-residual R1b.} Fork~A does not close either part and does not
+claim to.
 \end{openresidual}
 
 \begin{status}
 \label{status:y1a}
 $Y_1$-A is \textsf{RED --- open}. This is the expected outcome:
 Phase~1 was never going to close the $Y_1$ residual. What Phase~1
-establishes is that the cofiber-LES reduction ports cleanly to the
-well-defined Fork~A object and that the residual --- the homotopy type
-of the stuck-family fibres --- is the same hard object as before, now
-correctly housed.
+establishes is that the cofiber-LES reduction ports to the
+well-defined Fork~A object \emph{as an $\Sym_{n-1}$-equivariant
+statement} (Theorem~\ref{thm:y1-reduction}), and that the residual is
+two-part (Open residual~\ref{res:y1}): the cofiber R1a --- the
+homotopy type of the stuck-family fibres, the same hard object as
+before, now correctly housed --- and the new $\Sym_{n-1}\to\Sym_n$
+branching sub-residual R1b that the $(\Z/2)^n\to\Sym_n$ re-grading
+creates. The pre-Fork-A claim that the reduction ``ports unchanged''
+does \emph{not} hold for Fork~A; the honest statement is that it ports
+to an $\Sym_{n-1}$-equivariant reduction \emph{plus} a branching step.
 \end{status}
 
 \subsection{The closing contradiction}
@@ -1229,27 +1466,43 @@ correctly housed.
 
 \begin{theorem}[The Fork A two-part contradiction, conditional]
 \label{thm:contradiction}
-Assume, for $n\ge3$:
+Assume, for $n\ge3$, the following five inputs, none of which Phase~1
+discharges:
 \begin{enumerate}[label=\textup{(\roman*)},leftmargin=2.4em]
-\item \textup{(R3, faithfulness)} the \v{C}ech-to-cohomology edge map
-  of Definition~\ref{def:ob} is injective on the mismatch class;
+\item \textup{(R3a, edge-map existence)} the
+  \v{C}ech-to-cohomology edge map of Definition~\ref{def:ob}
+  \emph{exists} --- the promotion of the mismatch cocycle into the
+  cohomology of the category is a defined map, so that $\ob(\Fstar)$
+  is a genuine element of $H^{*}(\Cn;X)$;
+\item \textup{(R3b, degree behaviour)} that edge map carries the
+  mismatch class into total degree $n-1$, so that
+  $\ob(\Fstar)\in\widetilde H^{n-1}(\Cn;X)$ specifically;
+\item \textup{(R3c, edge-map injectivity)} the edge map is
+  \emph{injective} on the class of the mismatch cocycle;
 \item \textup{(R2, landing)} $\ob(\Fstar)$ has no
-  $\sgn_{\Sym_n}$-component in $H^{n-1}(\Cn;X)$ (Open
+  $\sgn_{\Sym_n}$-component in $\widetilde H^{n-1}(\Cn;X)$ (Open
   residual~\ref{res:y2}); and
 \item \textup{(R1, vanishing)} $Y_1$-A holds
-  (Conjecture~\ref{conj:y1a}; Open residual~\ref{res:y1}).
+  (Conjecture~\ref{conj:y1a}) --- which, by
+  Theorem~\ref{thm:y1-reduction}, itself rests on the two-part $Y_1$
+  residual: R1a (the cofiber) and R1b (the $\Sym_{n-1}\to\Sym_n$
+  branching step), Open residual~\ref{res:y1}.
 \end{enumerate}
 Then there is no minimal counterexample to Frankl on $[n]$; hence
 Frankl holds on $[n]$.
 \end{theorem}
 
 \begin{proof}
-Suppose $\Fstar$ is a minimal counterexample. By Fact One
-(Proposition~\ref{prop:fact-one}, using (i)), $\ob(\Fstar)\neq0$ in
-$\widetilde H^{n-1}(\Cn;X)$. By (iii), $Y_1$-A makes $\widetilde
-H^{n-1}(\Cn;X)\cong\sgn_{\Sym_n}$ --- the cohomology in degree $n-1$
-is exactly the one-dimensional sphere class, all other isotypes
-vanish. By (ii), $\ob(\Fstar)$ has no $\sgn$-component; since
+Suppose $\Fstar$ is a minimal counterexample. By (i) and (ii) the
+obstruction class $\ob(\Fstar)$ is a well-defined element of
+$\widetilde H^{n-1}(\Cn;X)$ --- (i) makes the promotion a defined map,
+(ii) places its value in degree $n-1$ --- so that Fact One and the
+remainder of the argument have a subject. By Fact One
+(Proposition~\ref{prop:fact-one}, using the injectivity (iii)),
+$\ob(\Fstar)\neq0$ in $\widetilde H^{n-1}(\Cn;X)$. By (v), $Y_1$-A
+makes $\widetilde H^{n-1}(\Cn;X)\cong\sgn_{\Sym_n}$ --- the cohomology
+in degree $n-1$ is exactly the one-dimensional sphere class, all other
+isotypes vanish. By (iv), $\ob(\Fstar)$ has no $\sgn$-component; since
 $\widetilde H^{n-1}(\Cn;X)$ is \emph{entirely} $\sgn$-isotypic, the
 only element with no $\sgn$-component is $0$, so $\ob(\Fstar)=0$. This
 contradicts $\ob(\Fstar)\neq0$. Hence no minimal counterexample
@@ -1262,18 +1515,34 @@ Theorem~\ref{thm:contradiction} is the Fork~A re-founding of the
 intended proof. It is a \emph{conditional} theorem, and the honest
 accounting of its hypotheses is the heart of the Phase-1 deliverable.
 \begin{itemize}[leftmargin=1.5em]
-\item It rests on \emph{three} named open inputs --- R1, R2, R3 ---
-  where the pre-Fork-A closing argument rested on the same three
-  \emph{plus} the unconstructed $(\Z/2)^n$-action. Fork~A removes the
-  fourth (Status~\ref{status:c-block}) and houses the other three on a
-  well-defined object. That is the genuine gain; it is a gain in
-  soundness and clarity, not in proof-distance to Frankl.
-\item R1 (the $Y_1$ cofiber residual) and R3 (faithfulness) are
-  \emph{unchanged} from the pre-Fork-A state. R2 (the landing) is the
-  one input Fork~A genuinely re-opens: the pre-Fork-A $Y_2$ was
+\item It rests on the named open inputs R1, R2, R3 --- with R1 itself
+  two-part (R1a the cofiber, R1b the $\Sym_{n-1}\to\Sym_n$ branching
+  step) and R3 itself three-part (R3a existence, R3b degree, R3c
+  injectivity of the edge map). Phase~1 makes \emph{no} claim that
+  this is a count of ``exactly three'': it is the honest enumeration
+  of every input Theorem~\ref{thm:contradiction} rests on. The
+  comparison with the pre-Fork-A closing argument is genuine but
+  modest: Fork~A removes the dependence on the unconstructed
+  $(\Z/2)^n$-action (Status~\ref{status:c-block}) and houses the
+  construction on a well-defined object --- a gain in soundness and
+  clarity --- but in doing so it trades the $(\Z/2)^n$ input for the
+  $\Sym_{n-1}\to\Sym_n$ branching step R1b and surfaces the edge-map
+  existence/degree debt R3a/R3b. It is therefore \emph{not} a clean
+  reduction in the number of open inputs, and Phase~1 does not claim
+  one.
+\item R1a (the $Y_1$ cofiber residual, as a target object) and R3c
+  (edge-map injectivity) are \emph{unchanged} from the pre-Fork-A
+  state. The inputs Fork~A genuinely changes are three: R2 (the
+  landing), which it re-opens --- the pre-Fork-A $Y_2$ was
   ``mechanism-sound'' resting on $(\Z/2)^n$-equivariance, and dropping
   that action means the separation of $\ob$ from the sphere class must
-  be re-established by other means (Open residual~\ref{res:y2}).
+  be re-established by other means (Open residual~\ref{res:y2}); R1b
+  (the $\Sym_{n-1}\to\Sym_n$ branching step), which the
+  $(\Z/2)^n\to\Sym_n$ re-grading newly creates
+  (Remark~\ref{rem:y1-branching}); and R3a/R3b (edge-map existence and
+  degree), implicit and unexamined in the pre-Fork-A development's
+  undefined object, which Fork~A must now name because its object is
+  genuinely defined.
 \item The proof of Theorem~\ref{thm:contradiction} does not invoke
   spherical concentration as an independent ingredient beyond $Y_1$-A;
   spherical concentration \emph{is} $Y_1$-A. It re-enters as the
@@ -1281,10 +1550,12 @@ accounting of its hypotheses is the heart of the Phase-1 deliverable.
   (Theorem~\ref{thm:y1-reduction}), exactly as in the pre-Fork-A
   simultaneous induction.
 \end{itemize}
-None of this proves Frankl: (i), (ii), (iii) are genuinely open. What
+None of this proves Frankl: the inputs (i)--(v) of
+Theorem~\ref{thm:contradiction} are genuinely open. What
 Theorem~\ref{thm:contradiction} shows is that the re-founded
-contradiction is coherent on a sound object and that its open part is
-exactly the three precisely named residuals R1, R2, R3.
+contradiction is coherent on a sound object, and that its open part is
+named precisely and \emph{in full} --- the residuals R1 (two-part),
+R2, and R3 (three-part).
 \end{remark}
 
 % =====================================================================
@@ -1315,20 +1586,36 @@ is precisely localized.
   (Remark~\ref{rem:sgn-always-sn}).
 \item The vanishing statement $Y_1$ re-derives to the re-graded
   sphere concentration $Y_1$-A (Conjecture~\ref{conj:y1a}), with the
-  cofiber-LES reduction ported (Theorem~\ref{thm:y1-reduction}).
+  cofiber-LES reduction ported to an $\Sym_{n-1}$-equivariant
+  statement (Theorem~\ref{thm:y1-reduction}).
 \item The landing statement $Y_2$ re-derives at the level of its
   structural mechanism (Proposition~\ref{prop:y2a-mech}).
 \end{enumerate}
 
-\noindent\emph{Localized (the open part).} The re-grading correctly
-\emph{surfaces} that the pre-Fork-A $Y_2$ rested on the
-$(\Z/2)^n$-equivariance now dropped: the separation of $\ob$ from the
-sphere class, free in the Walsh grading, is not free in the $\Sym_n$
-grading. Phase~1 localizes this precisely as residual R2 (Open
-residual~\ref{res:y2}). This is not a failure of the re-grading; it is
-the re-grading doing its job --- exposing that an input the pre-Fork-A
-ledger called ``mechanism-sound'' in fact depended on a now-refuted
-group action and must be re-established.
+\noindent\emph{Localized (the open parts).} The re-grading correctly
+\emph{surfaces} two inputs that the pre-Fork-A development obtained
+for free from the $(\Z/2)^n$-action now dropped.
+\begin{enumerate}[label=\textup{(\roman*)},leftmargin=2.2em]
+\item \emph{The $Y_2$ separation.} The separation of $\ob$ from the
+  sphere class, free in the Walsh grading, is not free in the $\Sym_n$
+  grading. Phase~1 localizes this precisely as residual R2 (Open
+  residual~\ref{res:y2}).
+\item \emph{The $Y_1$ branching step.} The pre-Fork-A cofiber-LES
+  reduction split into Walsh isotypes, descending to the smaller cube
+  via the abelian-quotient structure of $(\Z/2)^n$; $\Sym_n$ has no
+  such quotient (Remark~\ref{rem:y1-branching}). The reduction
+  therefore ports only to an $\Sym_{n-1}$-equivariant statement, and
+  recovering the $\Sym_n$-isotype structure needs an
+  $\Sym_{n-1}\to\Sym_n$ branching step. Phase~1 localizes this
+  precisely as the new sub-residual R1b (Open residual~\ref{res:y1}).
+\end{enumerate}
+Neither is a failure of the re-grading; both are the re-grading doing
+its job --- exposing that inputs the pre-Fork-A ledger treated as
+settled (``$Y_2$ mechanism-sound''; ``$Y_1$ reduction unchanged'') in
+fact depended on the now-refuted $(\Z/2)^n$-action and must be
+re-established. The discipline is symmetric: dropping $(\Z/2)^n$
+re-opens work on \emph{both} sides of the contradiction, and Phase~1
+records both.
 
 \begin{remark}[Why ``ADDRESSED'' and not ``PAID'']
 \label{rem:debt1-addressed}
@@ -1337,9 +1624,10 @@ as fully \textsf{PAID}, on the strength of a claimed theorem that
 $\ob$ is standard-isotypic. That theorem does not hold (Status~%
 \ref{status:y2a}), so the honest status is \textsf{ADDRESSED}: the
 re-grading as a structural task is complete and sound, and its
-residue is the single precisely named object R2. The brief permits
-``address \emph{or} precisely localize''; Phase~1 does both ---
-addresses the structural re-grading, localizes the residue.
+residue is precisely named --- the landing residual R2 and the
+branching sub-residual R1b that the re-grading surfaces. The brief
+permits ``address \emph{or} precisely localize''; Phase~1 does both
+--- addresses the structural re-grading, localizes the residue.
 \end{remark}
 
 \subsection{Owed debt 2 --- faithfulness ($V_3$ / wrapper-risk): LOCALIZED}
@@ -1348,8 +1636,10 @@ addresses the structural re-grading, localizes the residue.
 \begin{status}
 \label{status:debt2}
 Owed debt~\ref{debt:faithful} (faithfulness) is \textsf{LOCALIZED, not
-discharged}. Phase~1 reduces it to a single named object, with one
-related facet surfaced by the re-grading.
+discharged}. Phase~1 reduces it to a single named edge map and three
+load-bearing properties of that map --- existence, degree-$(n-1)$
+landing, and injectivity (R3a, R3b, R3c) --- with one further facet
+(R2) surfaced by the re-grading.
 \end{status}
 
 The vision's clause $V_3$ --- ``the minimal counterexample differs
@@ -1362,23 +1652,51 @@ rare coordinate; a minimal counterexample has $\ob\neq0$ ---
 \emph{provided} Fact One holds. So $\ob$ distinguishes $\Fstar$ from
 the generic families, as $V_3$ asks, conditionally on Fact One.
 
-\begin{debt}[Faithfulness, localized --- R3]
+\begin{debt}[Faithfulness, localized --- R3, a three-part debt]
 \label{debt:faithful-localized}
-Owed debt~\ref{debt:faithful} is exactly the following statement.
-\begin{quote}
-The edge map $\check H^{1}(\mathfrak U;\fobs)\to\widetilde
-H^{n-1}(\Cn;X)$ of Definition~\ref{def:ob} is \emph{injective} on the
-class of the mismatch cocycle: if $\ob(\Fstar)=0$ in $\widetilde
-H^{n-1}(\Cn;X)$, then $\{m_{xy}\}$ is the \v{C}ech coboundary of a
-\emph{global} section of $\fobs$.
-\end{quote}
-Equivalently: the promotion of the obstruction from the \v{C}ech
-$H^1$ of the cover into the cohomology of the category loses no
-information --- a vanishing promoted class reflects a genuinely
-trivial mismatch.
+Owed debt~\ref{debt:faithful} is the conjunction of \emph{three}
+statements about the \v{C}ech-to-cohomology edge map of
+Definition~\ref{def:ob} --- all three load-bearing, none discharged by
+Phase~1.
+\begin{itemize}[leftmargin=1.7em]
+\item[\textbf{R3a}] \emph{(existence).} The promotion of the mismatch
+  cocycle through the \v{C}ech-to-cohomology spectral sequence into
+  $H^{*}(\Cn;X)$ is a \emph{defined map}. This is not automatic: the
+  \v{C}ech double complex $\check C^{*,*}(\mathfrak U;\fobs)$ lives on
+  the punctured trace poset $\Cn(\Fstar)\setminus\{\Fstar\}$, while
+  $H^{*}(\Cn;X)$ is the cohomology of the whole category $\Cn$, and
+  the comparison map between the two is not constructed in Phase~1
+  (Remark~\ref{rem:promotion}).
+\item[\textbf{R3b}] \emph{(degree-$(n-1)$ landing).} The edge map
+  carries the mismatch class --- which sits in \v{C}ech degree $1$ ---
+  into total degree $n-1$, so that $\ob(\Fstar)$ is an element of
+  $\widetilde H^{n-1}(\Cn;X)$ \emph{specifically}, the degree where
+  the sphere-concentration residual R1 applies to it. Phase~1 inherits
+  the degree count $n-1$ from the pre-Fork-A development
+  (Remark~\ref{rem:promotion}), where it was performed in the
+  now-defunct object $X^{\cap}_n$; it is not re-verified in the
+  genuinely different Fork~A object.
+\item[\textbf{R3c}] \emph{(injectivity).} The edge map $\check
+  H^{1}(\mathfrak U;\fobs)\to\widetilde H^{n-1}(\Cn;X)$ is
+  \emph{injective} on the class of the mismatch cocycle: if
+  $\ob(\Fstar)=0$ in $\widetilde H^{n-1}(\Cn;X)$, then $\{m_{xy}\}$ is
+  the \v{C}ech coboundary of a \emph{global} section of $\fobs$.
+\end{itemize}
+R3c is the original faithfulness statement: the promotion of the
+obstruction from the \v{C}ech $H^1$ of the cover into the cohomology
+of the category loses no information --- a vanishing promoted class
+reflects a genuinely trivial mismatch. R3a and R3b are its logical
+prerequisites: without them $\ob(\Fstar)$ is not a well-defined
+element of $\widetilde H^{n-1}(\Cn;X)$ at all, and R3c --- and Fact
+One, and Theorem~\ref{thm:contradiction} --- have no subject. Phase~1
+names all three and discharges none. \emph{The earlier Phase-1 draft
+named only R3c}; that the residual set is a three-part debt, not a
+single injectivity statement, is one of the two corrections of the
+\texttt{mg-365e} revision (Status~\ref{status:mg365e-revision}).
 \end{debt}
 
-Three honest sub-points sharpen what this debt is.
+Three honest remarks sharpen what this debt is and how it relates to
+the rest of the contradiction.
 
 \begin{remark}[The wrapper-risk, precisely]
 \label{rem:wrapper}
@@ -1388,12 +1706,14 @@ double complex and never the counterexample hypothesis, so that
 \emph{if} $Y_1$-A holds then $\ob(\F)=0$ for \emph{every} family, and
 all Frankl-specific content collapses into Fact One. Fork~A does not
 remove this risk, but it localizes it: under Fork~A the
-Frankl-specific content is the edge-map injectivity of
-R3. If that injectivity holds, the equivalence ``$\ob=0\iff$ a global
+Frankl-specific content is the edge-map injectivity R3c. If that
+injectivity holds, the equivalence ``$\ob=0\iff$ a global
 rare-coordinate section exists'' is genuine and the cohomology
 genuinely detects the counterexample ($V_3$ satisfied). If it fails,
 $\ob$ is family-blind and the contradiction is hollow. The debt is a
-single, checkable homological-algebra statement about one edge map.
+small, checkable package of homological-algebra statements about one
+edge map --- its existence, its degree, and its injectivity
+(R3a--R3c).
 \end{remark}
 
 \begin{remark}[R2 is faithfulness-flavoured]
@@ -1455,13 +1775,16 @@ sphere class identified as $\sgn_{\Sym_n}$
 two-part contradiction are re-established as a conditional theorem
 (Theorem~\ref{thm:contradiction}). Owed debt~\ref{debt:regrading} (the
 re-grading) is addressed --- its structural content discharged, its
-residue localized as R2; Owed debt~\ref{debt:faithful} (faithfulness)
-is localized as R3. \textbf{Frankl is not proved, and Phase~1 was
-never meant to prove it.} The verdict GREEN is for the Phase-1 scope:
-the re-foundation is delivered and internally sound. Three objects
-remain genuinely open --- R1 (the $Y_1$ cofiber residual), R2 (the
-$Y_2$ landing / separation), R3 (faithfulness / the edge map) --- and
-each is precisely named.
+residue localized as R2 (the $Y_2$ separation) and R1b (the
+$\Sym_{n-1}\to\Sym_n$ branching step the re-grading newly surfaces);
+Owed debt~\ref{debt:faithful} (faithfulness) is localized as the
+three-part R3. \textbf{Frankl is not proved, and Phase~1 was never
+meant to prove it.} The verdict GREEN is for the Phase-1 scope: the
+re-foundation is delivered and internally sound. The genuine open
+content is named precisely and in full --- R1 (two-part: R1a the
+$Y_1$ cofiber, R1b the branching step), R2 (the $Y_2$ landing /
+separation), and R3 (three-part: existence, degree, and injectivity of
+the \v{C}ech-to-cohomology edge map).
 
 \subsection{What Phase 1 delivered (positive content)}
 \label{ssec:delivered}
@@ -1483,13 +1806,18 @@ each is precisely named.
   landing re-derived in the $\Sym_n$ grading with no group action
   (Proposition~\ref{prop:y2a-mech}).
 \item The $Y_1$ vanishing re-stated as re-graded sphere concentration
-  (Conjecture~\ref{conj:y1a}) with the cofiber-LES reduction ported
-  (Theorem~\ref{thm:y1-reduction}).
+  (Conjecture~\ref{conj:y1a}), with the cofiber-LES reduction ported
+  to an $\Sym_{n-1}$-equivariant statement
+  (Theorem~\ref{thm:y1-reduction}) and the new $\Sym_{n-1}\to\Sym_n$
+  branching sub-residual R1b honestly recorded
+  (Remark~\ref{rem:y1-branching}).
 \item The closing contradiction re-established as a conditional
-  theorem and shown to rest on exactly three open inputs
-  (Theorem~\ref{thm:contradiction}, Remark~\ref{rem:honest-shape}) ---
-  one fewer than the pre-Fork-A argument, which also needed the
-  unconstructed $(\Z/2)^n$-action.
+  theorem (Theorem~\ref{thm:contradiction}), with \emph{every} input
+  it rests on enumerated in full --- R1 (two-part: R1a cofiber, R1b
+  branching), R2, and R3 (three-part: R3a existence, R3b degree, R3c
+  injectivity of the edge map) --- and no claim of a clean
+  ``exactly three / one fewer than pre-Fork-A'' count
+  (Remark~\ref{rem:honest-shape}).
 \item Owed debt~1 addressed; Owed debt~2 localized
   (\S\ref{sec:debts}); and an over-claim from an earlier draft (the
   ``standard-isotypic'' theorem) caught and withdrawn
@@ -1500,20 +1828,26 @@ each is precisely named.
 \label{ssec:open}
 
 \begin{itemize}[leftmargin=1.7em]
-\item \textbf{R1 --- $Y_1$-A, Open residual~\ref{res:y1}.} The isotype
-  cohomology of the cofiber of the matched-cylinder inclusion --- the
-  homotopy type of the stuck-family fibres. Unchanged from the
-  pre-Fork-A residual; the genuine open Frankl content;
-  multi-week-plus.
+\item \textbf{R1 --- $Y_1$-A, Open residual~\ref{res:y1}}, in two
+  parts. \textbf{R1a:} the $\Sym_{n-1}$-isotype cohomology of the
+  cofiber of the matched-cylinder inclusion --- the homotopy type of
+  the stuck-family fibres; as a target object unchanged from the
+  pre-Fork-A residual, the genuine open Frankl content,
+  multi-week-plus. \textbf{R1b:} the $\Sym_{n-1}\to\Sym_n$ branching
+  step recovering the $\Sym_n$-isotype structure of $\widetilde
+  H^{n-1}(\Cn;X)$ from the $\Sym_{n-1}$-equivariant cofiber data --- a
+  new sub-residual created by the $(\Z/2)^n\to\Sym_n$ re-grading
+  (Remark~\ref{rem:y1-branching}).
 \item \textbf{R2 --- $Y_2$-A, Open residual~\ref{res:y2}.} Whether
   $\ob(\Fstar)$ avoids the $\sgn$ sphere-class isotype. A
   representation-theoretic question about the obstruction sheaf
   $\fobs$; faithfulness-flavoured (Remark~\ref{rem:r2-faithful}).
 \item \textbf{R3 --- faithfulness, Owed
-  debt~\ref{debt:faithful-localized}.} The injectivity of the
-  \v{C}ech-to-cohomology edge map --- the whole of the
-  $V_3$/wrapper-risk question, now a single homological-algebra
-  statement; subsumes the hocolim-versus-holim question
+  debt~\ref{debt:faithful-localized}}, a three-part debt on the
+  \v{C}ech-to-cohomology edge map: \textbf{R3a} its existence,
+  \textbf{R3b} its degree-$(n-1)$ landing, \textbf{R3c} its
+  injectivity --- together the whole of the $V_3$/wrapper-risk
+  question; subsumes the hocolim-versus-holim question
   (Remark~\ref{rem:holim-prereq}).
 \end{itemize}
 
@@ -1521,35 +1855,48 @@ each is precisely named.
 \label{ssec:recommendations}
 
 \begin{enumerate}[leftmargin=1.9em]
-\item \textbf{Proceed to Phase~2 (independent validation) of this
-  document.} The Phase-1 gate is GREEN: the re-foundation is delivered
-  and internally coherent. Phase~2 should default-skeptically check, in
-  particular, Theorem~\ref{thm:projection} (the chain-map and
-  functoriality claims), Theorem~\ref{thm:welldefined} ($D^2=0$),
-  Theorem~\ref{thm:maschke} (the $\Sym_n$-equivariance of $D$), and ---
-  with special care, given the withdrawn over-claim --- the honesty of
-  \S\ref{ssec:y2a}: that Proposition~\ref{prop:y2a-mech} is all that is
-  proved and Open residual~\ref{res:y2} is genuinely open.
+\item \textbf{Proceed to an independent re-validation of this revised
+  document.} The first Phase-2 validation (\texttt{mg-d300}) returned
+  AMBER and is incorporated: this revision corrects the two
+  over-claims it caught (Status~\ref{status:mg365e-revision}). A
+  re-validation should default-skeptically confirm that the correction
+  is complete and honest --- in particular that
+  Theorem~\ref{thm:y1-reduction} now claims only
+  $\Sym_{n-1}$-equivariance and that R1b is genuinely recorded
+  (Remark~\ref{rem:y1-branching}, Open residual~\ref{res:y1}); that
+  Theorem~\ref{thm:contradiction} lists \emph{every} input, including
+  the three-part R3 (Owed debt~\ref{debt:faithful-localized}); and
+  that the spine --- Theorem~\ref{thm:projection} (chain map and
+  functoriality), Theorem~\ref{thm:welldefined} ($D^2=0$),
+  Theorem~\ref{thm:maschke} (the $\Sym_n$-equivariance of $D$),
+  Proposition~\ref{prop:y2a-mech} --- which \texttt{mg-d300}
+  independently confirmed sound, is undisturbed by the revision.
 \item \textbf{The $Y_1$ residual} (R1, Open residual~\ref{res:y1}) and
   \textbf{the faithfulness edge map} (R3, Owed
-  debt~\ref{debt:faithful-localized}) are independent and can be
-  attacked in parallel as separate tickets. Both require first pinning
-  the cell-level spectral sequence of $\fobs$
+  debt~\ref{debt:faithful-localized}) can be attacked in parallel as
+  separate tickets, with the corrected picture: R1 now carries,
+  besides the cofiber R1a, the added $\Sym_{n-1}\to\Sym_n$ branching
+  step R1b (Remark~\ref{rem:y1-branching}); and R3 is three
+  sub-problems --- existence R3a, degree R3b, injectivity R3c --- of
+  which existence and degree are upstream of injectivity. Both attacks
+  require first pinning the cell-level spectral sequence of $\fobs$
   (Remark~\ref{rem:holim-prereq}).
 \item \textbf{The $Y_2$ separation residual} (R2, Open
   residual~\ref{res:y2}) should be attacked together with R3: they are
   facets of one faithfulness question (Remark~\ref{rem:r2-faithful}),
   and a representation-theoretic analysis of $\fobs$ feeds both.
 \item \textbf{Do not Lean-formalize yet} (Phase~3). Phase~3 is gated on
-  Phase~2 returning GREEN. Of the Fork~A content,
+  the independent re-validation of this revised document returning
+  GREEN. Of the Fork~A content,
   Theorems~\ref{thm:projection},~\ref{thm:welldefined}, and~%
   \ref{thm:maschke} and Proposition~\ref{prop:y2a-mech} are the
-  formalization-ready core; the three residuals are not.
+  formalization-ready core; the residuals R1 (two-part), R2, and R3
+  (three-part) are not.
 \item \textbf{The consolidated paper (\texttt{../main.tex}) is not
   edited by Phase~1.} It honestly records the pre-Fork-A state. A
-  later pass --- once Phase~2 validates this document --- may fold the
-  Fork~A re-foundation into the paper, superseding its \S\S3--4. That
-  is out of Phase-1 scope.
+  later pass --- once the independent re-validation of this revised
+  document returns GREEN --- may fold the Fork~A re-foundation into
+  the paper, superseding its \S\S3--4. That is out of Phase-1 scope.
 \end{enumerate}
 
 \subsection{The honest one-paragraph summary}
@@ -1567,30 +1914,46 @@ grading is re-established by Maschke for the genuine $\Sym_n$-action,
 with the sphere class the sign isotype --- the sign having always been
 an $\Sym_n$-datum, not a $(\Z/2)^n$ one. On the re-founded object the
 obstruction class is re-established and the two-part contradiction is
-re-assembled as a conditional theorem; honest accounting shows it
-rests on three precisely named open inputs --- the $Y_1$ cofiber
-residual (unchanged), the $Y_2$ landing (which Fork~A genuinely
-re-opens, because the pre-Fork-A landing mechanism rested on the
-now-dropped $(\Z/2)^n$-equivariance, and the separation of the
-obstruction from the sign sphere class is a representation-theoretic
-question about the obstruction sheaf that Phase~1 localizes but does
-not settle), and faithfulness (whether the cohomology genuinely
-detects the counterexample --- the vision's clause $V_3$ --- localized
-to the injectivity of one edge map). Frankl is not proved, and Phase~1
+re-assembled as a conditional theorem; honest accounting enumerates,
+in full, every input it rests on --- the $Y_1$ cofiber residual R1
+(its target object R1a unchanged, but its reduction now carrying a new
+$\Sym_{n-1}\to\Sym_n$ branching step R1b, because the pre-Fork-A
+reduction split isotype-by-isotype only via the abelian-quotient
+structure of $(\Z/2)^n$ that $\Sym_n$ lacks), the $Y_2$ landing R2
+(which Fork~A genuinely re-opens, because the pre-Fork-A landing
+mechanism rested on the now-dropped $(\Z/2)^n$-equivariance, and the
+separation of the obstruction from the sign sphere class is a
+representation-theoretic question about the obstruction sheaf that
+Phase~1 localizes but does not settle), and a three-part faithfulness
+debt R3 --- the existence, the degree-$(n-1)$ behaviour, and the
+injectivity of the \v{C}ech-to-cohomology edge map that promotes the
+obstruction into the cohomology (the vision's clause $V_3$). Frankl is not proved, and Phase~1
 was not meant to prove it: what Phase~1 delivers is a sound
 re-foundation that clears both Phase-1.5 walls, carries out the
 re-grading, re-assembles the contradiction on a well-defined object,
-and isolates the genuine open content as three precisely named
-residuals --- and, in the discipline the ledger's over-claim history
-demands, it withdraws a clean-landing-theorem over-claim from its own
-earlier draft rather than carrying it forward.
+and isolates the genuine open content as the precisely and completely
+named residuals R1 (two-part), R2, and R3 (three-part) --- and, in
+the discipline the ledger's over-claim history demands, it withdraws
+over-claims rather than carrying them forward: the
+clean-landing-theorem over-claim caught in Phase~1, and the two
+caught by the \texttt{mg-d300} Phase-2 validation and corrected in the
+\texttt{mg-365e} revision (the ``$\Sym_n$-equivariant cofiber LES /
+$R1$ unchanged'' over-claim and the ``exactly three residuals''
+over-claim; Status~\ref{status:mg365e-revision}).
 
 \subsection{Cross-references}
 \label{ssec:xref}
 
 \begin{itemize}[leftmargin=1.7em]
 \item \textbf{Brief:} \texttt{mg-c15b} (Frankl-ForkA-Refound-LaTeX,
-  Phase~1).
+  Phase~1); \texttt{mg-365e} (Frankl-ForkA-Phase2-Revision --- the
+  revision carried out in this document).
+\item \textbf{The Phase-2 independent validation (the two findings
+  this revision corrects):}
+  \texttt{docs/Frankl-ForkA-Phase2-validation.md} (\texttt{mg-d300};
+  \S3 Finding~A, \S4 Finding~B, \S5.1 the minor point, \S6.2 the
+  revision spec); the revision is logged in
+  \texttt{docs/Frankl-ForkA-Phase2-Revision.md} (\texttt{mg-365e}).
 \item \textbf{Fork~A endorsement and the two debts:}
   \texttt{docs/Frankl-ForkD-Probe-n3.md} (\texttt{mg-565a}, \S\S6--7).
 \item \textbf{The drift diagnosis and the fork menu:}
@@ -1611,22 +1974,38 @@ earlier draft rather than carrying it forward.
 
 \medskip
 \noindent\footnotesize Phase~1 re-foundation by polecat
-\texttt{cat-mg-c15b}. Deliverable on \texttt{main}: this document
-(\texttt{paper/forkA/refoundation.tex}) and the ledger note
-\texttt{docs/Frankl-ForkA-Refound-LaTeX.md}. Verdict: \textbf{GREEN ---
-FORK-A-REFOUNDATION-DELIVERED (Phase~1).} The Frankl cohomology is
-re-founded on Fork~A: the covariant homotopy colimit $H^{*}(\Cn;X)$ is
-genuinely defined (dodging Phase-1.5 refutation (a) by construction),
-the $(\Z/2)^n$-action is dropped (dissolving refutation (b)), the
+\texttt{cat-mg-c15b}, revised by polecat \texttt{cat-mg-365e} per the
+\texttt{mg-d300} Phase-2 validation. Deliverable on \texttt{main}:
+this document (\texttt{paper/forkA/refoundation.tex}) and the ledger
+notes \texttt{docs/Frankl-ForkA-Refound-LaTeX.md} (Phase~1) and
+\texttt{docs/Frankl-ForkA-Phase2-Revision.md} (this revision).
+Verdict: \textbf{GREEN --- FORK-A-REFOUNDATION-DELIVERED (Phase~1),
+as corrected.} The Frankl cohomology is re-founded on Fork~A: the
+covariant homotopy colimit $H^{*}(\Cn;X)$ is genuinely defined
+(dodging Phase-1.5 refutation (a) by construction), the
+$(\Z/2)^n$-action is dropped (dissolving refutation (b)), the
 $\sgn_{\Sym_n}$ re-grading is carried out, and the obstruction class
 and two-part contradiction are re-established as a conditional theorem
-resting on three precisely named open residuals --- R1 ($Y_1$ cofiber,
-unchanged), R2 ($Y_2$ landing, re-opened and localized), R3
-(faithfulness / edge map). Owed debt~1 (re-grading) is addressed; Owed
-debt~2 (faithfulness) is localized. Frankl is not proved; Phase~1 was
-not meant to prove it. An over-claim in an earlier draft of this
-document --- a clean ``standard-isotypic'' landing theorem --- was
-caught and withdrawn. Recommended next: Phase~2, independent
-validation of this document.
+whose open inputs are named precisely and in full --- R1 ($Y_1$
+cofiber: R1a unchanged as a target object, R1b a new
+$\Sym_{n-1}\to\Sym_n$ branching step), R2 ($Y_2$ landing, re-opened
+and localized), and the three-part R3 (edge-map existence, degree, and
+injectivity). Owed debt~1 (re-grading) is addressed; Owed debt~2
+(faithfulness) is localized. Frankl is not proved; Phase~1 was not
+meant to prove it. \emph{Revision note (\texttt{mg-365e}).} This
+document has been revised following the \texttt{mg-d300} independent
+Phase-2 validation, which returned AMBER and caught two surviving
+over-claims: that the $Y_1$ cofiber-LES reduction is
+$\Sym_n$-equivariant and ``ports unchanged'' (it is only
+$\Sym_{n-1}=\mathrm{Stab}(x)$-equivariant, and acquires the
+$\Sym_{n-1}\to\Sym_n$ branching sub-residual R1b), and that the
+contradiction rests on ``exactly three'' residuals (R3 is in fact a
+three-part edge-map debt). Both are honest re-statements, not
+refutations; the Fork~A strategy and its core constructions are
+unchanged and were independently confirmed sound. An over-claim in an
+earlier Phase-1 draft --- a clean ``standard-isotypic'' landing
+theorem --- had already been caught and withdrawn. Recommended next:
+independent re-validation of this revised document, then Phase~3
+(Lean).
 
 \end{document}
