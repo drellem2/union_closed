@@ -73,6 +73,17 @@ It uses only standard packages (`amsart`, `amsmath`, `amssymb`,
 `amsthm`, `mathtools`, `booktabs`, `longtable`, `enumitem`,
 `hyperref`, `geometry`, `stmaryrd`, `xcolor`).
 
+## Fork A re-foundation (in progress — separate document)
+
+`main.tex` honestly records the **pre-Fork-A** state of the
+cohomological arc. The arc's foundations were subsequently refuted
+(Phase-1.5, `mg-0405`) and the re-foundation resolved to **Fork A**.
+The Fork A re-foundation is a **separate, standalone document** in
+`forkA/refoundation.tex` (work item `mg-c15b`, Phase 1 — the LaTeX
+re-foundation); it does not modify this paper. Once that re-foundation
+is independently validated (Phase 2), a later pass may fold it in,
+superseding §§3–4 here. See `forkA/README.md`.
+
 ## Source notes
 
 The mathematical content comes from `docs/union-closed-UC1..UC14-*.md`

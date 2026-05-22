@@ -1,0 +1,1632 @@
+% =====================================================================
+%  The Frankl cohomology, re-founded on Fork A.
+%  Phase 1: the LaTeX re-foundation.
+%
+%  Work item mg-c15b (Frankl-ForkA-Refound-LaTeX).
+%  Per the Daniel 2026-05-22 directive "frankl - commit": commit to the
+%  Fork A re-foundation, the route the vision-check (mg-6edc) and the
+%  n=3 Fork-D probe (mg-565a) resolved to.
+%
+%  This is a STANDALONE document. It is Phase 1 (math-before-Lean) of a
+%  multi-phase arc: Phase 1 LaTeX (this document), Phase 2 independent
+%  validation, Phase 3 Lean. It does not modify the consolidated paper
+%  (../main.tex), which honestly records the pre-Fork-A state.
+%
+%  Build:  pdflatex refoundation && pdflatex refoundation
+%  (self-contained; no bibliography, no external inputs).
+% =====================================================================
+\documentclass[11pt,oneside]{amsart}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{stmaryrd}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xcolor}
+\usepackage[margin=1.1in]{geometry}
+
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{2}
+
+% ---- theorem environments ------------------------------------------
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{conjecture}[theorem]{Conjecture}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{construction}[theorem]{Construction}
+
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{notation}[theorem]{Notation}
+
+% Honesty / status callouts (same convention as the consolidated paper).
+\newtheoremstyle{honeststyle}{6pt}{6pt}{\normalfont}{}%
+  {\bfseries}{.}{.5em}{}
+\theoremstyle{honeststyle}
+\newtheorem{status}[theorem]{Status}
+\newtheorem{openresidual}[theorem]{Open residual}
+\newtheorem{debt}[theorem]{Owed debt}
+
+% ---- macros ---------------------------------------------------------
+\newcommand{\F}{\mathcal{F}}
+\newcommand{\G}{\mathcal{G}}
+\newcommand{\Fstar}{\F^{\star}}
+\newcommand{\bias}{\beta}
+\newcommand{\sgn}{\mathrm{sgn}}
+\newcommand{\std}{\mathrm{std}}
+\newcommand{\triv}{\mathbf{1}}
+\newcommand{\Sym}{\mathfrak{S}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Cn}{\mathcal{C}^{\cap}_n}
+\newcommand{\Cnm}{\mathcal{C}^{\cap}_{n-1,x}}
+\newcommand{\Xbb}{\mathbb{X}}
+\newcommand{\Dx}{\mathcal{D}_x}
+\newcommand{\hocolim}{\operatorname*{hocolim}}
+\newcommand{\ob}{\mathrm{ob}}
+\newcommand{\tr}{\mathrm{tr}}
+\newcommand{\BK}{\mathrm{BK}}
+\newcommand{\Tot}{\mathrm{Tot}}
+\newcommand{\fobs}{\mathcal{F}_{\mathrm{obs}}}
+\newcommand{\cofib}{\mathrm{cofib}}
+\newcommand{\walsh}[1]{\chi_{#1}}
+\newcommand{\Ch}{\mathrm{Ch}}
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\DeclareMathOperator{\im}{im}
+\DeclareMathOperator{\Hom}{Hom}
+
+\title[The Frankl cohomology re-founded on Fork A]{%
+  The Frankl cohomology, re-founded on Fork A\\
+  \normalsize Phase 1: the LaTeX re-foundation}
+
+\author{The \texttt{union\_closed} development}
+\date{Work item \texttt{mg-c15b} --- \today\\[2pt]
+  \normalfont\small Phase 1 of the Fork A re-foundation arc
+  (LaTeX $\to$ independent validation $\to$ Lean)}
+
+\begin{document}
+
+\begin{abstract}
+The cohomological arc of the union-closed (Frankl) program was halted
+when its Phase-1.5 audit (\texttt{mg-0405}) refuted two load-bearing
+objects: the against-trace structure map on which the cohomology object
+$X^{\cap}_n$ was built, and the $(\Z/2)^n$-action on which its Walsh
+grading rested. A vision-check (\texttt{mg-6edc}) diagnosed both
+refutations as consequences of \emph{drift} from the program's stated
+goal, and a bounded $n=3$ probe (\texttt{mg-565a}) eliminated the
+literal-vision foundation (Fork~D --- the bare nerve of the category,
+which is rationally acyclic) while \emph{positively endorsing} Fork~A:
+re-found the cohomology as the \emph{covariant} homotopy colimit of the
+per-family coefficient diagram $\F\mapsto X(\F)$ over the trace
+category $\Cn$, drop the $(\Z/2)^n$-action, grade by $\sgn_{\Sym_n}$,
+and keep Walsh only as the harmonic description of the obstruction
+cochain. This document is Phase~1 of the resulting re-foundation: the
+LaTeX construction.
+
+We carry it out. The covariant homotopy colimit $H^{*}(\Cn;X)$ is a
+genuinely defined cohomology theory --- its structure map is the
+canonical trace \emph{projection}, which exists and is functorial, so
+the Phase-1.5 variance refutation is dodged by construction. Dropping
+the $(\Z/2)^n$-action dissolves the second Phase-1.5 refutation
+outright: there is no group action left to fail. The grading is
+re-established by Maschke's theorem for the genuine $\Sym_n$-action,
+with the sphere class identified as the $\sgn_{\Sym_n}$ isotype. We
+re-found the obstruction class $\ob(\Fstar)\in H^{n-1}(\Cn;X)$ and the
+two-part contradiction. \textbf{We are honest about what the
+re-foundation does and does not buy.} It buys a sound, well-defined
+framework that clears both Phase-1.5 walls. It does \emph{not} close
+Frankl, and Phase~1 was never meant to. The closing contradiction is
+re-established as a conditional theorem resting on three precisely
+named open residuals: the vanishing statement $Y_1$ (the cofiber
+computation, unchanged from the pre-Fork-A state); the landing
+statement $Y_2$ (whose pre-Fork-A mechanism rested on the now-dropped
+$(\Z/2)^n$-equivariance and which Fork~A re-states as an $\Sym_n$
+question, localized to the representation theory of the obstruction
+sheaf); and faithfulness (whether the cohomology genuinely detects the
+counterexample --- the vision's clause $V_3$ --- localized to the
+injectivity of one edge map). The first owed debt, the re-grading, is
+discharged at the structural level and its remaining open part ($Y_2$)
+is precisely localized; the second owed debt, faithfulness, is
+precisely localized. \textbf{The verdict is GREEN for the Phase-1
+scope --- the re-foundation is delivered and sound --- with the
+explicit accounting that Frankl is not proved and three open residuals
+remain.}
+\end{abstract}
+
+\maketitle
+
+\tableofcontents
+
+% =====================================================================
+\section*{\S0\quad Verdict (top of page)}
+\addcontentsline{toc}{section}{\S0\quad Verdict}
+% =====================================================================
+
+\subsection*{0.1\quad Headline}
+
+\noindent\textbf{GREEN --- FORK-A-REFOUNDATION-DELIVERED (Phase~1).}
+The Frankl cohomology is re-founded on Fork~A. The new cohomology
+object $H^{*}(\Cn;X)$ --- the covariant homotopy colimit of the
+per-family cubical-defect diagram over the trace category, with the
+canonical projection $\pi_T$ as structure map --- is \emph{genuinely
+defined} (Theorem~\ref{thm:welldefined}); this dodges the Phase-1.5
+against-trace refutation by construction, because the projection
+exists and is functorial where the against-trace map did not exist at
+all. The $(\Z/2)^n$-action is \emph{dropped}; this dissolves the
+Phase-1.5 $(\Z/2)^n$ refutation outright (Status~\ref{status:c-block}).
+The grading is re-established by Maschke for the genuine
+$\Sym_n$-action (Theorem~\ref{thm:maschke}). The obstruction class and
+the two-part contradiction are re-established on the new object
+(\S\ref{sec:obstruction}--\S\ref{sec:contradiction}).
+
+\medskip\noindent
+\textbf{Frankl is not proved, and Phase~1 was never meant to prove it.}
+The verdict GREEN means: the Phase-1 scope --- construct the object,
+re-grade, re-establish the framework, localize the two debts --- is
+accomplished, and the re-foundation is internally sound. It does
+\emph{not} mean the conjecture is closer to proved than the
+pre-Fork-A state recorded. Three objects remain genuinely open and are
+each precisely named:
+\begin{itemize}[leftmargin=1.6em]
+\item[\textbf{R1}] \emph{The $Y_1$ residual} (Open
+  residual~\ref{res:y1}): the isotype cohomology of the cofiber of the
+  matched-cylinder inclusion. Unchanged from the pre-Fork-A state.
+\item[\textbf{R2}] \emph{The $Y_2$ residual} (Open
+  residual~\ref{res:y2}): whether the obstruction class avoids the
+  $\sgn$ sphere-isotype. The pre-Fork-A $Y_2$ mechanism rested on the
+  now-dropped $(\Z/2)^n$-equivariance; Fork~A re-states the landing as
+  an $\Sym_n$ question and localizes it.
+\item[\textbf{R3}] \emph{Faithfulness} (Owed
+  debt~\ref{debt:faithful-localized}): the injectivity of the
+  \v{C}ech-to-cohomology edge map --- the vision's clause $V_3$, the
+  wrapper-risk.
+\end{itemize}
+
+\subsection*{0.2\quad The Fork A scorecard}
+
+{\small
+\begin{longtable}{p{0.28\textwidth}p{0.15\textwidth}p{0.49\textwidth}}
+\toprule
+\textbf{Component} & \textbf{Status} & \textbf{Where / why}\\
+\midrule
+\endhead
+The covariant cohomology object $H^{*}(\Cn;X)$
+ & \textsf{GREEN}
+ & Theorem~\ref{thm:welldefined}. The structure map is the projection
+   $\pi_T$ (Theorem~\ref{thm:projection}); it exists and is functorial.
+   The Phase-1.5 against-trace refutation does not apply.\\
+Dropping the $(\Z/2)^n$-action
+ & \textsf{GREEN}
+ & Status~\ref{status:c-block}. There is no group action left to fail;
+   the Phase-1.5 $(\Z/2)^n$ refutation is dissolved, not repaired.\\
+$\Sym_n$-grading by isotype
+ & \textsf{GREEN}
+ & Theorem~\ref{thm:maschke}. Genuine $\Sym_n$-action; Maschke.
+   The sphere class is the $\sgn_{\Sym_n}$ isotype
+   (\S\ref{ssec:sphere-class}).\\
+The obstruction class $\ob(\Fstar)$
+ & \textsf{GREEN} (as a construction)
+ & \S\ref{sec:obstruction}. Re-founded on $H^{*}(\Cn;X)$ verbatim from
+   the \v{C}ech double complex of $\fobs$.\\
+$Y_1$-A (the vanishing) --- residual R1
+ & \textsf{RED --- open}
+ & \S\ref{ssec:y1a}. The cofiber-LES reduction ports to Fork~A; the
+   residual (Open residual~\ref{res:y1}) is unchanged and open.\\
+$Y_2$-A (the landing) --- residual R2
+ & \textsf{AMBER --- open}
+ & \S\ref{ssec:y2a}. Mechanism re-stated in $\Sym_n$ terms; the
+   separation from the sphere class is localized
+   (Open residual~\ref{res:y2}).\\
+Owed debt 1 --- the re-grading
+ & \textsf{ADDRESSED}
+ & \S\ref{ssec:debt1}. Structural re-grading discharged
+   (Theorem~\ref{thm:maschke}, \S\ref{ssec:sphere-class}); the open
+   part is residual R2.\\
+Owed debt 2 --- faithfulness ($V_3$ / wrapper-risk) --- residual R3
+ & \textsf{LOCALIZED}
+ & Owed debt~\ref{debt:faithful-localized}. Reduced to one named
+   object: the injectivity of the \v{C}ech-to-cohomology edge map.\\
+\bottomrule
+\end{longtable}}
+
+\subsection*{0.3\quad What Phase 1 is, and is not}
+
+Phase~1 is the LaTeX re-foundation: construct the Fork~A object, do the
+re-grading, re-establish the obstruction class and the two-part
+contradiction, and discharge or precisely localize the two owed debts.
+It is \emph{not} a proof of Frankl, and it is not a closure of any of
+the three residuals R1--R3. A RED verdict --- Fork~A hitting a genuine
+wall --- was an allowed outcome (the \texttt{mg-c15b} brief sanctions
+it); Phase~1 does not return RED, because nothing in the re-foundation
+is refuted: the construction is well-defined, the re-grading goes
+through, and the contradiction re-assembles as a conditional theorem.
+The honest one-sentence summary is \S\ref{ssec:final}. The arc
+continues with Phase~2 (independent validation of this document) and
+Phase~3 (Lean), each gated on the previous returning GREEN.
+
+% =====================================================================
+\section{Scope, method, and what Fork A is}
+\label{sec:scope}
+% =====================================================================
+
+\subsection{The starting point}
+\label{ssec:starting-point}
+
+The cohomological arc of the union-closed program builds, for a
+hypothetical minimal counterexample to Frankl, a cohomology class --- the
+\emph{obstruction class} --- that two arguments force to be
+simultaneously nonzero and zero. The arc was halted by its Phase-1.5
+audit (work item \texttt{mg-0405}), which refuted two objects the
+construction rested on:
+
+\begin{enumerate}[label=\textup{(\alph*)},leftmargin=2.4em]
+\item \textbf{the against-trace structure map.} The cohomology object
+  was defined as $X^{\cap}_n=\hocolim_{(\Cn)^{\mathrm{op}}}X(\F)$, the
+  homotopy colimit of a diagram over the \emph{opposite} of the trace
+  category. Such a diagram requires, for each trace
+  $(S,\F)\to(T,\F|_T)$, a chain map $X(\F|_T)\to X(\F)$ running
+  \emph{against} the trace. Phase~1.5 exhibited an explicit object of
+  $\mathcal C^{\cap}_4$ for which no such map exists (the source
+  complex is a solid square, the target is four isolated points), so
+  the diagram functor --- hence the object $X^{\cap}_n$ --- was
+  \emph{undefined}.
+\item \textbf{the $(\Z/2)^n$-action.} The Walsh grading of
+  $X^{\cap}_n$, on which the vanishing and landing statements were
+  phrased, required a $(\Z/2)^n$-action on the cohomology object.
+  Phase~1.5 showed $(\Z/2)^n$ acts on neither the indexing category
+  $\Cn$ (coordinate toggles break intersection-closure) nor the
+  diagram values, so the action --- hence the Walsh decomposition ---
+  was \emph{not constructed}.
+\end{enumerate}
+
+A vision-check (\texttt{mg-6edc}) read both refutations as consequences
+of three documented \emph{drifts} of the build from the program's
+stated goal --- ``a theorem on the cohomology of the category of
+intersection-closed families, like the cohomology of the category of
+posets.'' A bounded $n=3$ probe (\texttt{mg-565a}) then settled the
+foundational fork:
+
+\begin{itemize}[leftmargin=1.5em]
+\item \textbf{Fork~D} (re-found on the category's \emph{bare nerve}, no
+  coefficient diagram) is \emph{eliminated}: the probe computed the
+  order complex of the Moore-family lattice on $[3]$ and found it
+  rationally acyclic --- every reduced Betti number zero, M\"obius
+  function $\mu(\hat0,\hat1)=0$ --- robustly, at $n=2$, $n=3$, and
+  under both $\emptyset$-conventions. The bare nerve carries no
+  cohomology and detects nothing.
+\item \textbf{Fork~A} is \emph{positively endorsed}: the probe located
+  the family-sensitive content precisely, in the per-family complexes
+  $X(\F)$ --- a non-constant coefficient diagram over the category.
+  Integrating that diagram is exactly the covariant homotopy colimit
+  $\hocolim_{\Cn}X$. The probe thereby vindicated the program's
+  coefficient diagram as a \emph{forced} move (the bare nerve genuinely
+  has nothing) and named Fork~A as the live foundation.
+\end{itemize}
+
+\subsection{Fork A, as a precise prescription}
+\label{ssec:fork-a-prescription}
+
+Fork~A is the following four-part prescription, assembled from
+\texttt{mg-0405}~\S6, the vision-check \texttt{mg-6edc}~\S\S6--7, and
+the Fork-D probe \texttt{mg-565a}~\S\S6--7.
+
+\begin{enumerate}[label=\textup{(A\arabic*)},leftmargin=2.8em]
+\item \textbf{Keep} the trace category $\Cn$ and the per-family
+  cubical-defect complexes $X(\F)$. The probe shows the content lives
+  in the coefficient diagram $\F\mapsto X(\F)$; this is retained.
+\item \textbf{Fix the variance.} Replace the (undefined) contravariant
+  hocolim with the \emph{covariant} homotopy colimit
+  $\hocolim_{\Cn}X$, whose structure map is the canonical trace
+  \emph{projection} $\pi_T\colon X(\F)\to X(\F|_T)$. The projection
+  exists and is functorial (Theorem~\ref{thm:projection}, ported from
+  \texttt{mg-0405} Proposition~3.6); it is the structure map the
+  refutation (a) showed the build had backwards.
+\item \textbf{Drop the $(\Z/2)^n$-action} on the cohomology object
+  entirely. Grade by $\sgn_{\Sym_n}$, the genuine symmetry of the
+  category. Keep the Walsh apparatus only in its harmonic role --- as
+  the Fourier description of the obstruction \emph{cochain} --- never
+  as a group action to decompose the cohomology by.
+\item \textbf{Re-establish} the obstruction class and the two-part
+  contradiction on the re-founded object.
+\end{enumerate}
+
+\subsection{What Phase 1 owes, and the stance}
+\label{ssec:owed}
+
+The endorsement of Fork~A came with two named debts the probe
+explicitly did \emph{not} discharge.
+
+\begin{debt}[The re-grading]
+\label{debt:regrading}
+Fork~A drops the $(\Z/2)^n$-action and grades by $\sgn_{\Sym_n}$. The
+vanishing and landing statements $Y_1$, $Y_2$ were phrased in Walsh
+isotypes; they must be \emph{re-derived} in the $\Sym_n$-graded
+language, and one must check that the closing contradiction still has
+the separation it needs. This debt is treated in \S\ref{ssec:debt1}:
+its structural part is discharged, and its remaining open part is
+localized.
+\end{debt}
+
+\begin{debt}[Faithfulness --- the $V_3$ / wrapper-risk question]
+\label{debt:faithful}
+The program's stated vision has three clauses; the third ($V_3$) is
+that ``the minimal counterexample differs from the generic families by
+a factor relating to this cohomology'' --- i.e.\ the cohomology
+\emph{genuinely detects} the counterexample. The standing risk
+(``wrapper-risk'') is that the obstruction class is family-blind, in
+which case the cohomology detects nothing and the contradiction is
+hollow. Fork~A does not resolve this; Phase~1's task is to localize it
+precisely. This debt is localized in \S\ref{ssec:debt2}.
+\end{debt}
+
+The stance throughout is default-skeptical, in the discipline the
+\texttt{mg-56b8} / \texttt{mg-0405} briefs set, and with the
+over-claim history of the ledger (the invalid $Y_1$ proof, the false
+``$R2$'') explicitly in view: where a step closes, it is stated as a
+theorem with proof; where it does not, it is isolated as a precisely
+named residual, not hedged and not papered over. In particular, this
+document does \emph{not} claim a clean proof of the landing statement
+$Y_2$: an earlier draft of this re-foundation asserted such a proof,
+and \S\ref{ssec:y2a} explains precisely why that assertion does not
+hold and what is true instead.
+
+% =====================================================================
+\section{The category and the per-family complex}
+\label{sec:category}
+% =====================================================================
+
+We recall the two objects Fork~A retains unchanged --- the trace
+category and the per-family cubical-defect complex --- fixing notation.
+Throughout, $n\ge3$, $[n]=\{1,\dots,n\}$, and all (co)homology is over
+$\Q$.
+
+\subsection{The trace category}
+\label{ssec:trace-category}
+
+\begin{definition}
+\label{def:category}
+The \emph{trace category} $\Cn$ has as objects the pointed
+intersection-closed families: pairs $(S,\F)$ with $S\subseteq[n]$,
+$\F\subseteq2^S$ closed under intersection, $\bigcup\F=S$, and
+$S\in\F$. A morphism $(S,\F)\to(T,\G)$ exists precisely when
+$T\subseteq S$ and $\G=\F|_T:=\{A\cap T:A\in\F\}$, the \emph{trace} of
+$\F$ to $T$; this morphism is written $\tr_T$. Trace preserves
+intersection-closure, composition of traces is trace
+($\tr_{T'}\circ\tr_T=\tr_{T'}$ for $T'\subseteq T\subseteq S$), and
+$\tr_S=\mathrm{id}$, so $\Cn$ is a genuine (finite, thin) category.
+\end{definition}
+
+This is unchanged from the pre-Fork-A development. The morphism class
+remains \emph{trace}, not inclusion: Fork~D would have undone that
+choice, but Fork~D is eliminated, and the Fork-D probe showed the
+content lives in the coefficient diagram over $\Cn$, not in $\Cn$
+itself. So $\Cn$ stays exactly as built.
+
+\begin{notation}
+\label{not:sn}
+The symmetric group $\Sym_n$ acts on $[n]$ by relabelling. For
+$\pi\in\Sym_n$ and $(S,\F)\in\Cn$ put $\pi\cdot(S,\F)=(\pi
+S,\pi\F)$ with $\pi\F=\{\pi A:A\in\F\}$. Relabelling carries
+intersection-closed families to intersection-closed families and
+commutes with trace ($\pi(\F|_T)=(\pi\F)|_{\pi T}$), so $\Sym_n$ acts
+on $\Cn$ by automorphisms. \emph{This action is genuine and is the
+only ambient symmetry Fork~A uses.} The coordinate toggles
+$\sigma_x\colon A\mapsto A\bigtriangleup\{x\}$ do \emph{not} act on
+$\Cn$ --- they do not preserve intersection-closure --- which is why
+Fork~A discards the $(\Z/2)^n$-action; see \S\ref{ssec:drop-z2}.
+\end{notation}
+
+\subsection{The per-family cubical-defect complex}
+\label{ssec:per-family}
+
+\begin{definition}
+\label{def:xf}
+For a pointed family $(S,\F)$, the \emph{cubical-defect complex}
+$X(\F)$ is the cubical chain complex whose $k$-cells are the pairs
+$C(A,T')$ with $A\in\F$, $T'\subseteq S\setminus A$, $|T'|=k$, and
+$A\cup T''\in\F$ for every $T''\subseteq T'$ --- equivalently, the
+$k$-dimensional subcubes of the cube $Q_S$ with bottom vertex $A$ and
+varying directions $T'$, all $2^{k}$ of whose vertices lie in $\F$.
+The differential is the standard cubical boundary $\partial$;
+$C^{*}(X(\F);\Q)=\Hom(X(\F),\Q)$ is the cubical cochain complex with
+coboundary $d$.
+\end{definition}
+
+$X(\F)$ records where the local cube structure ``survives'' inside
+$\F$. It is a finite complex, functorial in $\F$ along traces via the
+projection of the next section, and $\Sym_n$-equivariant:
+$\pi\cdot X(\F)=X(\pi\F)$, with $\pi$ relabelling cells
+$C(A,T')\mapsto C(\pi A,\pi T')$. This is also unchanged from the
+pre-Fork-A development.
+
+% =====================================================================
+\section{The structure map: the trace projection}
+\label{sec:projection}
+% =====================================================================
+
+This section establishes the single fact that makes Fork~A's
+cohomology object well-defined: the trace induces a canonical chain map
+\emph{in the projection direction}, making $X$ a covariant functor.
+The against-trace map the pre-Fork-A build needed does not exist
+(refutation (a) of \S\ref{ssec:starting-point}); the projection does.
+
+\begin{theorem}[The trace projection is a covariant functor]
+\label{thm:projection}
+For every trace $\tr_T\colon(S,\F)\to(T,\F|_T)$ of $\Cn$, the
+assignment
+\[
+  \pi_T\bigl(C(A,T')\bigr)\;=\;
+  \begin{cases}
+    C(A\cap T,\ T'), & T'\subseteq T,\\[2pt]
+    0, & T'\not\subseteq T,
+  \end{cases}
+\]
+defines a chain map $\pi_T\colon X(\F)\to X(\F|_T)$. It is functorial
+--- $\pi_{T'}\circ\pi_T=\pi_{T'}$ for $T'\subseteq T\subseteq S$ and
+$\pi_S=\mathrm{id}$ --- and $\Sym_n$-equivariant. Hence
+\[
+  X\colon\Cn\longrightarrow\Ch_\Q,\qquad
+  (S,\F)\mapsto X(\F),\quad \tr_T\mapsto\pi_T,
+\]
+is a genuine \emph{covariant} functor from the trace category to
+$\Q$-chain complexes.
+\end{theorem}
+
+\begin{proof}
+This is the construction pinned in \texttt{mg-0405} Proposition~3.6; we
+give the proof in full because it is the load-bearing positive content
+of Fork~A.
+
+\emph{Well-defined on cells.} Let $C(A,T')$ be a $k$-cell of $X(\F)$
+with $T'\subseteq T$. Then $A\cap T\in\F|_T$ by definition of the
+trace. Since $T'\subseteq S\setminus A$ and $T'\subseteq T$, we have
+$T'\subseteq T\setminus(A\cap T)$. For every $T''\subseteq T'$,
+\[
+  (A\cap T)\cup T''\;=\;(A\cup T'')\cap T\;\in\;\F|_T,
+\]
+because $A\cup T''\in\F$ (as $C(A,T')$ is a cell of $X(\F)$) and the
+trace of an element of $\F$ lies in $\F|_T$; the first equality holds
+because $T''\subseteq T'\subseteq T$. So $C(A\cap T,T')$ is a genuine
+$k$-cell of $X(\F|_T)$, and $\pi_T$ lands in $X(\F|_T)$.
+
+\emph{Chain map.} $\pi_T$ is the cubical map induced by the coordinate
+projection $Q_S\to Q_T$, $A\mapsto A\cap T$, on cubical chains, with
+the standard normalised convention that a cell with a varying
+direction in $S\setminus T$ (i.e.\ $T'\not\subseteq T$) is degenerate
+and maps to $0$. A coordinate projection of cubes commutes with the
+face maps: a face of $C(A,T')$ is $C(A,T'\setminus\{t\})$ or
+$C(A\cup\{t\},T'\setminus\{t\})$ for $t\in T'$; if $t\in T$ these
+project to the corresponding faces of $C(A\cap T,T')$, and if $t\notin
+T$ the two faces in direction $t$ project to equal cells with opposite
+incidence sign and cancel. Hence $\pi_T\circ\partial=\partial\circ\pi_T$.
+
+\emph{Functorial.} For $T'\subseteq T\subseteq S$ and a cell
+$C(A,U)$ with $U\subseteq T'$ one has $(A\cap T)\cap T'=A\cap T'$, and
+the degenerate-to-zero convention is compatible with composition (a
+direction in $S\setminus T'$ is collapsed by whichever projection
+reaches it first). So $\pi_{T'}\circ\pi_T=\pi_{T'}$; and $\pi_S$ is the
+identity since $A\cap S=A$.
+
+\emph{Equivariant.} $\pi_T$ is defined from the coordinate projection
+$A\mapsto A\cap T$ and the relation $T'\subseteq T$, both of which a
+relabelling $\pi\in\Sym_n$ carries to the corresponding data on
+$\pi T$; hence $\pi\circ\pi_T=\pi_{\pi T}\circ\pi$.
+\end{proof}
+
+\begin{remark}[Why this is the whole variance fix]
+\label{rem:variance-fix}
+Phase-1.5 refutation (a) was that the diagram $X$ has no functorial
+structure map $X(\F|_T)\to X(\F)$ \emph{against} the trace. The
+content of Theorem~\ref{thm:projection} is that it has a perfectly good
+functorial structure map $\pi_T\colon X(\F)\to X(\F|_T)$ \emph{along}
+the trace. The pre-Fork-A build chose the wrong variance: it wanted
+$X$ to be a diagram over $(\Cn)^{\mathrm{op}}$ and asked for a map that
+does not exist. Fork~A takes $X$ to be a diagram over $\Cn$ and uses
+the map that does. The Phase-1.5 counterexample (the
+$\mathcal C^{\cap}_4$ object whose $X(\F)$ is four isolated points
+while $X(\F|_T)$ is a solid square) is no obstruction here: the
+projection $\pi_T$ sends the solid square \emph{onto} (a quotient of)
+the four points, which is exactly what a projection of cubes does, and
+is a chain map. The minimal-lift recipe $A\mapsto\bigcap\{B\in\F:B\cap
+T=A\}$ that Phase-1.5 refuted was an attempt to build the
+against-trace map; Fork~A does not need it and does not use it.
+\end{remark}
+
+% =====================================================================
+\section{The Fork A cohomology object}
+\label{sec:object}
+% =====================================================================
+
+With $X$ a genuine covariant functor (Theorem~\ref{thm:projection}),
+its homotopy colimit is a genuinely defined object. This section
+constructs it and its cohomology, and records that the construction
+clears Phase-1.5 refutation (a).
+
+\subsection{The Bousfield--Kan double complex}
+\label{ssec:bk}
+
+\begin{definition}
+\label{def:bk}
+The \emph{Fork~A cohomology object} is the homotopy colimit
+$\Xbb_n:=\hocolim_{\Cn}X$ of the covariant functor $X$ of
+Theorem~\ref{thm:projection}. For cohomology over $\Q$ we work with the
+dual cochain Bousfield--Kan double complex
+\[
+  \BK^{p,q}\;=\;\bigoplus_{\F_0\xrightarrow{\ \tr\ }\F_1\xrightarrow{\ \tr\ }
+  \cdots\xrightarrow{\ \tr\ }\F_p\ \text{in }\Cn}
+  C^{q}\bigl(X(\F_0);\Q\bigr),
+  \qquad p,q\ge0,
+\]
+indexed by the bar strings of length $p$ in $\Cn$, with the cochain
+value taken at the \emph{first} object $\F_0$ of each string (the sum
+is finite: $\Cn$ has finitely many objects and morphisms). It carries
+two differentials:
+\begin{itemize}[leftmargin=1.6em]
+\item the \emph{vertical} differential $d\colon\BK^{p,q}\to\BK^{p,q+1}$,
+  the cubical coboundary applied to each $C^{q}(X(\F_0))$;
+\item the \emph{horizontal} (bar) differential
+  $\delta_{\BK}\colon\BK^{p,q}\to\BK^{p+1,q}$,
+  $\delta_{\BK}=\sum_{j=0}^{p+1}(-1)^{j}d_j^{*}$, where for a string
+  $\F_0\to\cdots\to\F_{p+1}$:
+  \begin{itemize}[leftmargin=1.4em]
+  \item $d_0^{*}$ drops $\F_0$ and pulls the value at $\F_1$ back to
+    $\F_0$ along the projection of the first trace, via
+    $\pi_{T_1}^{*}\colon C^{q}(X(\F_1))\to C^{q}(X(\F_0))$;
+  \item $d_j^{*}$ for $1\le j\le p$ composes the $j$-th and
+    $(j{+}1)$-st traces (no change of cochain value);
+  \item $d_{p+1}^{*}$ drops the last object $\F_{p+1}$ (no change of
+    cochain value, which sits at $\F_0$).
+  \end{itemize}
+\end{itemize}
+The \emph{Fork~A cohomology} is
+$H^{*}(\Cn;X):=H^{*}\bigl(\Tot\BK,\,D\bigr)$, the cohomology of the
+total complex with total differential $D=d+(-1)^{q}\delta_{\BK}$.
+\end{definition}
+
+\begin{theorem}[The Fork A object is genuinely defined]
+\label{thm:welldefined}
+$\Tot\BK$ with the differential $D$ of Definition~\ref{def:bk} is a
+genuine cochain complex: $D^2=0$. Consequently $H^{*}(\Cn;X)$ is a
+well-defined graded $\Q$-vector space.
+\end{theorem}
+
+\begin{proof}
+$d^2=0$ is the cubical cochain identity. $\delta_{\BK}^{2}=0$ is the
+cosimplicial (bar) identity: it holds for the cochain bar construction
+of \emph{any} covariant functor into an abelian category, and $X$ is
+such a functor by Theorem~\ref{thm:projection}. The only component of
+$\delta_{\BK}$ that involves the diagram values --- the face $d_0^{*}$
+--- uses $\pi_{T}^{*}$, the cochain dual of the genuine chain map
+$\pi_T$; the bar identity $\delta_{\BK}^2=0$ then reduces, at the
+$d_0^{*}d_0^{*}$ term, to the functoriality
+$\pi_{T'}\circ\pi_T=\pi_{T'}$, which Theorem~\ref{thm:projection}
+supplies. Finally $d$ and $\delta_{\BK}$ commute up to the standard
+sign because each $\pi_T^{*}$ is a cochain map ($\pi_T$ is a chain map,
+Theorem~\ref{thm:projection}), so $d\,\pi_T^{*}=\pi_T^{*}\,d$. Hence
+$D^2=d^2\pm(d\,\delta_{\BK}-\delta_{\BK}\,d)+\delta_{\BK}^2=0$.
+\end{proof}
+
+\begin{status}
+\label{status:b-block}
+Theorem~\ref{thm:welldefined} \emph{dodges Phase-1.5 refutation (a)
+by construction.} The pre-Fork-A object $X^{\cap}_n$ was undefined
+because its diagram functor required a structure map that does not
+exist; the Fork~A object $H^{*}(\Cn;X)$ is defined because its
+diagram functor requires only $\pi_T^{*}$, which exists for free as
+the dual of the projection. No new mathematics is needed for this:
+Theorem~\ref{thm:projection} is \texttt{mg-0405}'s own
+Proposition~3.6, and \texttt{mg-0405}~\S6 already named ``adopt the
+covariant hocolim'' as Fork~A. Phase~1 carries it out and verifies
+$D^2=0$ explicitly. This step is \textsf{GREEN}.
+\end{status}
+
+\subsection{What this object is}
+\label{ssec:what-it-is}
+
+$H^{*}(\Cn;X)$ is the cohomology of the trace category $\Cn$ with
+coefficients in the covariant cubical-defect coefficient system
+$X(-)$. It is \emph{not} the cohomology of the bare nerve of $\Cn$;
+the Fork-D probe showed the bare nerve is rationally acyclic and
+detects nothing, so a non-constant coefficient system is forced, and
+$X(-)$ is that system. It is \emph{not} the cohomology of a diagram
+over $(\Cn)^{\mathrm{op}}$; that was the refuted variance. It is the
+homotopy colimit of the genuine covariant diagram --- the object the
+Fork-D probe endorsed in so many words: ``Integrating that diagram
+over the category is exactly $\hocolim_{\Cn}X(\F)$, and its cohomology
+$H^{*}(\Cn;X(-))$ is the cohomology of the category with coefficients''
+(\texttt{mg-565a}~\S6.2).
+
+\begin{remark}[A faithfulness flag, recorded now, discharged in \S\ref{ssec:debt2}]
+\label{rem:hocolim-flag}
+The obstruction class of \S\ref{sec:obstruction} is a
+\emph{gluing}-type invariant --- it measures whether local
+rare-coordinate data extend to a global section. Gluing is a limit
+phenomenon, and a referee may reasonably ask whether such a class is
+correctly housed in the cohomology of a homotopy \emph{colimit}. The
+program's prescription --- vision-check, Fork-D probe, and
+\texttt{mg-0405}~\S6 alike --- names the covariant hocolim, and Phase~1
+follows it; but the hocolim-versus-holim question is genuine and is
+folded, honestly, into the faithfulness debt (Owed
+debt~\ref{debt:faithful}, \S\ref{ssec:debt2}). It is flagged here so
+that it is not mistaken for settled.
+\end{remark}
+
+% =====================================================================
+\section{The re-grading: from $(\Z/2)^n$ to $\sgn_{\Sym_n}$}
+\label{sec:regrading}
+% =====================================================================
+
+This section discharges the structural half of Owed
+debt~\ref{debt:regrading}: it drops the $(\Z/2)^n$-action,
+re-establishes the grading by the genuine $\Sym_n$-action, and
+identifies the sphere class. The statement-level half --- re-deriving
+$Y_1$, $Y_2$ --- is \S\ref{sec:contradiction}.
+
+\subsection{Dropping the $(\Z/2)^n$-action}
+\label{ssec:drop-z2}
+
+\begin{status}
+\label{status:c-block}
+Fork~A \emph{drops} the $(\Z/2)^n$-action on the cohomology object.
+This is not a repair of Phase-1.5 refutation (b) --- it is its
+\emph{dissolution}. Refutation (b) said the $(\Z/2)^n$-action does not
+assemble: $(\Z/2)^n$ acts on neither $\Cn$ nor the diagram values, so
+the Walsh decomposition of the cohomology was never constructed.
+Fork~A's response is not to construct it but to observe it is not
+needed for the grading. The grading the program actually wants --- the
+sphere carries $\sgn$ --- is a statement about the $\Sym_n$-action,
+which is genuine (Notation~\ref{not:sn}). With no $(\Z/2)^n$-action in
+the construction, \emph{there is nothing left for refutation (b) to
+refute.} This step is \textsf{GREEN}. \emph{Caveat, recorded honestly:}
+the pre-Fork-A landing argument $Y_2$ used the $(\Z/2)^n$-action (it
+split the obstruction off by Walsh isotype); dropping the action means
+$Y_2$ must be genuinely re-derived, not merely re-graded ---
+see~\S\ref{ssec:y2a}.
+\end{status}
+
+The Walsh apparatus is not discarded wholesale --- only its
+\emph{Role~1} use, as a group action to split the cohomology by. Its
+\emph{Role~2} use survives, with one honest qualification:
+
+\begin{remark}[Walsh, Role 2: the harmonic description and its limits]
+\label{rem:walsh-role2}
+For each ground set $S$, the Walsh characters
+$\walsh{U}\colon2^{S}\to\{\pm1\}$, $\walsh{U}(A)=(-1)^{|U\cap A|}$,
+form an orthonormal basis of $\Q$-valued functions on the cube $2^S$.
+This is pure harmonic analysis: it requires no group \emph{action} on
+any complex, only the function basis. In particular the bias is, up to
+scale and sign, the level-$1$ Walsh--Fourier coefficient of the family
+indicator, $\bias_x(\F)=-2^{n}\widehat{\mathbf1_\F}(\{x\})$, and the
+obstruction cochain (\S\ref{sec:obstruction}) is built from exactly
+this level-$1$ data. Fork~A keeps the Walsh basis in precisely this
+role --- the harmonic description of the obstruction \emph{cochain}.
+\emph{The honest qualification:} the \emph{harmonic level} of a
+cochain is well-defined, but it is \emph{not} preserved by the cubical
+coboundary $d$ on the defect complex $X(\F)$ --- Phase~1.5 established
+exactly this (the single-family Walsh operators are not cochain maps).
+So Walsh level grades \emph{cochains}, not \emph{cohomology}. This is
+not a minor point: it is the reason the landing statement $Y_2$ cannot
+be read off the harmonic level of the obstruction cochain, and it is
+the crux of \S\ref{ssec:y2a}.
+\end{remark}
+
+\subsection{The $\Sym_n$-grading by Maschke}
+\label{ssec:maschke}
+
+\begin{theorem}[The $\Sym_n$-isotype decomposition]
+\label{thm:maschke}
+The action of $\Sym_n$ on $\Cn$ (Notation~\ref{not:sn}) and its
+equivariant action on the diagram $X$ (Theorem~\ref{thm:projection})
+induce an action of $\Sym_n$ on $\Tot\BK$ by cochain automorphisms.
+Hence each $H^{k}(\Cn;X)$ is a finite-dimensional $\Q[\Sym_n]$-module,
+and by Maschke's theorem it decomposes canonically into isotypic
+components
+\[
+  H^{k}(\Cn;X)\;=\;\bigoplus_{\lambda\,\vdash\,n}
+  H^{k}(\Cn;X)_{[\lambda]},
+\]
+one summand for each irreducible $\Q$-representation $\lambda$ of
+$\Sym_n$. Moreover the total complex itself splits, $\Tot\BK=
+\bigoplus_{\lambda}(\Tot\BK)_{[\lambda]}$, as a direct sum of
+sub-cochain-complexes, and $H^{k}(\Cn;X)_{[\lambda]}=
+H^{k}\bigl((\Tot\BK)_{[\lambda]}\bigr)$.
+\end{theorem}
+
+\begin{proof}
+$\Sym_n$ acts on the index set of $\BK^{p,q}$ --- the bar strings of
+$\Cn$ --- by relabelling, and on each summand $C^{q}(X(\F_0))$ by the
+equivariance $\pi\cdot X(\F_0)=X(\pi\F_0)$. The two differentials are
+$\Sym_n$-equivariant: $d$ because the cubical coboundary is natural
+under relabelling, and $\delta_{\BK}$ because $\pi_T$ is equivariant
+(Theorem~\ref{thm:projection}) and the bar faces are defined from the
+category structure, which $\Sym_n$ preserves. So $\Sym_n$ acts on
+$\Tot\BK$ by cochain automorphisms. $\Sym_n$ is finite and $\Q$ has
+characteristic $0$, so Maschke applies: $\Q[\Sym_n]$ is semisimple,
+every $\Q[\Sym_n]$-module splits canonically into isotypes, and an
+equivariant map (here $D$) is block-diagonal for that splitting.
+Splitting $\Tot\BK$ degreewise into isotypes therefore splits it as a
+complex, and cohomology commutes with the finite direct sum.
+\end{proof}
+
+\begin{remark}[This is the genuine analogue of the old Walsh decomposition]
+\label{rem:maschke-analogue}
+The pre-Fork-A development had a ``Walsh decomposition theorem'' whose
+content was Maschke applied to a $(\Z/2)^n$-action.
+Theorem~\ref{thm:maschke} is Maschke applied to the $\Sym_n$-action
+--- the decisive difference being that the $\Sym_n$-action is genuine
+(Notation~\ref{not:sn}) whereas the $(\Z/2)^n$-action was not
+(Phase-1.5 refutation (b)). The old decomposition was Maschke for a
+group that does not act; Theorem~\ref{thm:maschke} is Maschke for the
+group that does. This is the precise sense in which the re-grading is
+sound. It does \emph{not} follow that every statement phrased in Walsh
+isotypes translates to an $\Sym_n$-isotype statement: the two gradings
+are different decompositions of the cohomology (when both are defined),
+not nested. Re-deriving $Y_1$ and $Y_2$ in the $\Sym_n$ grading is
+genuine work, carried out --- and honestly assessed --- in
+\S\ref{sec:contradiction}.
+\end{remark}
+
+\subsection{The sphere class}
+\label{ssec:sphere-class}
+
+The program's structural target --- ``it has spherical cohomology,''
+the vision's clause $V_2$ --- is, on the cube side, that
+$H^{*}(\Cn;X)$ is concentrated in the top degree $n-1$ and
+one-dimensional there. Under the $\Sym_n$-grading this top class is
+forced to be the sign:
+
+\begin{proposition}[The sphere class is the sign isotype]
+\label{prop:sphere-sgn}
+Suppose $H^{*}(\Cn;X)$ is rationally a homotopy $(n-1)$-sphere:
+$\widetilde H^{k}(\Cn;X)=0$ for $0\le k\le n-2$ and $\widetilde
+H^{n-1}(\Cn;X)$ one-dimensional. Then, as a $\Q[\Sym_n]$-module,
+\[
+  \widetilde H^{n-1}(\Cn;X)\;\cong\;\sgn_{\Sym_n}.
+\]
+\end{proposition}
+
+\begin{proof}
+A one-dimensional $\Q$-representation of $\Sym_n$ is either the trivial
+or the sign representation. An element of $\Sym_n$ acts on the
+orientation class of a sphere built $\Sym_n$-symmetrically from $n$
+coordinate directions by the degree of the induced self-map, which is
+the sign of the permutation of those directions; a transposition acts
+by $-1$. Hence the one-dimensional module is $\sgn_{\Sym_n}$, not the
+trivial one. (This is the cube-side analogue of the F-series fact that
+$\widetilde H^{n-2}(\Delta(\mathrm{PPF}_n);\Q)\cong\sgn_{\Sym_n}$: the
+top cohomology of an $\Sym_n$-symmetric sphere is the orientation
+character, the sign.)
+\end{proof}
+
+\begin{remark}[The $\sgn$ was always an $\Sym_n$-fact]
+\label{rem:sgn-always-sn}
+The pre-Fork-A target was $\widetilde H^{n-1}\cong\walsh{[n]}\boxtimes
+\sgn_{\Sym_n}$. The $\walsh{[n]}$ tensor factor was the
+$(\Z/2)^n$-decoration; the $\sgn_{\Sym_n}$ factor was always carried by
+the $\Sym_n$-action on the one-dimensional multiplicity space.
+Proposition~\ref{prop:sphere-sgn} recovers exactly the $\sgn_{\Sym_n}$
+factor and discards exactly the $\walsh{[n]}$ factor. So dropping
+$(\Z/2)^n$ costs nothing at the sphere class: the sign was never a
+$(\Z/2)^n$-datum. This is the first concrete confirmation that the
+re-grading (Owed debt~\ref{debt:regrading}) is sound at the structural
+level.
+\end{remark}
+
+We do \emph{not} claim the sphere-concentration hypothesis of
+Proposition~\ref{prop:sphere-sgn}; that is the $Y_1$ statement, and it
+is open (\S\ref{ssec:y1a}). Proposition~\ref{prop:sphere-sgn} says only
+\emph{what} the top class is, \emph{if} the cohomology is spherical.
+
+% =====================================================================
+\section{The obstruction class, re-founded}
+\label{sec:obstruction}
+% =====================================================================
+
+This section re-establishes the obstruction class on the Fork~A object.
+The construction is verbatim from the pre-Fork-A development --- the
+\v{C}ech double complex of the obstruction sheaf --- because nothing in
+that construction used the refuted variance or the refuted
+$(\Z/2)^n$-action; it used only the trace poset below a minimal
+counterexample and the bias data. What changes is only the object the
+class is promoted into: $H^{n-1}(\Cn;X)$ in place of the undefined
+$X^{\cap}_n$.
+
+\subsection{The minimal counterexample and the trace cover}
+\label{ssec:trace-cover}
+
+Work in the intersection-closed dialect, in which Frankl reads: every
+intersection-closed $\F\neq\{[n]\}$ has a \emph{rare} coordinate, some
+$x$ with $\bias_x(\F)\le0$. Suppose Frankl fails.
+
+\begin{definition}
+\label{def:minimal}
+A \emph{minimal counterexample} $\Fstar$ is an intersection-closed
+family on $[n]$ with $\bias_x(\Fstar)>0$ for every $x$ (no rare
+coordinate), minimising $|\Fstar|$, then $n$.
+\end{definition}
+
+\begin{proposition}[Minimality--element]
+\label{prop:minimality}
+Every proper trace $\Fstar|_T$, $T\subsetneq[n]$, has a rare
+coordinate: some $x\in T$ with $\bias_x(\Fstar|_T)\le0$.
+\end{proposition}
+
+\begin{proof}
+$\Fstar|_T$ is a strictly smaller intersection-closed family; if it
+had no rare coordinate it would be a smaller counterexample,
+contradicting the minimality of $\Fstar$.
+\end{proof}
+
+Proposition~\ref{prop:minimality} furnishes a partial rare-coordinate
+assignment, defined on every proper trace of $\Fstar$ but \emph{not}
+on $\Fstar$ itself. The obstruction measures the failure to extend it.
+For $x\in[n]$ let
+\[
+  U_x\;=\;\bigl\{(T,\G)\neq\Fstar\ :\ x\in T,\ \bias_x(\G)\le0\bigr\}
+\]
+be the stratum of proper traces in which $x$ is rare. By
+Proposition~\ref{prop:minimality} the strata $\{U_x\}_{x\in[n]}$ cover
+the punctured trace poset $\Cn(\Fstar)\setminus\{\Fstar\}$, where
+$\Cn(\Fstar)$ is the full subcategory of $\Cn$ on the traces of
+$\Fstar$.
+
+\subsection{The obstruction double complex}
+\label{ssec:obs-complex}
+
+\begin{definition}
+\label{def:obs-sheaf}
+On the stratum $U_x$ place the \emph{local bias cochain}
+$\widehat b_x=b_x\cdot[\walsh{\{x\}}]$, where $b_x(\G)=-\bias_x(\G)\ge0$
+is the (non-negative) defect and $[\walsh{\{x\}}]$ records that the
+datum is carried by the level-$1$ Walsh character $\walsh{\{x\}}$
+(Remark~\ref{rem:walsh-role2}, Role~2 --- this is a labelling of the
+harmonic type of the cochain, not a group action). On a pairwise
+overlap $U_x\cap U_y$ place the \emph{mismatch cochain}
+$m_{xy}=\widehat b_x-\widehat b_y$. These data form the
+\emph{obstruction sheaf} $\fobs$ on $\Cn(\Fstar)\setminus\{\Fstar\}$
+and assemble into the \v{C}ech double complex of the cover
+$\mathfrak U=\{U_x\}_{x\in[n]}$,
+\[
+  \check C^{p,q}(\mathfrak U;\fobs)\;=\;
+  \bigoplus_{x_0<x_1<\cdots<x_p}\fobs^{q}\bigl(U_{x_0}\cap\cdots\cap
+  U_{x_p}\bigr),
+\]
+with \v{C}ech differential $\check\delta$ (alternating sum over
+omitted indices) and internal cochain differential $d$.
+\end{definition}
+
+\begin{lemma}[Cocycle]
+\label{lem:cocycle}
+On every triple overlap $m_{xy}+m_{yz}+m_{zx}=0$, so the family
+$\{m_{xy}\}$ is a \v{C}ech $1$-cocycle. It is the \v{C}ech coboundary
+$\check\delta^{0}\{\widehat b_x\}$ of the $0$-cochain
+$\{\widehat b_x\}$.
+\end{lemma}
+
+\begin{proof}
+$m_{xy}+m_{yz}+m_{zx}=(\widehat b_x-\widehat b_y)+(\widehat
+b_y-\widehat b_z)+(\widehat b_z-\widehat b_x)=0$, and by definition
+$(\check\delta^{0}\{\widehat b_x\})_{xy}=\widehat b_x-\widehat
+b_y=m_{xy}$.
+\end{proof}
+
+The $\{\widehat b_x\}$ are genuine local sections of $\fobs$ but do
+\emph{not} agree on overlaps --- that is the whole point: a minimal
+counterexample is precisely a family for which they cannot be made to
+agree. So $\{\widehat b_x\}$ is not a global section, and the mismatch
+$\{m_{xy}\}$, though a $\check\delta$-cocycle, need not be a coboundary
+\emph{of a global section}. The obstruction is exactly that
+discrepancy.
+
+\begin{definition}[The obstruction class]
+\label{def:ob}
+The mismatch cocycle $\{m_{xy}\}$, promoted through the edge map of the
+\v{C}ech-to-cohomology spectral sequence of the double complex
+$\check C^{*,*}(\mathfrak U;\fobs)$, defines the \emph{obstruction
+class}
+\[
+  \ob(\Fstar)\;\in\;\widetilde H^{n-1}(\Cn;X).
+\]
+\end{definition}
+
+\begin{remark}[The promotion, stated honestly]
+\label{rem:promotion}
+The spectral sequence of the double complex
+$\check C^{*,*}(\mathfrak U;\fobs)$ has $E_2^{p,q}=\check
+H^{p}(\mathfrak U;\mathcal H^{q}(\fobs))$ and abuts to the total
+cohomology, which an edge map carries into $H^{*}(\Cn;X)$. The
+mismatch cocycle sits in \v{C}ech degree $p=1$, and the total degree
+$n-1$ of $\ob(\Fstar)$ is the cube-side dimension count inherited from
+the pre-Fork-A development. The precise pinning of this edge map ---
+its existence, its degree behaviour, and (crucially) its injectivity
+--- is \emph{not} discharged here; it is the content of Owed
+debt~\ref{debt:faithful} and is localized in \S\ref{ssec:debt2}. What
+Phase~1 does establish, and uses, is only that the edge map and the
+whole double complex are $\Sym_n$-equivariant --- which is structural,
+since every ingredient (the cover indexed by $[n]$, the sheaf $\fobs$,
+the differentials) is natural in the ground set.
+\end{remark}
+
+% =====================================================================
+\section{The two-part contradiction, re-established}
+\label{sec:contradiction}
+% =====================================================================
+
+The intended proof of Frankl is a collision: the obstruction class is
+forced nonzero by minimality (Fact One) and zero by the structure of
+the cohomology (Fact Two). This section re-establishes the
+contradiction on the Fork~A object as a \emph{conditional} theorem,
+and is scrupulous about which of its inputs are established and which
+are open.
+
+\subsection{Fact One: the obstruction is nonzero}
+\label{ssec:fact-one}
+
+\begin{proposition}[Fact One, conditional]
+\label{prop:fact-one}
+If the \v{C}ech-to-cohomology edge map of Definition~\ref{def:ob} is
+injective on the class of the mismatch cocycle, then
+$\ob(\Fstar)\neq0$ in $\widetilde H^{n-1}(\Cn;X)$.
+\end{proposition}
+
+\begin{proof}
+Suppose $\ob(\Fstar)=0$. If the edge map is injective, this forces the
+mismatch cocycle $\{m_{xy}\}$ to be a \v{C}ech coboundary \emph{of a
+global section}: the local data $\{\widehat b_x\}$ glue. A global
+section is a single rare-coordinate datum valid on all of
+$\Cn(\Fstar)$ --- including the top object $\Fstar$ --- producing a
+coordinate $x_\ast$ with $\bias_{x_\ast}(\Fstar)\le0$. But a minimal
+counterexample has $\bias_x(\Fstar)>0$ for every $x$
+(Definition~\ref{def:minimal}). Contradiction; hence
+$\ob(\Fstar)\neq0$.
+\end{proof}
+
+\begin{status}
+\label{status:fact-one}
+Fact One is \emph{conditional on the edge-map injectivity}. This is not
+a defect introduced by Fork~A --- the pre-Fork-A development carried
+exactly the same conditionality, recorded there as ``the load-bearing
+content is the equivalence $\ob=0\iff$ a global section exists, and
+that equivalence is the assertion that the obstruction theory is
+faithful.'' Fork~A inherits it unchanged and names it precisely:
+edge-map injectivity is residual R3, Owed
+debt~\ref{debt:faithful-localized} (\S\ref{ssec:debt2}). Phase~1 does
+not discharge it.
+\end{status}
+
+\subsection{Fact Two, part 1: the landing ($Y_2$-A)}
+\label{ssec:y2a}
+
+The landing statement asks where in $H^{n-1}(\Cn;X)$ the obstruction
+class sits. In the pre-Fork-A development this was $Y_2$: ``$\ob$
+lands in the level-$1$ Walsh isotypes,'' and its mechanism was that
+the additive, $(\Z/2)^n$-equivariant differentials of the \v{C}ech
+double complex preserve Walsh isotype. \textbf{That mechanism does not
+survive Fork~A}: it used $(\Z/2)^n$-equivariance, and Fork~A has no
+$(\Z/2)^n$-action (Status~\ref{status:c-block}). The landing must
+therefore be genuinely re-derived in the $\Sym_n$ grading. We state
+honestly what re-derives, and what does not.
+
+\subsubsection*{What does re-derive: the structural mechanism}
+
+\begin{proposition}[$Y_2$-A, structural mechanism]
+\label{prop:y2a-mech}
+The obstruction class $\ob(\Fstar)$ has the following two properties.
+\begin{enumerate}[label=\textup{(\arabic*)},leftmargin=2.4em]
+\item \textup{(it factors through mismatches)} $\ob(\Fstar)$ depends on
+  the local bias data $(\widehat b_x)_{x\in[n]}$ \emph{only through the
+  differences} $\widehat b_x-\widehat b_y$. Equivalently
+  (Lemma~\ref{lem:cocycle}), it factors through the \v{C}ech coboundary
+  map $\check\delta^{0}$, hence is insensitive to any datum that is
+  already a global section of $\fobs$.
+\item \textup{(it is harmonically level-$1$ at the cochain level)} The
+  obstruction \emph{cochain} --- the mismatch $\{m_{xy}\}$ and every
+  cochain in the \v{C}ech direction built from it by the additive
+  \v{C}ech differential --- is supported on the level-$1$ Walsh
+  characters $\walsh{\{x\}}$; the \v{C}ech differential is additive
+  and carries out no multiplication by a Walsh character, so it does
+  not raise the harmonic level of a cochain.
+\end{enumerate}
+Both properties are $\Sym_n$-equivariant statements and hold with no
+group action on the cohomology object.
+\end{proposition}
+
+\begin{proof}
+(1) By Definition~\ref{def:ob} the obstruction is the promotion of the
+mismatch $\{m_{xy}\}=\{\widehat b_x-\widehat b_y\}$; every $m_{xy}$ is
+a difference. By Lemma~\ref{lem:cocycle} the mismatch is
+$\check\delta^{0}\{\widehat b_x\}$, and $\check\delta^{0}$ annihilates
+exactly the global sections (the $0$-cochains agreeing on overlaps).
+(2) Each $\widehat b_x=b_x\cdot[\walsh{\{x\}}]$ is level-$1$ harmonic
+by Definition~\ref{def:obs-sheaf}; the \v{C}ech differential
+$\check\delta$ is an alternating sum of restrictions, an additive
+operation involving no Walsh multiplication, so it preserves the
+level-$1$ harmonic support. Both constructions are natural in the
+ground set $[n]$, hence $\Sym_n$-equivariant.
+\end{proof}
+
+\subsubsection*{What does not re-derive for free: the separation from the sphere}
+
+The closing contradiction needs more than Proposition~\ref{prop:y2a-mech}.
+It needs the obstruction's cohomology \emph{class} to lie in a part of
+$H^{n-1}(\Cn;X)$ that the vanishing statement $Y_1$-A can kill ---
+concretely, a part \emph{disjoint from the $\sgn$ sphere-class
+isotype}, since the sphere class is the one piece $Y_1$-A leaves
+nonzero (\S\ref{ssec:sphere-class}). In the pre-Fork-A development this
+separation was free: $\ob$ sat at Walsh level $1$, the sphere class at
+Walsh level $n$, and Walsh level separated them. Fork~A has dropped
+Walsh level as a grading of the cohomology. The honest finding is:
+
+\begin{openresidual}[$Y_2$-A: the separation residual --- R2]
+\label{res:y2}
+It is \emph{not} established by Phase~1 that $\ob(\Fstar)$ avoids the
+$\sgn_{\Sym_n}$ sphere-class isotype of $H^{n-1}(\Cn;X)$. The two
+properties of Proposition~\ref{prop:y2a-mech} do not deliver it:
+\begin{itemize}[leftmargin=1.5em]
+\item \emph{Harmonic level is not a cohomology grading.} The
+  obstruction cochain is level-$1$ harmonic
+  (Proposition~\ref{prop:y2a-mech}(2)), but the cubical coboundary $d$
+  does not preserve harmonic level on the defect complex
+  (Remark~\ref{rem:walsh-role2}); so ``the cochain is level-$1$'' does
+  not imply ``the class avoids the top-harmonic / sphere part.''
+\item \emph{Factoring through mismatches constrains, but does not
+  pin, the $\Sym_n$-isotype.} By
+  Proposition~\ref{prop:y2a-mech}(1) and Maschke
+  (Theorem~\ref{thm:maschke}), $\ob(\Fstar)$ lies in the image of an
+  $\Sym_n$-equivariant map out of $\im\check\delta^{0}$, so its
+  $\Sym_n$-isotype content is contained in that of
+  $\im\check\delta^{0}\subseteq\check C^{1,*}$. Whether
+  $\im\check\delta^{0}$ contains the $\sgn_{\Sym_n}$ isotype is a
+  representation-theoretic property of the obstruction sheaf $\fobs$:
+  by Frobenius reciprocity for the cover indexed by $[n]$, it reduces
+  to whether the coefficient $\fobs^{q}(U_x)$ carries the relevant
+  sign character of the point stabiliser $\Sym_{n-1}$. The fine
+  structure of $\fobs^{q}$ is not pinned in Phase~1.
+\end{itemize}
+\textbf{$Y_2$-A reduces to the following named residual:}
+\emph{$\ob(\Fstar)$ has no $\sgn_{\Sym_n}$-component in
+$H^{n-1}(\Cn;X)$} --- equivalently, the level-$1$-harmonic obstruction
+class is not cohomologous to a nonzero multiple of the
+top-harmonic sphere class. This is a representation-theoretic question
+about the obstruction sheaf $\fobs$, and it is naturally a
+\emph{faithfulness} question: if $\ob$ had a $\sgn$-component it would
+be partly the family-blind orientation class, which is the precise
+shape of the wrapper-risk.
+\end{openresidual}
+
+\begin{status}
+\label{status:y2a}
+$Y_2$-A is \textsf{AMBER --- open}. The structural mechanism re-derives
+in the $\Sym_n$ grading with no group action on the cohomology
+(Proposition~\ref{prop:y2a-mech}); this is the genuine portable
+content of the pre-Fork-A $Y_2$. But the conclusion the contradiction
+needs --- that $\ob$ avoids the sphere isotype --- is \emph{not} free,
+because the pre-Fork-A $Y_2$ obtained it from the Walsh-level grading
+of cohomology, which Fork~A correctly discards. Phase~1 isolates the
+residual precisely (Open residual~\ref{res:y2}). An earlier draft of
+this re-foundation asserted a clean theorem ``$\ob$ is
+standard-isotypic, hence $\sgn$-free''; that assertion is
+\emph{withdrawn}: it tacitly assumed the coefficient $\fobs^{q}$ is
+$\Sym_n$-trivial, which is not justified, and the honest statement is
+the residual above. Recording this correction is part of the Phase-1
+deliverable: the over-claim discipline that caught the invalid $Y_1$
+proof and the false ``$R2$'' applies here too.
+\end{status}
+
+\subsection{Fact Two, part 2: the vanishing ($Y_1$-A)}
+\label{ssec:y1a}
+
+The closing contradiction needs the obstruction's home to vanish.
+Granting (R2) that $\ob$ avoids the sphere isotype, the home is the
+non-$\sgn$ part of $\widetilde H^{n-1}(\Cn;X)$. So the Fork~A
+vanishing statement is the re-graded sphere concentration:
+
+\begin{conjecture}[$Y_1$-A, sphere concentration]
+\label{conj:y1a}
+For $n\ge3$, $\widetilde H^{k}(\Cn;X)=0$ for $1\le k\le n-2$, and
+$\widetilde H^{n-1}(\Cn;X)\cong\sgn_{\Sym_n}$ (one-dimensional). In
+particular every non-$\sgn$ isotype of $\widetilde H^{n-1}(\Cn;X)$
+vanishes.
+\end{conjecture}
+
+This is the re-graded form of the pre-Fork-A target ``UC10.1'': it is
+the same spherical-cohomology statement, now stated for the genuine
+$\Sym_n$-grading rather than the unconstructed Walsh grading.
+$Y_1$-A is \emph{open}. The honest reduction available is the cofiber
+long-exact-sequence method, which ports to Fork~A.
+
+\begin{construction}[The matched-cylinder bridge]
+\label{constr:bridge}
+The doubling functor $\mathrm{db}_x$ embeds $\Cnm$ into $\Cn$ as the
+\emph{matched subcategory} $\Dx$, with $X(\mathrm{db}_x\F)\cong
+X(\F)\times I$ a prism --- the matched cylinder. The geometric prism
+operator $h$, $(h\omega)(D)=\omega(D\times\{0\!\to\!1\})$, is a
+degree-$(-1)$ cochain operator. It is a \emph{geometric} construction
+on cells; it needs no group action and survives the dropping of
+$(\Z/2)^n$ intact. The harmonic twist by $\walsh{\{x\}}$ used in the
+pre-Fork-A bridge is, in Fork~A, simply pointwise multiplication by
+the fixed function $\walsh{\{x\}}$ (Role~2,
+Remark~\ref{rem:walsh-role2}) --- a cochain operation, not a group
+action --- so the twisted bridge identity
+$\iota_x^{*}=\pm\frac12(dh-hd)$ also ports without a
+$(\Z/2)^n$-action. It gives $\iota_x^{*}\simeq0$, the input the
+reduction uses.
+\end{construction}
+
+\begin{theorem}[Cofiber-LES reduction of $Y_1$-A]
+\label{thm:y1-reduction}
+Fix $n$ and $x\in[n]$. Let $\Cnm\hookrightarrow\Cn$ induce a
+cofibration $\iota_x\colon\Xbb_{n-1,x}\hookrightarrow\Xbb_n$ of Fork~A
+complexes. The pair has an $\Sym_n$-equivariant cohomology long exact
+sequence; projecting to any isotype $[\lambda]$ (Maschke,
+Theorem~\ref{thm:maschke}) and substituting the null-homotopy
+$\iota_x^{*}\simeq0$ (Construction~\ref{constr:bridge}) collapses it,
+in each degree, to a relation expressing
+$\widetilde H^{k}(\Cn;X)_{[\lambda]}$ through the isotype cohomology of
+the cofiber $\cofib\iota_x=\Xbb_n/\Xbb_{n-1,x}$ and the
+smaller-ground-set term $\widetilde H^{k-1}(\Xbb_{n-1,x})_{[\lambda]}$.
+Hence $Y_1$-A reduces to control of the isotype cohomology of
+$\cofib\iota_x$, with the smaller-ground-set terms supplied by the
+simultaneous induction on $n$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+The cofiber long exact sequence of the pair
+$(\Xbb_n,\Xbb_{n-1,x})$ is standard; every map is $\Sym_n$-equivariant
+(the inclusion $\Cnm\hookrightarrow\Cn$ and the cofiber are natural in
+$[n]$), so by Theorem~\ref{thm:maschke} the LES splits into isotypes.
+The bridge (Construction~\ref{constr:bridge}) gives $\iota_x^{*}=0$ on
+cohomology in the relevant degrees; substituting the zero map makes
+the restriction $j^{*}$ surjective with kernel the image of the
+connecting map $\delta$, and $\delta$ injective. The argument is the
+$\Sym_n$-graded port of the pre-Fork-A cofiber-LES re-derivation
+(\texttt{mg-56b8} Theorem ``Valid cofiber-LES reduction of $Y_1$'');
+it carries over the \emph{same} sub-case structure, including the
+delicate sub-case where the smaller-ground-set term meets the sphere
+class of the $(n-1)$-cube. Phase~1 does not claim Fork~A removes that
+delicacy; it claims only that the reduction ports and the residual is
+the cofiber.
+\end{proof}
+
+\begin{openresidual}[The $Y_1$ residual --- R1]
+\label{res:y1}
+$Y_1$-A reduces, by Theorem~\ref{thm:y1-reduction}, to the isotype
+cohomology of the homotopy cofiber of the matched-cylinder inclusion
+$X(\Dx)\hookrightarrow\Xbb_n$. Stripping the contractible cylinder,
+this is the cohomology of the bar strings of $\Cn$ that \emph{exit}
+the matched subcategory $\Dx$ --- the comma-category twist
+$N(\rho_x/-)$ of the trace functor $\rho_x$, the homotopy type of the
+stuck-family fibres. \textbf{This residual is unchanged from the
+pre-Fork-A state.} The cofiber-LES re-derivation (\texttt{mg-56b8})
+had already isolated exactly this object; Fork~A houses it correctly
+on a well-defined cohomology object, but does not close it and does
+not claim to. It is the genuine open Frankl content and is
+multi-week-plus work for a later phase.
+\end{openresidual}
+
+\begin{status}
+\label{status:y1a}
+$Y_1$-A is \textsf{RED --- open}. This is the expected outcome:
+Phase~1 was never going to close the $Y_1$ residual. What Phase~1
+establishes is that the cofiber-LES reduction ports cleanly to the
+well-defined Fork~A object and that the residual --- the homotopy type
+of the stuck-family fibres --- is the same hard object as before, now
+correctly housed.
+\end{status}
+
+\subsection{The closing contradiction}
+\label{ssec:closing}
+
+\begin{theorem}[The Fork A two-part contradiction, conditional]
+\label{thm:contradiction}
+Assume, for $n\ge3$:
+\begin{enumerate}[label=\textup{(\roman*)},leftmargin=2.4em]
+\item \textup{(R3, faithfulness)} the \v{C}ech-to-cohomology edge map
+  of Definition~\ref{def:ob} is injective on the mismatch class;
+\item \textup{(R2, landing)} $\ob(\Fstar)$ has no
+  $\sgn_{\Sym_n}$-component in $H^{n-1}(\Cn;X)$ (Open
+  residual~\ref{res:y2}); and
+\item \textup{(R1, vanishing)} $Y_1$-A holds
+  (Conjecture~\ref{conj:y1a}; Open residual~\ref{res:y1}).
+\end{enumerate}
+Then there is no minimal counterexample to Frankl on $[n]$; hence
+Frankl holds on $[n]$.
+\end{theorem}
+
+\begin{proof}
+Suppose $\Fstar$ is a minimal counterexample. By Fact One
+(Proposition~\ref{prop:fact-one}, using (i)), $\ob(\Fstar)\neq0$ in
+$\widetilde H^{n-1}(\Cn;X)$. By (iii), $Y_1$-A makes $\widetilde
+H^{n-1}(\Cn;X)\cong\sgn_{\Sym_n}$ --- the cohomology in degree $n-1$
+is exactly the one-dimensional sphere class, all other isotypes
+vanish. By (ii), $\ob(\Fstar)$ has no $\sgn$-component; since
+$\widetilde H^{n-1}(\Cn;X)$ is \emph{entirely} $\sgn$-isotypic, the
+only element with no $\sgn$-component is $0$, so $\ob(\Fstar)=0$. This
+contradicts $\ob(\Fstar)\neq0$. Hence no minimal counterexample
+exists, and Frankl holds on $[n]$.
+\end{proof}
+
+\begin{remark}[The honest shape of the re-founded contradiction]
+\label{rem:honest-shape}
+Theorem~\ref{thm:contradiction} is the Fork~A re-founding of the
+intended proof. It is a \emph{conditional} theorem, and the honest
+accounting of its hypotheses is the heart of the Phase-1 deliverable.
+\begin{itemize}[leftmargin=1.5em]
+\item It rests on \emph{three} named open inputs --- R1, R2, R3 ---
+  where the pre-Fork-A closing argument rested on the same three
+  \emph{plus} the unconstructed $(\Z/2)^n$-action. Fork~A removes the
+  fourth (Status~\ref{status:c-block}) and houses the other three on a
+  well-defined object. That is the genuine gain; it is a gain in
+  soundness and clarity, not in proof-distance to Frankl.
+\item R1 (the $Y_1$ cofiber residual) and R3 (faithfulness) are
+  \emph{unchanged} from the pre-Fork-A state. R2 (the landing) is the
+  one input Fork~A genuinely re-opens: the pre-Fork-A $Y_2$ was
+  ``mechanism-sound'' resting on $(\Z/2)^n$-equivariance, and dropping
+  that action means the separation of $\ob$ from the sphere class must
+  be re-established by other means (Open residual~\ref{res:y2}).
+\item The proof of Theorem~\ref{thm:contradiction} does not invoke
+  spherical concentration as an independent ingredient beyond $Y_1$-A;
+  spherical concentration \emph{is} $Y_1$-A. It re-enters as the
+  inductive partner of $Y_1$-A in the cofiber-LES method
+  (Theorem~\ref{thm:y1-reduction}), exactly as in the pre-Fork-A
+  simultaneous induction.
+\end{itemize}
+None of this proves Frankl: (i), (ii), (iii) are genuinely open. What
+Theorem~\ref{thm:contradiction} shows is that the re-founded
+contradiction is coherent on a sound object and that its open part is
+exactly the three precisely named residuals R1, R2, R3.
+\end{remark}
+
+% =====================================================================
+\section{The two owed debts}
+\label{sec:debts}
+% =====================================================================
+
+\subsection{Owed debt 1 --- the re-grading: ADDRESSED}
+\label{ssec:debt1}
+
+\begin{status}
+\label{status:debt1}
+Owed debt~\ref{debt:regrading} (the re-grading) is \textsf{ADDRESSED}:
+its structural content is discharged, and its one remaining open part
+is precisely localized.
+\end{status}
+
+\noindent\emph{Discharged (structural re-grading).}
+\begin{enumerate}[label=\textup{(\arabic*)},leftmargin=2.2em]
+\item The $(\Z/2)^n$-action is dropped, which \emph{dissolves}
+  Phase-1.5 refutation (b) (Status~\ref{status:c-block}).
+\item The grading is re-established by Maschke for the genuine
+  $\Sym_n$-action (Theorem~\ref{thm:maschke}) --- the genuine analogue
+  of the old Walsh decomposition, for the group that genuinely acts.
+\item The sphere class is identified as the $\sgn_{\Sym_n}$ isotype
+  (Proposition~\ref{prop:sphere-sgn}); the old target's $\walsh{[n]}$
+  factor was redundant $(\Z/2)^n$-decoration
+  (Remark~\ref{rem:sgn-always-sn}).
+\item The vanishing statement $Y_1$ re-derives to the re-graded
+  sphere concentration $Y_1$-A (Conjecture~\ref{conj:y1a}), with the
+  cofiber-LES reduction ported (Theorem~\ref{thm:y1-reduction}).
+\item The landing statement $Y_2$ re-derives at the level of its
+  structural mechanism (Proposition~\ref{prop:y2a-mech}).
+\end{enumerate}
+
+\noindent\emph{Localized (the open part).} The re-grading correctly
+\emph{surfaces} that the pre-Fork-A $Y_2$ rested on the
+$(\Z/2)^n$-equivariance now dropped: the separation of $\ob$ from the
+sphere class, free in the Walsh grading, is not free in the $\Sym_n$
+grading. Phase~1 localizes this precisely as residual R2 (Open
+residual~\ref{res:y2}). This is not a failure of the re-grading; it is
+the re-grading doing its job --- exposing that an input the pre-Fork-A
+ledger called ``mechanism-sound'' in fact depended on a now-refuted
+group action and must be re-established.
+
+\begin{remark}[Why ``ADDRESSED'' and not ``PAID'']
+\label{rem:debt1-addressed}
+An earlier draft of this document recorded Owed debt~\ref{debt:regrading}
+as fully \textsf{PAID}, on the strength of a claimed theorem that
+$\ob$ is standard-isotypic. That theorem does not hold (Status~%
+\ref{status:y2a}), so the honest status is \textsf{ADDRESSED}: the
+re-grading as a structural task is complete and sound, and its
+residue is the single precisely named object R2. The brief permits
+``address \emph{or} precisely localize''; Phase~1 does both ---
+addresses the structural re-grading, localizes the residue.
+\end{remark}
+
+\subsection{Owed debt 2 --- faithfulness ($V_3$ / wrapper-risk): LOCALIZED}
+\label{ssec:debt2}
+
+\begin{status}
+\label{status:debt2}
+Owed debt~\ref{debt:faithful} (faithfulness) is \textsf{LOCALIZED, not
+discharged}. Phase~1 reduces it to a single named object, with one
+related facet surfaced by the re-grading.
+\end{status}
+
+The vision's clause $V_3$ --- ``the minimal counterexample differs
+from the generic families by a factor relating to this cohomology''
+--- asks that the cohomology \emph{genuinely detect} the
+counterexample. On the Fork~A object the ``factor'' is the obstruction
+class $\ob(\Fstar)$: a generic family (one with a rare coordinate) has
+$\ob=0$, because its local rare-coordinate data glue through its own
+rare coordinate; a minimal counterexample has $\ob\neq0$ ---
+\emph{provided} Fact One holds. So $\ob$ distinguishes $\Fstar$ from
+the generic families, as $V_3$ asks, conditionally on Fact One.
+
+\begin{debt}[Faithfulness, localized --- R3]
+\label{debt:faithful-localized}
+Owed debt~\ref{debt:faithful} is exactly the following statement.
+\begin{quote}
+The edge map $\check H^{1}(\mathfrak U;\fobs)\to\widetilde
+H^{n-1}(\Cn;X)$ of Definition~\ref{def:ob} is \emph{injective} on the
+class of the mismatch cocycle: if $\ob(\Fstar)=0$ in $\widetilde
+H^{n-1}(\Cn;X)$, then $\{m_{xy}\}$ is the \v{C}ech coboundary of a
+\emph{global} section of $\fobs$.
+\end{quote}
+Equivalently: the promotion of the obstruction from the \v{C}ech
+$H^1$ of the cover into the cohomology of the category loses no
+information --- a vanishing promoted class reflects a genuinely
+trivial mismatch.
+\end{debt}
+
+Three honest sub-points sharpen what this debt is.
+
+\begin{remark}[The wrapper-risk, precisely]
+\label{rem:wrapper}
+The standing concern (``wrapper-risk'') is that the vanishing side of
+the contradiction --- $Y_1$-A --- uses only the shape of the \v{C}ech
+double complex and never the counterexample hypothesis, so that
+\emph{if} $Y_1$-A holds then $\ob(\F)=0$ for \emph{every} family, and
+all Frankl-specific content collapses into Fact One. Fork~A does not
+remove this risk, but it localizes it: under Fork~A the
+Frankl-specific content is the edge-map injectivity of
+R3. If that injectivity holds, the equivalence ``$\ob=0\iff$ a global
+rare-coordinate section exists'' is genuine and the cohomology
+genuinely detects the counterexample ($V_3$ satisfied). If it fails,
+$\ob$ is family-blind and the contradiction is hollow. The debt is a
+single, checkable homological-algebra statement about one edge map.
+\end{remark}
+
+\begin{remark}[R2 is faithfulness-flavoured]
+\label{rem:r2-faithful}
+The landing residual R2 (Open residual~\ref{res:y2}) --- whether
+$\ob$ avoids the $\sgn$ sphere-class isotype --- is closely related to
+faithfulness. If $\ob$ had a $\sgn$-component, that component would be
+a multiple of the sphere class, which is family-\emph{independent}
+(it is a property of the category's cohomology, not of any family). An
+$\ob$ with a nonzero $\sgn$-component would thus be partly a
+family-blind invariant --- a faithfulness failure of exactly the
+wrapper-risk shape. So R2 and R3, though housed under the two
+different debts, are facets of one underlying question: whether the
+cohomology separates the family-specific obstruction from the
+family-blind orientation class. Phase~1 records them as two named
+residuals; a later phase may find them inter-reducible.
+\end{remark}
+
+\begin{remark}[The hocolim-versus-holim sharpening; the foundational prerequisite]
+\label{rem:holim-prereq}
+Remark~\ref{rem:hocolim-flag} flagged that the obstruction is a
+gluing-type (limit-flavoured) invariant while $H^{*}(\Cn;X)$ is the
+cohomology of a homotopy \emph{colimit}. This is a sharpening of R3,
+not a separate debt: the edge map of Definition~\ref{def:ob} is the
+comparison between the limit-side \v{C}ech $H^1$ (where gluing lives)
+and the colimit-side $H^{n-1}(\Cn;X)$ (where $\ob$ is housed), and
+edge-map injectivity is exactly the assertion that this comparison is
+faithful. Pinning the edge map to the precision R3 needs requires the
+cell-level Bousfield--Kan model of $\Cn$: the projection $\pi_T$ at
+cell level (supplied --- Theorem~\ref{thm:projection}) and the
+cell-level structure of $\fobs$ and its spectral sequence (not pinned
+here). Fork~A discharges the harder half of this foundational
+prerequisite (the structure map genuinely exists and is pinned) and
+leaves the spectral sequence of $\fobs$ for the residual-attack phase.
+A computation reported on un-pinned $\fobs$-foundations would repeat
+the Phase-1.5 failure mode and must not be attempted before the
+pinning.
+\end{remark}
+
+% =====================================================================
+\section{Verdict, what Phase 1 delivered, recommendations}
+\label{sec:verdict}
+% =====================================================================
+
+\subsection{Verdict}
+\label{ssec:verdict}
+
+\textbf{GREEN --- FORK-A-REFOUNDATION-DELIVERED (Phase~1).} The Frankl
+cohomology is re-founded on Fork~A in LaTeX. The covariant homotopy
+colimit $H^{*}(\Cn;X)$ is a genuinely defined cohomology theory
+(Theorem~\ref{thm:welldefined}), built on the trace projection
+$\pi_T$, which exists and is functorial (Theorem~\ref{thm:projection}):
+this dodges Phase-1.5 refutation (a) by construction. The
+$(\Z/2)^n$-action is dropped, dissolving Phase-1.5 refutation (b)
+(Status~\ref{status:c-block}). The grading is re-established by Maschke
+for the genuine $\Sym_n$-action (Theorem~\ref{thm:maschke}), with the
+sphere class identified as $\sgn_{\Sym_n}$
+(Proposition~\ref{prop:sphere-sgn}). The obstruction class and the
+two-part contradiction are re-established as a conditional theorem
+(Theorem~\ref{thm:contradiction}). Owed debt~\ref{debt:regrading} (the
+re-grading) is addressed --- its structural content discharged, its
+residue localized as R2; Owed debt~\ref{debt:faithful} (faithfulness)
+is localized as R3. \textbf{Frankl is not proved, and Phase~1 was
+never meant to prove it.} The verdict GREEN is for the Phase-1 scope:
+the re-foundation is delivered and internally sound. Three objects
+remain genuinely open --- R1 (the $Y_1$ cofiber residual), R2 (the
+$Y_2$ landing / separation), R3 (faithfulness / the edge map) --- and
+each is precisely named.
+
+\subsection{What Phase 1 delivered (positive content)}
+\label{ssec:delivered}
+
+\begin{enumerate}[leftmargin=1.9em]
+\item A genuinely defined cohomology object $H^{*}(\Cn;X)$ --- the
+  covariant hocolim, with $D^2=0$ verified
+  (Theorem~\ref{thm:welldefined}) --- replacing the undefined
+  pre-Fork-A $X^{\cap}_n$.
+\item The trace projection $\pi_T$, pinned as a covariant functor
+  (Theorem~\ref{thm:projection}), the structure map the build had
+  backwards.
+\item The re-grading: $\Sym_n$-isotype decomposition by Maschke
+  (Theorem~\ref{thm:maschke}); the sphere class as $\sgn_{\Sym_n}$
+  (Proposition~\ref{prop:sphere-sgn}); the $(\Z/2)^n$-action dropped
+  with no loss at the sphere class.
+\item The obstruction class re-founded on the well-defined object
+  (\S\ref{sec:obstruction}), and the structural mechanism of the
+  landing re-derived in the $\Sym_n$ grading with no group action
+  (Proposition~\ref{prop:y2a-mech}).
+\item The $Y_1$ vanishing re-stated as re-graded sphere concentration
+  (Conjecture~\ref{conj:y1a}) with the cofiber-LES reduction ported
+  (Theorem~\ref{thm:y1-reduction}).
+\item The closing contradiction re-established as a conditional
+  theorem and shown to rest on exactly three open inputs
+  (Theorem~\ref{thm:contradiction}, Remark~\ref{rem:honest-shape}) ---
+  one fewer than the pre-Fork-A argument, which also needed the
+  unconstructed $(\Z/2)^n$-action.
+\item Owed debt~1 addressed; Owed debt~2 localized
+  (\S\ref{sec:debts}); and an over-claim from an earlier draft (the
+  ``standard-isotypic'' theorem) caught and withdrawn
+  (Status~\ref{status:y2a}, Remark~\ref{rem:debt1-addressed}).
+\end{enumerate}
+
+\subsection{What remains open}
+\label{ssec:open}
+
+\begin{itemize}[leftmargin=1.7em]
+\item \textbf{R1 --- $Y_1$-A, Open residual~\ref{res:y1}.} The isotype
+  cohomology of the cofiber of the matched-cylinder inclusion --- the
+  homotopy type of the stuck-family fibres. Unchanged from the
+  pre-Fork-A residual; the genuine open Frankl content;
+  multi-week-plus.
+\item \textbf{R2 --- $Y_2$-A, Open residual~\ref{res:y2}.} Whether
+  $\ob(\Fstar)$ avoids the $\sgn$ sphere-class isotype. A
+  representation-theoretic question about the obstruction sheaf
+  $\fobs$; faithfulness-flavoured (Remark~\ref{rem:r2-faithful}).
+\item \textbf{R3 --- faithfulness, Owed
+  debt~\ref{debt:faithful-localized}.} The injectivity of the
+  \v{C}ech-to-cohomology edge map --- the whole of the
+  $V_3$/wrapper-risk question, now a single homological-algebra
+  statement; subsumes the hocolim-versus-holim question
+  (Remark~\ref{rem:holim-prereq}).
+\end{itemize}
+
+\subsection{Recommendations (routed to Daniel via \texttt{pm-onethird})}
+\label{ssec:recommendations}
+
+\begin{enumerate}[leftmargin=1.9em]
+\item \textbf{Proceed to Phase~2 (independent validation) of this
+  document.} The Phase-1 gate is GREEN: the re-foundation is delivered
+  and internally coherent. Phase~2 should default-skeptically check, in
+  particular, Theorem~\ref{thm:projection} (the chain-map and
+  functoriality claims), Theorem~\ref{thm:welldefined} ($D^2=0$),
+  Theorem~\ref{thm:maschke} (the $\Sym_n$-equivariance of $D$), and ---
+  with special care, given the withdrawn over-claim --- the honesty of
+  \S\ref{ssec:y2a}: that Proposition~\ref{prop:y2a-mech} is all that is
+  proved and Open residual~\ref{res:y2} is genuinely open.
+\item \textbf{The $Y_1$ residual} (R1, Open residual~\ref{res:y1}) and
+  \textbf{the faithfulness edge map} (R3, Owed
+  debt~\ref{debt:faithful-localized}) are independent and can be
+  attacked in parallel as separate tickets. Both require first pinning
+  the cell-level spectral sequence of $\fobs$
+  (Remark~\ref{rem:holim-prereq}).
+\item \textbf{The $Y_2$ separation residual} (R2, Open
+  residual~\ref{res:y2}) should be attacked together with R3: they are
+  facets of one faithfulness question (Remark~\ref{rem:r2-faithful}),
+  and a representation-theoretic analysis of $\fobs$ feeds both.
+\item \textbf{Do not Lean-formalize yet} (Phase~3). Phase~3 is gated on
+  Phase~2 returning GREEN. Of the Fork~A content,
+  Theorems~\ref{thm:projection},~\ref{thm:welldefined}, and~%
+  \ref{thm:maschke} and Proposition~\ref{prop:y2a-mech} are the
+  formalization-ready core; the three residuals are not.
+\item \textbf{The consolidated paper (\texttt{../main.tex}) is not
+  edited by Phase~1.} It honestly records the pre-Fork-A state. A
+  later pass --- once Phase~2 validates this document --- may fold the
+  Fork~A re-foundation into the paper, superseding its \S\S3--4. That
+  is out of Phase-1 scope.
+\end{enumerate}
+
+\subsection{The honest one-paragraph summary}
+\label{ssec:final}
+
+Fork~A re-founds the Frankl cohomology as the covariant homotopy
+colimit of the per-family cubical-defect diagram over the trace
+category, with the canonical trace projection --- which genuinely
+exists and is functorial --- as its structure map; this object is
+well-defined, which the pre-Fork-A object was not, so the Phase-1.5
+against-trace refutation is dodged by construction. Dropping the
+$(\Z/2)^n$-action dissolves the Phase-1.5 $(\Z/2)^n$ refutation
+outright, because there is then no group action to fail, and the
+grading is re-established by Maschke for the genuine $\Sym_n$-action,
+with the sphere class the sign isotype --- the sign having always been
+an $\Sym_n$-datum, not a $(\Z/2)^n$ one. On the re-founded object the
+obstruction class is re-established and the two-part contradiction is
+re-assembled as a conditional theorem; honest accounting shows it
+rests on three precisely named open inputs --- the $Y_1$ cofiber
+residual (unchanged), the $Y_2$ landing (which Fork~A genuinely
+re-opens, because the pre-Fork-A landing mechanism rested on the
+now-dropped $(\Z/2)^n$-equivariance, and the separation of the
+obstruction from the sign sphere class is a representation-theoretic
+question about the obstruction sheaf that Phase~1 localizes but does
+not settle), and faithfulness (whether the cohomology genuinely
+detects the counterexample --- the vision's clause $V_3$ --- localized
+to the injectivity of one edge map). Frankl is not proved, and Phase~1
+was not meant to prove it: what Phase~1 delivers is a sound
+re-foundation that clears both Phase-1.5 walls, carries out the
+re-grading, re-assembles the contradiction on a well-defined object,
+and isolates the genuine open content as three precisely named
+residuals --- and, in the discipline the ledger's over-claim history
+demands, it withdraws a clean-landing-theorem over-claim from its own
+earlier draft rather than carrying it forward.
+
+\subsection{Cross-references}
+\label{ssec:xref}
+
+\begin{itemize}[leftmargin=1.7em]
+\item \textbf{Brief:} \texttt{mg-c15b} (Frankl-ForkA-Refound-LaTeX,
+  Phase~1).
+\item \textbf{Fork~A endorsement and the two debts:}
+  \texttt{docs/Frankl-ForkD-Probe-n3.md} (\texttt{mg-565a}, \S\S6--7).
+\item \textbf{The drift diagnosis and the fork menu:}
+  \texttt{docs/Frankl-vision-check.md} (\texttt{mg-6edc}, \S\S6--7).
+\item \textbf{The Phase-1.5 refutations and the pinned projection
+  $\pi_T$:} \texttt{docs/Frankl-Y1-phase1.5-bk-structure-maps.md}
+  (\texttt{mg-0405}: \S3 refutation (a), \S4 refutation (b), \S3.6
+  Proposition~3.6 = Theorem~\ref{thm:projection} here, \S6 Fork~A).
+\item \textbf{The cofiber-LES reduction of $Y_1$ and its residual:}
+  \texttt{docs/Frankl-Y1-reprove.md} (\texttt{mg-56b8}).
+\item \textbf{The consolidated paper (pre-Fork-A state):}
+  \texttt{../main.tex} and \texttt{../sections/03--06}.
+\item \textbf{Onboarding:} \texttt{docs/PROOF-STRUCTURE-ONBOARDING.md}.
+\end{itemize}
+
+\bigskip
+\noindent\rule{\textwidth}{0.4pt}
+
+\medskip
+\noindent\footnotesize Phase~1 re-foundation by polecat
+\texttt{cat-mg-c15b}. Deliverable on \texttt{main}: this document
+(\texttt{paper/forkA/refoundation.tex}) and the ledger note
+\texttt{docs/Frankl-ForkA-Refound-LaTeX.md}. Verdict: \textbf{GREEN ---
+FORK-A-REFOUNDATION-DELIVERED (Phase~1).} The Frankl cohomology is
+re-founded on Fork~A: the covariant homotopy colimit $H^{*}(\Cn;X)$ is
+genuinely defined (dodging Phase-1.5 refutation (a) by construction),
+the $(\Z/2)^n$-action is dropped (dissolving refutation (b)), the
+$\sgn_{\Sym_n}$ re-grading is carried out, and the obstruction class
+and two-part contradiction are re-established as a conditional theorem
+resting on three precisely named open residuals --- R1 ($Y_1$ cofiber,
+unchanged), R2 ($Y_2$ landing, re-opened and localized), R3
+(faithfulness / edge map). Owed debt~1 (re-grading) is addressed; Owed
+debt~2 (faithfulness) is localized. Frankl is not proved; Phase~1 was
+not meant to prove it. An over-claim in an earlier draft of this
+document --- a clean ``standard-isotypic'' landing theorem --- was
+caught and withdrawn. Recommended next: Phase~2, independent
+validation of this document.
+
+\end{document}
