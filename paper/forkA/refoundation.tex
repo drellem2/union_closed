@@ -15,6 +15,15 @@
 %  set is not "exactly three" -- R3 is a three-part edge-map debt
 %  (existence, degree, injectivity). See Status~\ref{status:mg365e-revision}.
 %
+%  REVISED AGAIN under work item mg-894c (Frankl-ForkA-Phase2-Revision2)
+%  per the mg-5221 independent Phase-2 re-validation (AMBER): a third
+%  over-claim of the identical shape -- the twisted-bridge null-homotopy
+%  iota_x* ~ 0 presented as a discharged ported input -- demoted to the
+%  open sub-residual R1c; plus an exhaustive sweep of every ported
+%  Walsh/chi_S fact, certifying there is no fourth prong. See
+%  Status~\ref{status:mg894c-revision} and the ledger
+%  docs/Frankl-ForkA-Phase2-Revision2.md.
+%
 %  This is a STANDALONE document. It is Phase 1 (math-before-Lean) of a
 %  multi-phase arc: Phase 1 LaTeX (this document), Phase 2 independent
 %  validation, Phase 3 Lean. It does not modify the consolidated paper
@@ -98,8 +107,10 @@
   \normalsize Phase 1: the LaTeX re-foundation}
 
 \author{The \texttt{union\_closed} development}
-\date{Work items \texttt{mg-c15b} (Phase 1) and \texttt{mg-365e}
-  (revision per the \texttt{mg-d300} Phase-2 validation) --- \today\\[2pt]
+\date{Work items \texttt{mg-c15b} (Phase 1), \texttt{mg-365e}
+  (revision per the \texttt{mg-d300} Phase-2 validation), and
+  \texttt{mg-894c} (revision~2 per the \texttt{mg-5221} Phase-2
+  re-validation) --- \today\\[2pt]
   \normalfont\small Phase 1 of the Fork A re-foundation arc
   (LaTeX $\to$ independent validation $\to$ Lean)}
 
@@ -138,25 +149,29 @@ Frankl, and Phase~1 was never meant to. The closing contradiction is
 re-established as a conditional theorem, and its open inputs are named
 precisely and in full: the vanishing statement $Y_1$ (the cofiber
 computation --- its target object unchanged from the pre-Fork-A state,
-but its reduction now carrying a genuine $\Sym_{n-1}\to\Sym_n$
-branching step the $(\Z/2)^n\to\Sym_n$ re-grading creates); the
-landing statement $Y_2$ (whose pre-Fork-A mechanism rested on the
+but its reduction now carrying two steps the $(\Z/2)^n\to\Sym_n$
+re-grading creates: a genuine $\Sym_{n-1}\to\Sym_n$ branching step,
+and a Fork-A-native discharge of the twisted-bridge null-homotopy);
+the landing statement $Y_2$ (whose pre-Fork-A mechanism rested on the
 now-dropped $(\Z/2)^n$-equivariance and which Fork~A re-states as an
 $\Sym_n$ question, localized to the representation theory of the
 obstruction sheaf); and a three-part faithfulness debt (whether the
 \v{C}ech-to-cohomology edge map that promotes the obstruction class
 \emph{exists}, lands in \emph{degree $n-1$}, and is \emph{injective}
 --- the vision's clause $V_3$). The first owed debt, the re-grading, is
-discharged at the structural level and its remaining open parts ($Y_2$
-and the new branching step) are precisely localized; the second owed
+discharged at the structural level and its remaining open parts (the
+$Y_2$ landing, the $\Sym_{n-1}\to\Sym_n$ branching step, and the
+twisted-bridge null-homotopy) are precisely localized; the second owed
 debt, faithfulness, is precisely localized as the three-part residual.
 \textbf{The verdict is GREEN for the Phase-1 scope --- the
 re-foundation is delivered and sound --- with the explicit accounting
 that Frankl is not proved and that the conditional theorem rests on
-the open residuals R1 (cofiber plus branching), R2, and R3 (three-part
-faithfulness).} This document has been revised following the
-\texttt{mg-d300} independent Phase-2 validation; see
-Status~\ref{status:mg365e-revision}.
+the open residuals R1 (three-part: cofiber, branching, and the
+twisted-bridge null-homotopy), R2, and R3 (three-part
+faithfulness).} This document has been revised twice following
+independent Phase-2 validation; see
+Status~\ref{status:mg365e-revision} and
+Status~\ref{status:mg894c-revision}.
 \end{abstract}
 
 \maketitle
@@ -193,15 +208,19 @@ accomplished, and the re-foundation is internally sound. It does
 \emph{not} mean the conjecture is closer to proved than the
 pre-Fork-A state recorded. The genuine open content remains, and
 Phase~1's task is to name it precisely and in full --- as the
-residuals R1 (two-part), R2, and R3 (three-part):
+residuals R1 (three-part), R2, and R3 (three-part):
 \begin{itemize}[leftmargin=1.6em]
 \item[\textbf{R1}] \emph{The $Y_1$ residual} (Open
-  residual~\ref{res:y1}), in two parts: \textbf{R1a}, the
+  residual~\ref{res:y1}), in three parts: \textbf{R1a}, the
   $\Sym_{n-1}$-isotype cohomology of the cofiber of the
   matched-cylinder inclusion --- as a target object unchanged from the
-  pre-Fork-A state; and \textbf{R1b}, a new $\Sym_{n-1}\to\Sym_n$
+  pre-Fork-A state; \textbf{R1b}, a new $\Sym_{n-1}\to\Sym_n$
   branching step created by the $(\Z/2)^n\to\Sym_n$ re-grading
-  (Remark~\ref{rem:y1-branching}).
+  (Remark~\ref{rem:y1-branching}); and \textbf{R1c}, the
+  twisted-bridge null-homotopy $\iota_x^{*}\simeq0$ --- a
+  $\walsh{S}$-graded fact the ported bridge does \emph{not} discharge
+  in Fork~A (Remark~\ref{rem:bridge-not-ported}), also created by the
+  $(\Z/2)^n\to\Sym_n$ re-grading.
 \item[\textbf{R2}] \emph{The $Y_2$ residual} (Open
   residual~\ref{res:y2}): whether the obstruction class avoids the
   $\sgn$ sphere-isotype. The pre-Fork-A $Y_2$ mechanism rested on the
@@ -247,9 +266,11 @@ $Y_1$-A (the vanishing) --- residual R1
  & \textsf{RED --- open}
  & \S\ref{ssec:y1a}. The cofiber-LES reduction ports to Fork~A as an
    $\Sym_{n-1}$-equivariant statement
-   (Theorem~\ref{thm:y1-reduction}); the residual is two-part (Open
+   (Theorem~\ref{thm:y1-reduction}); the residual is three-part (Open
    residual~\ref{res:y1}) --- R1a, the cofiber, unchanged as a target
-   object; R1b, a new $\Sym_{n-1}\to\Sym_n$ branching step.\\
+   object; R1b, a new $\Sym_{n-1}\to\Sym_n$ branching step; R1c, the
+   twisted-bridge null-homotopy, which the ported bridge does not
+   discharge in Fork~A.\\
 $Y_2$-A (the landing) --- residual R2
  & \textsf{AMBER --- open}
  & \S\ref{ssec:y2a}. Mechanism re-stated in $\Sym_n$ terms; the
@@ -259,8 +280,9 @@ Owed debt 1 --- the re-grading
  & \textsf{ADDRESSED}
  & \S\ref{ssec:debt1}. Structural re-grading discharged
    (Theorem~\ref{thm:maschke}, \S\ref{ssec:sphere-class}); the open
-   part is residual R2 \emph{and} the new branching sub-residual
-   R1b.\\
+   part is residual R2 \emph{and} the two new $Y_1$-side
+   sub-residuals R1b (branching) and R1c (the bridge
+   null-homotopy).\\
 Owed debt 2 --- faithfulness ($V_3$ / wrapper-risk) --- residual R3
  & \textsf{LOCALIZED}
  & Owed debt~\ref{debt:faithful-localized}. Reduced to one named edge
@@ -275,15 +297,16 @@ Phase~1 is the LaTeX re-foundation: construct the Fork~A object, do the
 re-grading, re-establish the obstruction class and the two-part
 contradiction, and discharge or precisely localize the two owed debts.
 It is \emph{not} a proof of Frankl, and it is not a closure of any of
-the residuals R1--R3 (R1 itself two-part, R3 itself three-part). A
+the residuals R1--R3 (R1 itself three-part, R3 itself three-part). A
 RED verdict --- Fork~A hitting a genuine
 wall --- was an allowed outcome (the \texttt{mg-c15b} brief sanctions
 it); Phase~1 does not return RED, because nothing in the re-foundation
 is refuted: the construction is well-defined, the re-grading goes
 through, and the contradiction re-assembles as a conditional theorem.
 The honest one-sentence summary is \S\ref{ssec:final}. The arc
-continues with an independent re-validation of this revised document
-and then Phase~3 (Lean), each gated on the previous returning GREEN.
+continues with a further independent re-validation of this
+twice-revised document and then Phase~3 (Lean), each gated on the
+previous returning GREEN.
 
 \begin{status}[Revision following the \texttt{mg-d300} Phase-2 validation]
 \label{status:mg365e-revision}
@@ -321,6 +344,64 @@ constructions (Theorems~\ref{thm:projection},
 independently confirmed sound by \texttt{mg-d300}. The verdict GREEN
 above is for the Phase-1 scope as corrected; an independent
 re-validation is the next gate.
+\end{status}
+
+\begin{status}[Revision~2 following the \texttt{mg-5221} Phase-2
+re-validation]
+\label{status:mg894c-revision}
+This document has been revised a second time (work item
+\texttt{mg-894c}) following the independent Phase-2 re-validation
+\texttt{mg-5221}, which returned \textsf{AMBER}: the three
+\texttt{mg-365e} fixes were confirmed correct and the GREEN spine
+independently re-confirmed, but a \emph{third} over-claim --- of the
+identical ``a $\walsh{S}$-graded fact treated as portable'' shape as
+\texttt{mg-d300}'s two findings --- survived into the revised draft.
+\begin{enumerate}[label=\textup{(\Alph*)},leftmargin=2.4em]
+\item \emph{The twisted-bridge null-homotopy does not port as a
+  discharged input.} Construction~\ref{constr:bridge} asserted that
+  the twisted-bridge identity ``ports'' to Fork~A and ``gives
+  $\iota_x^{*}\simeq0$, the input the reduction uses,'' justified only
+  by the observation that the $\walsh{\{x\}}$-twist is, in Fork~A, a
+  cochain operation rather than a group action. That justification is
+  a non sequitur: the identity needs $d$ to \emph{commute} with
+  $\walsh{\{x\}}$-multiplication, a step the pre-Fork-A source
+  (\texttt{mg-56b8}~\S8.1) validates \emph{only on
+  $\walsh{S}$-supported cells}, so $\iota_x^{*}\simeq0$ is, at honest
+  strength, a fact about the $\walsh{S}$-isotype sub-complexes
+  $V_S^{*}$. Fork~A, having dropped the $(\Z/2)^n$-action
+  (Remark~\ref{rem:walsh-role2}: $d$ does not preserve harmonic
+  level), has no such sub-complex, so the bridge does not deliver
+  $\iota_x^{*}\simeq0$ as an established Fork~A input. Establishing it
+  in Fork~A is recorded here as the new sub-residual R1c
+  (Remark~\ref{rem:bridge-not-ported}, Open residual~\ref{res:y1}).
+  This was \texttt{mg-d300}'s ``second, compounding prong'' of its
+  Finding~A, raised there in prose but omitted from its revision
+  spec, so the \texttt{mg-365e} revision carried
+  Construction~\ref{constr:bridge} through verbatim.
+\end{enumerate}
+This revision additionally carried out, per the \texttt{mg-5221}
+mandate, an \emph{exhaustive sweep} of every fact in this document
+ported from the pre-Fork-A Walsh / $\walsh{S}$-isotype-graded
+framework, checking each for a genuine Fork~A referent. The sweep is
+recorded in full in the ledger
+\texttt{docs/Frankl-ForkA-Phase2-Revision2.md}; its conclusion is
+that, once R1c is demoted, \emph{every} ported Walsh fact either has a
+genuine Fork~A referent (the Walsh basis in its harmonic Role~2 --- a
+labelling of the obstruction \emph{cochain}; see
+Remark~\ref{rem:walsh-role2}), is explicitly dropped (the Walsh
+grading of \emph{cohomology}; Status~\ref{status:c-block}), or is a
+named residual (R1a, R1b, R1c, R3b). There is no fourth prong, and
+the input list of Theorem~\ref{thm:contradiction} is complete and
+final. Two minor points from \texttt{mg-5221}~\S4 are also addressed:
+the base case of the simultaneous induction is now stated
+(Theorem~\ref{thm:y1-reduction}, Open residual~\ref{res:y1}), and the
+punctured-poset-to-$\Fstar$ extension inside
+Proposition~\ref{prop:fact-one} is now explicitly attributed to the
+R3 faithfulness package. As with the \texttt{mg-365e} revision, this
+is an honest re-statement, not a refutation: the Fork~A strategy and
+its core constructions (Theorems~\ref{thm:projection},
+\ref{thm:welldefined}, \ref{thm:maschke}) are unchanged and remain
+sound.
 \end{status}
 
 % =====================================================================
@@ -768,7 +849,12 @@ abelian, with a quotient acting on the smaller cube --- descends to
 that cube; $\Sym_n$ has no such quotient, so the $Y_1$ reduction
 acquires an $\Sym_{n-1}\to\Sym_n$ branching step
 (see~\S\ref{ssec:y1a}, Remark~\ref{rem:y1-branching}, residual~R1b).
-Phase~1 records both costs.
+Dropping $(\Z/2)^n$ \emph{also} removes the $\walsh{S}$-isotype
+sub-complexes $V_S^{*}$ on which the pre-Fork-A twisted-bridge
+null-homotopy $\iota_x^{*}\simeq0$ lived, so that null-homotopy
+ceases to be a discharged input and becomes the sub-residual~R1c
+(see~\S\ref{ssec:y1a}, Remark~\ref{rem:bridge-not-ported}). Phase~1
+records all of these costs.
 \end{status}
 
 The Walsh apparatus is not discarded wholesale --- only its
@@ -1105,10 +1191,17 @@ H^{n-1}(\Cn;X)$.
 Suppose $\ob(\Fstar)=0$. If the edge map is injective, this forces the
 mismatch cocycle $\{m_{xy}\}$ to be a \v{C}ech coboundary \emph{of a
 global section}: the local data $\{\widehat b_x\}$ glue. A global
-section is a single rare-coordinate datum valid on all of
-$\Cn(\Fstar)$ --- including the top object $\Fstar$ --- producing a
-coordinate $x_\ast$ with $\bias_{x_\ast}(\Fstar)\le0$. But a minimal
-counterexample has $\bias_x(\Fstar)>0$ for every $x$
+section of $\fobs$ is, strictly, a single rare-coordinate datum valid
+on the \emph{punctured} poset $\Cn(\Fstar)\setminus\{\Fstar\}$ on
+which $\fobs$ is defined (Definition~\ref{def:obs-sheaf}); extending
+it to a datum valid at the top object $\Fstar$ \emph{itself} is the
+punctured-poset-to-$\Fstar$ promotion that
+Remark~\ref{rem:promotion} folds into the R3 faithfulness package
+(specifically the edge-map \emph{existence} part R3a, which is what
+bridges the punctured poset and the whole category). Granting the
+standing hypothesis that the edge map exists, that promotion produces
+a coordinate $x_\ast$ with $\bias_{x_\ast}(\Fstar)\le0$. But a
+minimal counterexample has $\bias_x(\Fstar)>0$ for every $x$
 (Definition~\ref{def:minimal}). Contradiction; hence
 $\ob(\Fstar)\neq0$.
 \end{proof}
@@ -1129,8 +1222,13 @@ cocycle through an edge map that Remark~\ref{rem:promotion} constructs
 only at the level of the \v{C}ech double complex, not as a pinned map
 into $H^{*}(\Cn;X)$ --- so Fact One, like Theorem~\ref{thm:contradiction},
 presupposes that $\ob(\Fstar)$ is a genuine element of $\widetilde
-H^{n-1}(\Cn;X)$ in the first place. Phase~1 discharges none of the
-three.
+H^{n-1}(\Cn;X)$ in the first place. In particular, the
+punctured-poset-to-$\Fstar$ extension that
+Proposition~\ref{prop:fact-one}'s proof performs --- passing from a
+global section of $\fobs$ on $\Cn(\Fstar)\setminus\{\Fstar\}$ to a
+rare-coordinate datum valid at $\Fstar$ --- is itself part of the R3a
+edge-map package (Remark~\ref{rem:promotion}), not a step Phase~1
+takes for free. Phase~1 discharges none of the three.
 \end{status}
 
 \subsection{Fact Two, part 1: the landing ($Y_2$-A)}
@@ -1277,7 +1375,7 @@ $\Sym_{n-1}$-equivariant reduction --- not, as an earlier draft
 claimed, an $\Sym_n$-equivariant one (Theorem~\ref{thm:y1-reduction},
 Remark~\ref{rem:y1-branching}).
 
-\begin{construction}[The matched-cylinder bridge]
+\begin{construction}[The matched-cylinder prism operator]
 \label{constr:bridge}
 The doubling functor $\mathrm{db}_x$ embeds $\Cnm$ into $\Cn$ as the
 \emph{matched subcategory} $\Dx$, with $X(\mathrm{db}_x\F)\cong
@@ -1285,15 +1383,71 @@ X(\F)\times I$ a prism --- the matched cylinder. The geometric prism
 operator $h$, $(h\omega)(D)=\omega(D\times\{0\!\to\!1\})$, is a
 degree-$(-1)$ cochain operator. It is a \emph{geometric} construction
 on cells; it needs no group action and survives the dropping of
-$(\Z/2)^n$ intact. The harmonic twist by $\walsh{\{x\}}$ used in the
-pre-Fork-A bridge is, in Fork~A, simply pointwise multiplication by
-the fixed function $\walsh{\{x\}}$ (Role~2,
-Remark~\ref{rem:walsh-role2}) --- a cochain operation, not a group
-action --- so the twisted bridge identity
-$\iota_x^{*}=\pm\frac12(dh-hd)$ also ports without a
-$(\Z/2)^n$-action. It gives $\iota_x^{*}\simeq0$, the input the
-reduction uses.
+$(\Z/2)^n$ intact. \emph{This much ports cleanly.} What does
+\emph{not} port as a discharged input is the twisted-bridge
+null-homotopy $\iota_x^{*}\simeq0$ that the cofiber-LES reduction
+substitutes; that is the subject of Remark~\ref{rem:bridge-not-ported}
+and the sub-residual R1c (Open residual~\ref{res:y1}).
 \end{construction}
+
+\begin{remark}[The twisted-bridge null-homotopy does not port as a
+discharged input --- sub-residual R1c]
+\label{rem:bridge-not-ported}
+The pre-Fork-A cofiber-LES reduction collapses its long exact sequence
+by substituting the \emph{twisted-bridge null-homotopy}
+$\iota_x^{*}\simeq0$. In the pre-Fork-A development
+(\texttt{mg-56b8}~\S3.2) that null-homotopy is supplied by the
+twisted-bridge chain-homotopy identity
+$\iota_x^{*}=\pm\frac12(dh-hd)$, in which the operator is twisted by
+the Walsh character $\walsh{\{x\}}$. An earlier draft of this
+re-foundation (the text of Construction~\ref{constr:bridge} before
+this revision) argued that the identity ``ports without a
+$(\Z/2)^n$-action'' because the $\walsh{\{x\}}$-twist is, in Fork~A, a
+cochain operation rather than a group action. \textbf{That argument is
+a non sequitur, and the claim is withdrawn.} Whether the twist is a
+group action or a cochain operation is not what the identity needs:
+it needs the cubical coboundary $d$ to \emph{commute} with
+multiplication by $\walsh{\{x\}}$. The pre-Fork-A source is explicit
+that this very step --- ``$d$ commutes with $\walsh{\{x\}}\cdot$'' ---
+is \emph{valid only on $\walsh{S}$-supported cells}
+(\texttt{mg-56b8}~\S8.1); so the identity holds, and
+$\iota_x^{*}\simeq0$ is established, \emph{only} as a statement about
+the $\walsh{S}$-isotype sub-complexes $V_S^{*}$ --- which in the
+pre-Fork-A development were genuine sub-complexes, namely the isotypes
+of the $(\Z/2)^n$-action on the hocolim.
+
+Fork~A removes exactly that structure. It drops the $(\Z/2)^n$-action
+(Status~\ref{status:c-block}), so there is no $(\Z/2)^n$-action on the
+Fork~A hocolim and hence \emph{no $V_S^{*}$ sub-complex} for the
+null-homotopy to live on; and this document's own
+Remark~\ref{rem:walsh-role2} records the underlying fact that $d$ does
+\emph{not} preserve harmonic level on the defect complex $X(\F)$ ---
+equivalently, $d$ does not commute with $\walsh{\{x\}}$-multiplication
+(multiplying by $\walsh{\{x\}}$ shifts Walsh level). Hence in Fork~A
+the $\walsh{S}$-graded pieces are \emph{not} sub-complexes, the
+twisted-bridge identity does \emph{not} hold as a whole-complex
+identity, and the \emph{only} honest pre-Fork-A form of
+$\iota_x^{*}\simeq0$ --- ``a map of $\walsh{S}$-isotype sub-complexes
+$V_S^{*}$'' --- has \emph{no referent in Fork~A}. The geometric prism
+operator $h$ ports; the \emph{twisted} null-homotopy
+$\iota_x^{*}\simeq0$ does not port as a discharged input.
+
+This is not a refutation. $\iota_x^{*}\simeq0$ may well be \emph{true}
+in the Fork~A setting; it is simply not \emph{discharged} by the
+ported twisted bridge. Establishing it in Fork~A --- whether by a
+Fork-A-native re-derivation of the null-homotopy, or by carrying the
+$\walsh{S}$-grading explicitly and reconciling it with the
+$\Sym_{n-1}$-grading of the cofiber LES (a representation-theoretic
+reconciliation beside R1b) --- is genuine open work, recorded as the
+sub-residual \textbf{R1c} (Open residual~\ref{res:y1}). It is the
+third over-claim of the identical ``a $\walsh{S}$-graded fact treated
+as portable'' shape that the validate--revise loop has caught: the
+\texttt{mg-c15b} self-audit caught it for the $Y_2$
+``standard-isotypic'' theorem (Status~\ref{status:y2a}), the
+\texttt{mg-d300} validation caught it for the $Y_1$ cofiber-LES
+equivariance (R1b), and the \texttt{mg-5221} re-validation caught it
+here.
+\end{remark}
 
 \begin{theorem}[Cofiber-LES reduction of $Y_1$-A]
 \label{thm:y1-reduction}
@@ -1307,23 +1461,33 @@ complexes. Then:
   subgroup, not for all of $\Sym_n$ (Remark~\ref{rem:y1-branching}).
 \item Projecting that LES to any $\Sym_{n-1}$-isotype $[\mu]$ (Maschke
   for $\Sym_{n-1}$) and substituting the null-homotopy
-  $\iota_x^{*}\simeq0$ (Construction~\ref{constr:bridge}) collapses it,
-  in each degree, to a relation expressing the $[\mu]$-isotype of the
+  $\iota_x^{*}\simeq0$ --- \emph{when} it is available: in Fork~A it is
+  \emph{not} a discharged input but the open sub-residual R1c
+  (Construction~\ref{constr:bridge},
+  Remark~\ref{rem:bridge-not-ported}) --- collapses it, in each
+  degree, to a relation expressing the $[\mu]$-isotype of the
   restriction $\mathrm{Res}^{\Sym_n}_{\Sym_{n-1}}\widetilde
   H^{k}(\Cn;X)$ through the $[\mu]$-isotype cohomology of the cofiber
   $\cofib\iota_x=\Xbb_n/\Xbb_{n-1,x}$ and the smaller-ground-set term
   $\widetilde H^{k-1}(\Xbb_{n-1,x})_{[\mu]}$.
 \end{enumerate}
-Hence $Y_1$-A reduces to \emph{two} steps: \textup{(a)} control of the
-$\Sym_{n-1}$-isotype cohomology of $\cofib\iota_x$, with the
+Hence $Y_1$-A reduces to \emph{three} steps: \textup{(a)} control of
+the $\Sym_{n-1}$-isotype cohomology of $\cofib\iota_x$, with the
 smaller-ground-set terms supplied by the simultaneous induction on
-$n$; and \textup{(b)} an induction--restriction (branching) step
-recovering the $\Sym_n$-isotype structure of $\widetilde
-H^{n-1}(\Cn;X)$ --- in particular its $\sgn_{\Sym_n}$-content, which
-the $\sgn_{\Sym_n}$ target of $Y_1$-A (Conjecture~\ref{conj:y1a})
-requires --- from the $\Sym_{n-1}$-equivariant data of step~(a). Both
-steps are genuinely open (Open residual~\ref{res:y1}: R1a and R1b
-respectively).
+$n$ --- based at the finite check $n=2$ (the families on a two-element
+ground set are finite in number and directly computable; this is the
+same base verification the pre-Fork-A development relied on for the
+$n=2$ sphere class); \textup{(b)} an induction--restriction
+(branching) step recovering the $\Sym_n$-isotype structure of
+$\widetilde H^{n-1}(\Cn;X)$ --- in particular its
+$\sgn_{\Sym_n}$-content, which the $\sgn_{\Sym_n}$ target of $Y_1$-A
+(Conjecture~\ref{conj:y1a}) requires --- from the
+$\Sym_{n-1}$-equivariant data of step~(a); and \textup{(c)}
+establishing the twisted-bridge null-homotopy $\iota_x^{*}\simeq0$ in
+the Fork~A setting, which the collapse in~(2) substitutes but which
+Construction~\ref{constr:bridge} does \emph{not} discharge
+(Remark~\ref{rem:bridge-not-ported}). All three steps are genuinely
+open (Open residual~\ref{res:y1}: R1a, R1b, and R1c respectively).
 \end{theorem}
 
 \begin{proof}[Proof sketch]
@@ -1335,24 +1499,28 @@ $\Cnm\hookrightarrow\Cn$ and the cofiber are natural for relabellings
 for $\Sym_{n-1}$ the LES splits into $\Sym_{n-1}$-isotypes. It does
 \emph{not} split into $\Sym_n$-isotypes: $\Sym_n$ does not act on the
 pair (Remark~\ref{rem:y1-branching}), so Theorem~\ref{thm:maschke},
-which is Maschke for $\Sym_n$, does not apply to this LES. The bridge
-(Construction~\ref{constr:bridge}) gives $\iota_x^{*}=0$ on cohomology
-in the relevant degrees; substituting the zero map makes the
-restriction $j^{*}$ surjective with kernel the image of the connecting
-map $\delta$, and $\delta$ injective. This is the
-$\Sym_{n-1}$-graded port of the pre-Fork-A cofiber-LES re-derivation
-(\texttt{mg-56b8} Theorem ``Valid cofiber-LES reduction of $Y_1$'');
-it carries over the \emph{same} sub-case structure, including the
-delicate sub-case where the smaller-ground-set term meets the sphere
-class of the $(n-1)$-cube. The pre-Fork-A re-derivation split into
-\emph{Walsh} isotypes, for which the $(\Z/2)^n$-action does descend to
-the smaller cube; the $\Sym_n$ re-grading has no such descent, which
-is the source of the branching step~(b)
-(Remark~\ref{rem:y1-branching}). Phase~1 does not claim Fork~A removes
-the cofiber delicacy, nor that the reduction ports unchanged: it
+which is Maschke for $\Sym_n$, does not apply to this LES.
+\emph{Granting} the twisted-bridge null-homotopy $\iota_x^{*}\simeq0$
+--- which in Fork~A is not a discharged input but the open
+sub-residual R1c (Construction~\ref{constr:bridge},
+Remark~\ref{rem:bridge-not-ported}) --- substituting the zero map
+makes the restriction $j^{*}$ surjective with kernel the image of the
+connecting map $\delta$, and $\delta$ injective. This is the
+$\Sym_{n-1}$-graded port of the pre-Fork-A cofiber-LES reduction
+(\texttt{mg-56b8}~\S3); it carries over an analogous sub-case
+structure, including the delicate sub-case where the
+smaller-ground-set term meets the sphere class of the $(n-1)$-cube ---
+all of it internal to the open cofiber residual R1a. The pre-Fork-A
+reduction split into \emph{Walsh} isotypes, for which the
+$(\Z/2)^n$-action does descend to the smaller cube; the $\Sym_n$
+re-grading has no such descent, which is the source of the branching
+step~(b) (Remark~\ref{rem:y1-branching}). Phase~1 does not claim
+Fork~A removes the cofiber delicacy, nor that the reduction ports
+unchanged: it
 claims the reduction ports \emph{to an $\Sym_{n-1}$-equivariant
-statement}, and that closing $Y_1$-A then needs both the cofiber and
-the branching step.
+statement}, and that closing $Y_1$-A then needs all three of the
+cofiber (R1a), the branching step (R1b), and a Fork-A-native
+discharge of the bridge null-homotopy (R1c).
 \end{proof}
 
 \begin{remark}[Why the LES is only $\Sym_{n-1}$-equivariant, and the
@@ -1409,9 +1577,9 @@ residual~\ref{res:y1}), the $Y_1$-side mirror of the way dropping
 $(\Z/2)^n$ re-opens the $Y_2$ landing as R2.
 \end{remark}
 
-\begin{openresidual}[The $Y_1$ residual --- R1, in two parts]
+\begin{openresidual}[The $Y_1$ residual --- R1, in three parts]
 \label{res:y1}
-$Y_1$-A reduces, by Theorem~\ref{thm:y1-reduction}, to \emph{two}
+$Y_1$-A reduces, by Theorem~\ref{thm:y1-reduction}, to \emph{three}
 genuinely open sub-residuals.
 \begin{itemize}[leftmargin=1.7em]
 \item[\textbf{R1a}] \emph{(the cofiber).} The $\Sym_{n-1}$-isotype
@@ -1425,7 +1593,8 @@ genuinely open sub-residuals.
   (\texttt{mg-56b8}) had already isolated exactly this object, and
   Fork~A houses it correctly on a well-defined cohomology object. It
   is the genuine open Frankl content and is multi-week-plus work for a
-  later phase.
+  later phase. The simultaneous induction on $n$ that supplies its
+  smaller-ground-set terms is based at the finite check $n=2$.
 \item[\textbf{R1b}] \emph{(the branching step --- new under Fork~A).}
   The induction--restriction step recovering the $\Sym_n$-isotype
   structure of $\widetilde H^{n-1}(\Cn;X)$ --- in particular whether
@@ -1437,12 +1606,33 @@ genuinely open sub-residuals.
   $(\Z/2)^n$; it is created by the $(\Z/2)^n\to\Sym_n$ re-grading and
   is the $Y_1$-side mirror of the way dropping $(\Z/2)^n$ re-opens the
   $Y_2$ landing (R2, Open residual~\ref{res:y2}).
+\item[\textbf{R1c}] \emph{(the bridge null-homotopy --- not
+  discharged under Fork~A).} Establishing the twisted-bridge
+  null-homotopy $\iota_x^{*}\simeq0$ as a genuine Fork~A input. The
+  collapse of the cofiber LES in Theorem~\ref{thm:y1-reduction}(2)
+  substitutes this null-homotopy; the pre-Fork-A development supplied
+  it through the twisted-bridge chain-homotopy identity, but
+  \emph{only} as a map of the $\walsh{S}$-isotype sub-complexes
+  $V_S^{*}$ --- a structure Fork~A does not possess, having dropped
+  the $(\Z/2)^n$-action, and on which $d$ does not even preserve the
+  harmonic grading (Remark~\ref{rem:walsh-role2}).
+  Construction~\ref{constr:bridge} ports the geometric prism operator
+  $h$ but \emph{not} the twisted null-homotopy
+  (Remark~\ref{rem:bridge-not-ported}). Like R1b, this sub-residual
+  \emph{did not exist} in the pre-Fork-A development, where
+  $\iota_x^{*}\simeq0$ lived on the genuine $V_S^{*}$ sub-complexes;
+  it is created by the $(\Z/2)^n\to\Sym_n$ re-grading. It may be
+  closed by a Fork-A-native re-derivation of the null-homotopy, or by
+  an explicit $\walsh{S}$-to-$\Sym_{n-1}$ grading reconciliation (a
+  second representation-theoretic reconciliation, beside R1b).
 \end{itemize}
 \textbf{The honest statement of R1 is therefore: its target object
 (R1a) is unchanged from the pre-Fork-A state, but its reduction
-acquires, under Fork~A, the new $\Sym_{n-1}\to\Sym_n$ branching
-sub-residual R1b.} Fork~A does not close either part and does not
-claim to.
+acquires, under Fork~A, \emph{two} new sub-residuals --- the
+$\Sym_{n-1}\to\Sym_n$ branching step R1b and the bridge
+null-homotopy R1c --- both created by the $(\Z/2)^n\to\Sym_n$
+re-grading.} Fork~A does not close any of the three parts and does
+not claim to.
 \end{openresidual}
 
 \begin{status}
@@ -1452,13 +1642,17 @@ Phase~1 was never going to close the $Y_1$ residual. What Phase~1
 establishes is that the cofiber-LES reduction ports to the
 well-defined Fork~A object \emph{as an $\Sym_{n-1}$-equivariant
 statement} (Theorem~\ref{thm:y1-reduction}), and that the residual is
-two-part (Open residual~\ref{res:y1}): the cofiber R1a --- the
-homotopy type of the stuck-family fibres, the same hard object as
-before, now correctly housed --- and the new $\Sym_{n-1}\to\Sym_n$
-branching sub-residual R1b that the $(\Z/2)^n\to\Sym_n$ re-grading
-creates. The pre-Fork-A claim that the reduction ``ports unchanged''
-does \emph{not} hold for Fork~A; the honest statement is that it ports
-to an $\Sym_{n-1}$-equivariant reduction \emph{plus} a branching step.
+\emph{three}-part (Open residual~\ref{res:y1}): the cofiber R1a ---
+the homotopy type of the stuck-family fibres, the same hard object as
+before, now correctly housed --- the new $\Sym_{n-1}\to\Sym_n$
+branching sub-residual R1b, and the bridge null-homotopy R1c
+($\iota_x^{*}\simeq0$, which the ported twisted bridge does
+\emph{not} discharge in Fork~A --- Remark~\ref{rem:bridge-not-ported}).
+Both R1b and R1c are created by the $(\Z/2)^n\to\Sym_n$ re-grading.
+The pre-Fork-A claim that the reduction ``ports unchanged'' does
+\emph{not} hold for Fork~A; the honest statement is that it ports to
+an $\Sym_{n-1}$-equivariant reduction \emph{plus} a branching step
+\emph{plus} a Fork-A-native discharge of the bridge null-homotopy.
 \end{status}
 
 \subsection{The closing contradiction}
@@ -1484,9 +1678,11 @@ discharges:
   residual~\ref{res:y2}); and
 \item \textup{(R1, vanishing)} $Y_1$-A holds
   (Conjecture~\ref{conj:y1a}) --- which, by
-  Theorem~\ref{thm:y1-reduction}, itself rests on the two-part $Y_1$
-  residual: R1a (the cofiber) and R1b (the $\Sym_{n-1}\to\Sym_n$
-  branching step), Open residual~\ref{res:y1}.
+  Theorem~\ref{thm:y1-reduction}, itself rests on the three-part
+  $Y_1$ residual: R1a (the cofiber), R1b (the $\Sym_{n-1}\to\Sym_n$
+  branching step), and R1c (the twisted-bridge null-homotopy
+  $\iota_x^{*}\simeq0$, not discharged by the ported bridge ---
+  Remark~\ref{rem:bridge-not-ported}), Open residual~\ref{res:y1}.
 \end{enumerate}
 Then there is no minimal counterexample to Frankl on $[n]$; hence
 Frankl holds on $[n]$.
@@ -1516,33 +1712,39 @@ intended proof. It is a \emph{conditional} theorem, and the honest
 accounting of its hypotheses is the heart of the Phase-1 deliverable.
 \begin{itemize}[leftmargin=1.5em]
 \item It rests on the named open inputs R1, R2, R3 --- with R1 itself
-  two-part (R1a the cofiber, R1b the $\Sym_{n-1}\to\Sym_n$ branching
-  step) and R3 itself three-part (R3a existence, R3b degree, R3c
-  injectivity of the edge map). Phase~1 makes \emph{no} claim that
-  this is a count of ``exactly three'': it is the honest enumeration
-  of every input Theorem~\ref{thm:contradiction} rests on. The
-  comparison with the pre-Fork-A closing argument is genuine but
-  modest: Fork~A removes the dependence on the unconstructed
-  $(\Z/2)^n$-action (Status~\ref{status:c-block}) and houses the
-  construction on a well-defined object --- a gain in soundness and
-  clarity --- but in doing so it trades the $(\Z/2)^n$ input for the
-  $\Sym_{n-1}\to\Sym_n$ branching step R1b and surfaces the edge-map
+  three-part (R1a the cofiber, R1b the $\Sym_{n-1}\to\Sym_n$ branching
+  step, R1c the twisted-bridge null-homotopy) and R3 itself three-part
+  (R3a existence, R3b degree, R3c injectivity of the edge map).
+  Phase~1 makes \emph{no} claim that this is a count of ``exactly
+  three'': it is the honest enumeration of every input
+  Theorem~\ref{thm:contradiction} rests on. The comparison with the
+  pre-Fork-A closing argument is genuine but modest: Fork~A removes
+  the dependence on the unconstructed $(\Z/2)^n$-action
+  (Status~\ref{status:c-block}) and houses the construction on a
+  well-defined object --- a gain in soundness and clarity --- but in
+  doing so it trades the $(\Z/2)^n$ input for the two $Y_1$-side
+  sub-residuals R1b and R1c, and surfaces the edge-map
   existence/degree debt R3a/R3b. It is therefore \emph{not} a clean
   reduction in the number of open inputs, and Phase~1 does not claim
   one.
 \item R1a (the $Y_1$ cofiber residual, as a target object) and R3c
   (edge-map injectivity) are \emph{unchanged} from the pre-Fork-A
-  state. The inputs Fork~A genuinely changes are three: R2 (the
+  state. The inputs Fork~A genuinely changes are four: R2 (the
   landing), which it re-opens --- the pre-Fork-A $Y_2$ was
   ``mechanism-sound'' resting on $(\Z/2)^n$-equivariance, and dropping
   that action means the separation of $\ob$ from the sphere class must
   be re-established by other means (Open residual~\ref{res:y2}); R1b
   (the $\Sym_{n-1}\to\Sym_n$ branching step), which the
   $(\Z/2)^n\to\Sym_n$ re-grading newly creates
-  (Remark~\ref{rem:y1-branching}); and R3a/R3b (edge-map existence and
-  degree), implicit and unexamined in the pre-Fork-A development's
-  undefined object, which Fork~A must now name because its object is
-  genuinely defined.
+  (Remark~\ref{rem:y1-branching}); R1c (the twisted-bridge
+  null-homotopy $\iota_x^{*}\simeq0$), which the same re-grading
+  surfaces --- the ported twisted bridge established it only on the
+  $\walsh{S}$-isotype sub-complexes $V_S^{*}$, which Fork~A, having
+  dropped $(\Z/2)^n$, does not possess
+  (Remark~\ref{rem:bridge-not-ported}); and R3a/R3b (edge-map
+  existence and degree), implicit and unexamined in the pre-Fork-A
+  development's undefined object, which Fork~A must now name because
+  its object is genuinely defined.
 \item The proof of Theorem~\ref{thm:contradiction} does not invoke
   spherical concentration as an independent ingredient beyond $Y_1$-A;
   spherical concentration \emph{is} $Y_1$-A. It re-enters as the
@@ -1554,7 +1756,7 @@ None of this proves Frankl: the inputs (i)--(v) of
 Theorem~\ref{thm:contradiction} are genuinely open. What
 Theorem~\ref{thm:contradiction} shows is that the re-founded
 contradiction is coherent on a sound object, and that its open part is
-named precisely and \emph{in full} --- the residuals R1 (two-part),
+named precisely and \emph{in full} --- the residuals R1 (three-part),
 R2, and R3 (three-part).
 \end{remark}
 
@@ -1593,7 +1795,7 @@ is precisely localized.
 \end{enumerate}
 
 \noindent\emph{Localized (the open parts).} The re-grading correctly
-\emph{surfaces} two inputs that the pre-Fork-A development obtained
+\emph{surfaces} three inputs that the pre-Fork-A development obtained
 for free from the $(\Z/2)^n$-action now dropped.
 \begin{enumerate}[label=\textup{(\roman*)},leftmargin=2.2em]
 \item \emph{The $Y_2$ separation.} The separation of $\ob$ from the
@@ -1607,15 +1809,26 @@ for free from the $(\Z/2)^n$-action now dropped.
   therefore ports only to an $\Sym_{n-1}$-equivariant statement, and
   recovering the $\Sym_n$-isotype structure needs an
   $\Sym_{n-1}\to\Sym_n$ branching step. Phase~1 localizes this
-  precisely as the new sub-residual R1b (Open residual~\ref{res:y1}).
+  precisely as the sub-residual R1b (Open residual~\ref{res:y1}).
+\item \emph{The $Y_1$ bridge null-homotopy.} The pre-Fork-A
+  cofiber-LES reduction collapses its LES by substituting the
+  twisted-bridge null-homotopy $\iota_x^{*}\simeq0$, which the
+  pre-Fork-A twisted bridge established only on the
+  $\walsh{S}$-isotype sub-complexes $V_S^{*}$. Fork~A, having dropped
+  the $(\Z/2)^n$-action, has no $V_S^{*}$ sub-complex, so the ported
+  bridge does not discharge $\iota_x^{*}\simeq0$
+  (Remark~\ref{rem:bridge-not-ported}). Phase~1 localizes this
+  precisely as the sub-residual R1c (Open residual~\ref{res:y1}).
 \end{enumerate}
-Neither is a failure of the re-grading; both are the re-grading doing
-its job --- exposing that inputs the pre-Fork-A ledger treated as
-settled (``$Y_2$ mechanism-sound''; ``$Y_1$ reduction unchanged'') in
-fact depended on the now-refuted $(\Z/2)^n$-action and must be
-re-established. The discipline is symmetric: dropping $(\Z/2)^n$
-re-opens work on \emph{both} sides of the contradiction, and Phase~1
-records both.
+None of the three is a failure of the re-grading; all three are the
+re-grading doing its job --- exposing that inputs the pre-Fork-A
+ledger treated as settled (``$Y_2$ mechanism-sound''; ``$Y_1$
+reduction unchanged'') in fact depended on the now-refuted
+$(\Z/2)^n$-action and must be re-established. The discipline is
+symmetric: dropping $(\Z/2)^n$ re-opens work on \emph{both} sides of
+the contradiction --- the $Y_2$ landing (R2) on one side, the $Y_1$
+branching step (R1b) and bridge null-homotopy (R1c) on the other ---
+and Phase~1 records them all.
 
 \begin{remark}[Why ``ADDRESSED'' and not ``PAID'']
 \label{rem:debt1-addressed}
@@ -1624,8 +1837,9 @@ as fully \textsf{PAID}, on the strength of a claimed theorem that
 $\ob$ is standard-isotypic. That theorem does not hold (Status~%
 \ref{status:y2a}), so the honest status is \textsf{ADDRESSED}: the
 re-grading as a structural task is complete and sound, and its
-residue is precisely named --- the landing residual R2 and the
-branching sub-residual R1b that the re-grading surfaces. The brief
+residue is precisely named --- the landing residual R2 and the two
+$Y_1$-side sub-residuals R1b (branching) and R1c (the bridge
+null-homotopy) that the re-grading surfaces. The brief
 permits ``address \emph{or} precisely localize''; Phase~1 does both
 --- addresses the structural re-grading, localizes the residue.
 \end{remark}
@@ -1775,16 +1989,18 @@ sphere class identified as $\sgn_{\Sym_n}$
 two-part contradiction are re-established as a conditional theorem
 (Theorem~\ref{thm:contradiction}). Owed debt~\ref{debt:regrading} (the
 re-grading) is addressed --- its structural content discharged, its
-residue localized as R2 (the $Y_2$ separation) and R1b (the
-$\Sym_{n-1}\to\Sym_n$ branching step the re-grading newly surfaces);
-Owed debt~\ref{debt:faithful} (faithfulness) is localized as the
-three-part R3. \textbf{Frankl is not proved, and Phase~1 was never
-meant to prove it.} The verdict GREEN is for the Phase-1 scope: the
-re-foundation is delivered and internally sound. The genuine open
-content is named precisely and in full --- R1 (two-part: R1a the
-$Y_1$ cofiber, R1b the branching step), R2 (the $Y_2$ landing /
-separation), and R3 (three-part: existence, degree, and injectivity of
-the \v{C}ech-to-cohomology edge map).
+residue localized as R2 (the $Y_2$ separation) and the two
+$Y_1$-side sub-residuals the re-grading newly surfaces, R1b (the
+$\Sym_{n-1}\to\Sym_n$ branching step) and R1c (the twisted-bridge
+null-homotopy); Owed debt~\ref{debt:faithful} (faithfulness) is
+localized as the three-part R3. \textbf{Frankl is not proved, and
+Phase~1 was never meant to prove it.} The verdict GREEN is for the
+Phase-1 scope: the re-foundation is delivered and internally sound.
+The genuine open content is named precisely and in full --- R1
+(three-part: R1a the $Y_1$ cofiber, R1b the branching step, R1c the
+twisted-bridge null-homotopy), R2 (the $Y_2$ landing / separation),
+and R3 (three-part: existence, degree, and injectivity of the
+\v{C}ech-to-cohomology edge map).
 
 \subsection{What Phase 1 delivered (positive content)}
 \label{ssec:delivered}
@@ -1808,27 +2024,31 @@ the \v{C}ech-to-cohomology edge map).
 \item The $Y_1$ vanishing re-stated as re-graded sphere concentration
   (Conjecture~\ref{conj:y1a}), with the cofiber-LES reduction ported
   to an $\Sym_{n-1}$-equivariant statement
-  (Theorem~\ref{thm:y1-reduction}) and the new $\Sym_{n-1}\to\Sym_n$
-  branching sub-residual R1b honestly recorded
-  (Remark~\ref{rem:y1-branching}).
+  (Theorem~\ref{thm:y1-reduction}) and the two new sub-residuals it
+  surfaces honestly recorded --- the $\Sym_{n-1}\to\Sym_n$ branching
+  step R1b (Remark~\ref{rem:y1-branching}) and the twisted-bridge
+  null-homotopy R1c (Remark~\ref{rem:bridge-not-ported}).
 \item The closing contradiction re-established as a conditional
   theorem (Theorem~\ref{thm:contradiction}), with \emph{every} input
-  it rests on enumerated in full --- R1 (two-part: R1a cofiber, R1b
-  branching), R2, and R3 (three-part: R3a existence, R3b degree, R3c
-  injectivity of the edge map) --- and no claim of a clean
-  ``exactly three / one fewer than pre-Fork-A'' count
-  (Remark~\ref{rem:honest-shape}).
+  it rests on enumerated in full --- R1 (three-part: R1a cofiber, R1b
+  branching, R1c the bridge null-homotopy), R2, and R3 (three-part:
+  R3a existence, R3b degree, R3c injectivity of the edge map) --- and
+  no claim of a clean ``exactly three / one fewer than pre-Fork-A''
+  count (Remark~\ref{rem:honest-shape}).
 \item Owed debt~1 addressed; Owed debt~2 localized
-  (\S\ref{sec:debts}); and an over-claim from an earlier draft (the
-  ``standard-isotypic'' theorem) caught and withdrawn
-  (Status~\ref{status:y2a}, Remark~\ref{rem:debt1-addressed}).
+  (\S\ref{sec:debts}); and the over-claims of the
+  ``$\walsh{S}$-graded fact treated as portable'' shape caught and
+  withdrawn --- the ``standard-isotypic'' landing theorem
+  (Status~\ref{status:y2a}, Remark~\ref{rem:debt1-addressed}) and the
+  twisted-bridge null-homotopy (Construction~\ref{constr:bridge},
+  Remark~\ref{rem:bridge-not-ported}, now the sub-residual R1c).
 \end{enumerate}
 
 \subsection{What remains open}
 \label{ssec:open}
 
 \begin{itemize}[leftmargin=1.7em]
-\item \textbf{R1 --- $Y_1$-A, Open residual~\ref{res:y1}}, in two
+\item \textbf{R1 --- $Y_1$-A, Open residual~\ref{res:y1}}, in three
   parts. \textbf{R1a:} the $\Sym_{n-1}$-isotype cohomology of the
   cofiber of the matched-cylinder inclusion --- the homotopy type of
   the stuck-family fibres; as a target object unchanged from the
@@ -1837,7 +2057,11 @@ the \v{C}ech-to-cohomology edge map).
   step recovering the $\Sym_n$-isotype structure of $\widetilde
   H^{n-1}(\Cn;X)$ from the $\Sym_{n-1}$-equivariant cofiber data --- a
   new sub-residual created by the $(\Z/2)^n\to\Sym_n$ re-grading
-  (Remark~\ref{rem:y1-branching}).
+  (Remark~\ref{rem:y1-branching}). \textbf{R1c:} the twisted-bridge
+  null-homotopy $\iota_x^{*}\simeq0$, which the cofiber-LES collapse
+  substitutes but the ported bridge does not discharge in Fork~A ---
+  also new, created by the same re-grading
+  (Remark~\ref{rem:bridge-not-ported}).
 \item \textbf{R2 --- $Y_2$-A, Open residual~\ref{res:y2}.} Whether
   $\ob(\Fstar)$ avoids the $\sgn$ sphere-class isotype. A
   representation-theoretic question about the obstruction sheaf
@@ -1855,48 +2079,57 @@ the \v{C}ech-to-cohomology edge map).
 \label{ssec:recommendations}
 
 \begin{enumerate}[leftmargin=1.9em]
-\item \textbf{Proceed to an independent re-validation of this revised
-  document.} The first Phase-2 validation (\texttt{mg-d300}) returned
-  AMBER and is incorporated: this revision corrects the two
-  over-claims it caught (Status~\ref{status:mg365e-revision}). A
-  re-validation should default-skeptically confirm that the correction
-  is complete and honest --- in particular that
-  Theorem~\ref{thm:y1-reduction} now claims only
-  $\Sym_{n-1}$-equivariance and that R1b is genuinely recorded
-  (Remark~\ref{rem:y1-branching}, Open residual~\ref{res:y1}); that
-  Theorem~\ref{thm:contradiction} lists \emph{every} input, including
-  the three-part R3 (Owed debt~\ref{debt:faithful-localized}); and
-  that the spine --- Theorem~\ref{thm:projection} (chain map and
-  functoriality), Theorem~\ref{thm:welldefined} ($D^2=0$),
-  Theorem~\ref{thm:maschke} (the $\Sym_n$-equivariance of $D$),
-  Proposition~\ref{prop:y2a-mech} --- which \texttt{mg-d300}
-  independently confirmed sound, is undisturbed by the revision.
+\item \textbf{Proceed to a further independent re-validation of this
+  twice-revised document.} Two Phase-2 validations have now been
+  incorporated: \texttt{mg-d300} (AMBER) returned two over-claims,
+  corrected by the \texttt{mg-365e} revision
+  (Status~\ref{status:mg365e-revision}); \texttt{mg-5221} (AMBER)
+  returned a third of the same shape, corrected by the
+  \texttt{mg-894c} revision (Status~\ref{status:mg894c-revision}).
+  The next re-validation should default-skeptically confirm that the
+  correction is complete and honest --- in particular that
+  Construction~\ref{constr:bridge} no longer claims the twisted
+  bridge ``ports'' and that R1c is genuinely recorded
+  (Remark~\ref{rem:bridge-not-ported}, Open residual~\ref{res:y1});
+  that Theorem~\ref{thm:contradiction} lists \emph{every} input, with
+  R1 now three-part and R3 three-part; that the exhaustive Walsh-fact
+  sweep recorded in \texttt{docs/Frankl-ForkA-Phase2-Revision2.md} is
+  complete --- no fourth ported $\walsh{S}$-graded fact treated as
+  portable; and that the spine --- Theorem~\ref{thm:projection}
+  (chain map and functoriality), Theorem~\ref{thm:welldefined}
+  ($D^2=0$), Theorem~\ref{thm:maschke} (the $\Sym_n$-equivariance of
+  $D$), Proposition~\ref{prop:y2a-mech} --- which \texttt{mg-d300}
+  and \texttt{mg-5221} both independently confirmed sound, is
+  undisturbed by the revisions.
 \item \textbf{The $Y_1$ residual} (R1, Open residual~\ref{res:y1}) and
   \textbf{the faithfulness edge map} (R3, Owed
   debt~\ref{debt:faithful-localized}) can be attacked in parallel as
   separate tickets, with the corrected picture: R1 now carries,
-  besides the cofiber R1a, the added $\Sym_{n-1}\to\Sym_n$ branching
-  step R1b (Remark~\ref{rem:y1-branching}); and R3 is three
-  sub-problems --- existence R3a, degree R3b, injectivity R3c --- of
-  which existence and degree are upstream of injectivity. Both attacks
-  require first pinning the cell-level spectral sequence of $\fobs$
-  (Remark~\ref{rem:holim-prereq}).
+  besides the cofiber R1a, \emph{two} added sub-residuals the
+  re-grading surfaces --- the $\Sym_{n-1}\to\Sym_n$ branching step
+  R1b (Remark~\ref{rem:y1-branching}) and the twisted-bridge
+  null-homotopy R1c (Remark~\ref{rem:bridge-not-ported}); and R3 is
+  three sub-problems --- existence R3a, degree R3b, injectivity R3c
+  --- of which existence and degree are upstream of injectivity. Both
+  attacks require first pinning the cell-level spectral sequence of
+  $\fobs$ (Remark~\ref{rem:holim-prereq}).
 \item \textbf{The $Y_2$ separation residual} (R2, Open
   residual~\ref{res:y2}) should be attacked together with R3: they are
   facets of one faithfulness question (Remark~\ref{rem:r2-faithful}),
   and a representation-theoretic analysis of $\fobs$ feeds both.
 \item \textbf{Do not Lean-formalize yet} (Phase~3). Phase~3 is gated on
-  the independent re-validation of this revised document returning
-  GREEN. Of the Fork~A content,
+  a further independent re-validation of this twice-revised document
+  returning GREEN. Of the Fork~A content,
   Theorems~\ref{thm:projection},~\ref{thm:welldefined}, and~%
   \ref{thm:maschke} and Proposition~\ref{prop:y2a-mech} are the
-  formalization-ready core; the residuals R1 (two-part), R2, and R3
+  formalization-ready core; the residuals R1 (three-part), R2, and R3
   (three-part) are not.
 \item \textbf{The consolidated paper (\texttt{../main.tex}) is not
   edited by Phase~1.} It honestly records the pre-Fork-A state. A
-  later pass --- once the independent re-validation of this revised
-  document returns GREEN --- may fold the Fork~A re-foundation into
-  the paper, superseding its \S\S3--4. That is out of Phase-1 scope.
+  later pass --- once a further independent re-validation of this
+  twice-revised document returns GREEN --- may fold the Fork~A
+  re-foundation into the paper, superseding its \S\S3--4. That is out
+  of Phase-1 scope.
 \end{enumerate}
 
 \subsection{The honest one-paragraph summary}
@@ -1916,10 +2149,15 @@ an $\Sym_n$-datum, not a $(\Z/2)^n$ one. On the re-founded object the
 obstruction class is re-established and the two-part contradiction is
 re-assembled as a conditional theorem; honest accounting enumerates,
 in full, every input it rests on --- the $Y_1$ cofiber residual R1
-(its target object R1a unchanged, but its reduction now carrying a new
+(its target object R1a unchanged, but its reduction now carrying two
+new sub-residuals the $(\Z/2)^n\to\Sym_n$ re-grading creates: the
 $\Sym_{n-1}\to\Sym_n$ branching step R1b, because the pre-Fork-A
 reduction split isotype-by-isotype only via the abelian-quotient
-structure of $(\Z/2)^n$ that $\Sym_n$ lacks), the $Y_2$ landing R2
+structure of $(\Z/2)^n$ that $\Sym_n$ lacks; and the twisted-bridge
+null-homotopy R1c, because the pre-Fork-A bridge established
+$\iota_x^{*}\simeq0$ only on the $\walsh{S}$-isotype sub-complexes
+$V_S^{*}$ that Fork~A, having dropped $(\Z/2)^n$, no longer has), the
+$Y_2$ landing R2
 (which Fork~A genuinely re-opens, because the pre-Fork-A landing
 mechanism rested on the now-dropped $(\Z/2)^n$-equivariance, and the
 separation of the obstruction from the sign sphere class is a
@@ -1932,28 +2170,42 @@ was not meant to prove it: what Phase~1 delivers is a sound
 re-foundation that clears both Phase-1.5 walls, carries out the
 re-grading, re-assembles the contradiction on a well-defined object,
 and isolates the genuine open content as the precisely and completely
-named residuals R1 (two-part), R2, and R3 (three-part) --- and, in
+named residuals R1 (three-part), R2, and R3 (three-part) --- and, in
 the discipline the ledger's over-claim history demands, it withdraws
 over-claims rather than carrying them forward: the
-clean-landing-theorem over-claim caught in Phase~1, and the two
-caught by the \texttt{mg-d300} Phase-2 validation and corrected in the
+clean-landing-theorem over-claim caught in Phase~1, the two caught by
+the \texttt{mg-d300} Phase-2 validation and corrected in the
 \texttt{mg-365e} revision (the ``$\Sym_n$-equivariant cofiber LES /
 $R1$ unchanged'' over-claim and the ``exactly three residuals''
-over-claim; Status~\ref{status:mg365e-revision}).
+over-claim; Status~\ref{status:mg365e-revision}), and the third of
+the identical ``$\walsh{S}$-graded fact treated as portable'' shape
+caught by the \texttt{mg-5221} Phase-2 re-validation and corrected in
+the \texttt{mg-894c} revision (the twisted-bridge null-homotopy
+$\iota_x^{*}\simeq0$, presented as a discharged ported input, now
+the sub-residual R1c; Status~\ref{status:mg894c-revision}). After the
+\texttt{mg-894c} exhaustive Walsh-fact sweep, the input list of
+Theorem~\ref{thm:contradiction} is complete and final.
 
 \subsection{Cross-references}
 \label{ssec:xref}
 
 \begin{itemize}[leftmargin=1.7em]
 \item \textbf{Brief:} \texttt{mg-c15b} (Frankl-ForkA-Refound-LaTeX,
-  Phase~1); \texttt{mg-365e} (Frankl-ForkA-Phase2-Revision --- the
-  revision carried out in this document).
-\item \textbf{The Phase-2 independent validation (the two findings
-  this revision corrects):}
+  Phase~1); \texttt{mg-365e} (Frankl-ForkA-Phase2-Revision);
+  \texttt{mg-894c} (Frankl-ForkA-Phase2-Revision2 --- the revision
+  carried out in this document).
+\item \textbf{The Phase-2 independent validations (the findings the
+  two revisions correct):}
   \texttt{docs/Frankl-ForkA-Phase2-validation.md} (\texttt{mg-d300};
   \S3 Finding~A, \S4 Finding~B, \S5.1 the minor point, \S6.2 the
-  revision spec); the revision is logged in
-  \texttt{docs/Frankl-ForkA-Phase2-Revision.md} (\texttt{mg-365e}).
+  revision spec) and
+  \texttt{docs/Frankl-ForkA-Phase2-Revalidation.md} (\texttt{mg-5221};
+  \S3 the surviving twisted-bridge over-claim, \S4 the minor points,
+  \S5.2 the re-statement spec); the revisions are logged in
+  \texttt{docs/Frankl-ForkA-Phase2-Revision.md} (\texttt{mg-365e})
+  and \texttt{docs/Frankl-ForkA-Phase2-Revision2.md}
+  (\texttt{mg-894c} --- the latter also carrying the exhaustive
+  Walsh-fact sweep).
 \item \textbf{Fork~A endorsement and the two debts:}
   \texttt{docs/Frankl-ForkD-Probe-n3.md} (\texttt{mg-565a}, \S\S6--7).
 \item \textbf{The drift diagnosis and the fork menu:}
@@ -1975,10 +2227,14 @@ over-claim; Status~\ref{status:mg365e-revision}).
 \medskip
 \noindent\footnotesize Phase~1 re-foundation by polecat
 \texttt{cat-mg-c15b}, revised by polecat \texttt{cat-mg-365e} per the
-\texttt{mg-d300} Phase-2 validation. Deliverable on \texttt{main}:
-this document (\texttt{paper/forkA/refoundation.tex}) and the ledger
-notes \texttt{docs/Frankl-ForkA-Refound-LaTeX.md} (Phase~1) and
-\texttt{docs/Frankl-ForkA-Phase2-Revision.md} (this revision).
+\texttt{mg-d300} Phase-2 validation and by polecat
+\texttt{cat-mg-894c} per the \texttt{mg-5221} Phase-2 re-validation.
+Deliverable on \texttt{main}: this document
+(\texttt{paper/forkA/refoundation.tex}) and the ledger notes
+\texttt{docs/Frankl-ForkA-Refound-LaTeX.md} (Phase~1),
+\texttt{docs/Frankl-ForkA-Phase2-Revision.md} (the \texttt{mg-365e}
+revision), and \texttt{docs/Frankl-ForkA-Phase2-Revision2.md} (the
+\texttt{mg-894c} revision).
 Verdict: \textbf{GREEN --- FORK-A-REFOUNDATION-DELIVERED (Phase~1),
 as corrected.} The Frankl cohomology is re-founded on Fork~A: the
 covariant homotopy colimit $H^{*}(\Cn;X)$ is genuinely defined
@@ -1988,24 +2244,38 @@ $\sgn_{\Sym_n}$ re-grading is carried out, and the obstruction class
 and two-part contradiction are re-established as a conditional theorem
 whose open inputs are named precisely and in full --- R1 ($Y_1$
 cofiber: R1a unchanged as a target object, R1b a new
-$\Sym_{n-1}\to\Sym_n$ branching step), R2 ($Y_2$ landing, re-opened
-and localized), and the three-part R3 (edge-map existence, degree, and
-injectivity). Owed debt~1 (re-grading) is addressed; Owed debt~2
-(faithfulness) is localized. Frankl is not proved; Phase~1 was not
-meant to prove it. \emph{Revision note (\texttt{mg-365e}).} This
-document has been revised following the \texttt{mg-d300} independent
-Phase-2 validation, which returned AMBER and caught two surviving
-over-claims: that the $Y_1$ cofiber-LES reduction is
+$\Sym_{n-1}\to\Sym_n$ branching step, R1c the twisted-bridge
+null-homotopy the ported bridge does not discharge), R2 ($Y_2$
+landing, re-opened and localized), and the three-part R3 (edge-map
+existence, degree, and injectivity). Owed debt~1 (re-grading) is
+addressed; Owed debt~2 (faithfulness) is localized. Frankl is not
+proved; Phase~1 was not meant to prove it. \emph{Revision note
+(\texttt{mg-365e}, \texttt{mg-894c}).} This document has been revised
+twice following independent Phase-2 validation. The \texttt{mg-365e}
+revision acted on the \texttt{mg-d300} validation (AMBER), which
+caught two over-claims: that the $Y_1$ cofiber-LES reduction is
 $\Sym_n$-equivariant and ``ports unchanged'' (it is only
 $\Sym_{n-1}=\mathrm{Stab}(x)$-equivariant, and acquires the
 $\Sym_{n-1}\to\Sym_n$ branching sub-residual R1b), and that the
 contradiction rests on ``exactly three'' residuals (R3 is in fact a
-three-part edge-map debt). Both are honest re-statements, not
-refutations; the Fork~A strategy and its core constructions are
-unchanged and were independently confirmed sound. An over-claim in an
-earlier Phase-1 draft --- a clean ``standard-isotypic'' landing
-theorem --- had already been caught and withdrawn. Recommended next:
-independent re-validation of this revised document, then Phase~3
-(Lean).
+three-part edge-map debt). The \texttt{mg-894c} revision acted on the
+\texttt{mg-5221} re-validation (AMBER), which caught a third
+over-claim of the identical ``$\walsh{S}$-graded fact treated as
+portable'' shape: the twisted-bridge null-homotopy
+$\iota_x^{*}\simeq0$ was presented as a discharged, ported input
+(Construction~\ref{constr:bridge}) when it is a
+$\walsh{S}$-isotype-sub-complex fact with no Fork~A referent --- now
+the sub-residual R1c (Remark~\ref{rem:bridge-not-ported}); the
+\texttt{mg-894c} revision additionally carried out an exhaustive
+sweep of every ported Walsh fact (ledger
+\texttt{docs/Frankl-ForkA-Phase2-Revision2.md}), certifying there is
+no fourth prong and the input list of
+Theorem~\ref{thm:contradiction} is complete and final. All are
+honest re-statements, not refutations; the Fork~A strategy and its
+core constructions are unchanged and were independently confirmed
+sound. An over-claim in an earlier Phase-1 draft --- a clean
+``standard-isotypic'' landing theorem --- had already been caught and
+withdrawn. Recommended next: a further independent re-validation of
+this twice-revised document, then Phase~3 (Lean).
 
 \end{document}

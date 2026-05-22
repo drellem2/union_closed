@@ -3,8 +3,10 @@
 This directory holds the **Fork A re-foundation** of the cohomological
 arc of the union-closed (Frankl) program — work item **mg-c15b**
 (Frankl-ForkA-Refound-LaTeX), **Phase 1: the LaTeX re-foundation**,
-**revised** under **mg-365e** (Frankl-ForkA-Phase2-Revision) per the
-**mg-d300** independent Phase-2 validation.
+**revised twice**: under **mg-365e** (Frankl-ForkA-Phase2-Revision)
+per the **mg-d300** independent Phase-2 validation, and under
+**mg-894c** (Frankl-ForkA-Phase2-Revision2) per the **mg-5221**
+independent Phase-2 re-validation.
 
 ## What this is
 
@@ -43,7 +45,7 @@ It is **self-contained**: its own preamble, no bibliography, no
 external inputs. It does **not** modify the consolidated paper
 (`../main.tex`), which honestly records the pre-Fork-A state.
 
-## Verdict (Phase 1, as corrected by the mg-365e revision)
+## Verdict (Phase 1, as corrected by the mg-365e and mg-894c revisions)
 
 **GREEN — FORK-A-REFOUNDATION-DELIVERED.** The re-foundation is
 delivered and internally sound:
@@ -59,11 +61,15 @@ delivered and internally sound:
 **Frankl is not proved, and Phase 1 was never meant to prove it.** The
 contradiction's open inputs are named precisely and **in full**:
 
-- **R1** — the `Y1` cofiber residual, **two-part**: **R1a** the
+- **R1** — the `Y1` cofiber residual, **three-part**: **R1a** the
   cofiber cohomology (as a target object, unchanged from pre-Fork-A);
   **R1b** a new `S_{n-1}→S_n` branching step the `(Z/2)^n→S_n`
   re-grading creates (the `Y1` cofiber-LES reduction is only
-  `Stab(x)≅S_{n-1}`-equivariant, not `S_n`-equivariant);
+  `Stab(x)≅S_{n-1}`-equivariant, not `S_n`-equivariant); **R1c** the
+  twisted-bridge null-homotopy `ι_x* ≃ 0` — a `χ_S`-isotype-sub-complex
+  fact the ported bridge does **not** discharge in Fork A (Fork A
+  drops the `(Z/2)^n`-action, so there is no `V_S^*` sub-complex for
+  it to live on), also created by the `(Z/2)^n→S_n` re-grading;
 - **R2** — the `Y2` landing / separation of the obstruction from the
   sphere class (Fork A re-opens this: the pre-Fork-A `Y2` mechanism
   rested on the now-dropped `(Z/2)^n`-equivariance);
@@ -72,12 +78,16 @@ contradiction's open inputs are named precisely and **in full**:
   landing, **R3c** injectivity (the `V3` / wrapper-risk question).
 
 Owed debt 1 (the re-grading) is **addressed**; owed debt 2
-(faithfulness) is **localized** to R3.
+(faithfulness) is **localized** to R3. After the mg-894c exhaustive
+Walsh-fact sweep the conditional theorem's input list — R3a, R3b, R3c,
+R2, and R1 (= R1a + R1b + R1c) — is **complete and final**.
 
 See `refoundation.tex` §0 for the full scorecard and the revision
-callout, `docs/Frankl-ForkA-Refound-LaTeX.md` for the Phase-1 ledger
-note, and `docs/Frankl-ForkA-Phase2-Revision.md` for the mg-365e
-revision ledger note.
+callouts, `docs/Frankl-ForkA-Refound-LaTeX.md` for the Phase-1 ledger
+note, `docs/Frankl-ForkA-Phase2-Revision.md` for the mg-365e revision
+ledger note, and `docs/Frankl-ForkA-Phase2-Revision2.md` for the
+mg-894c revision ledger note (which also carries the exhaustive
+portable-Walsh-fact sweep).
 
 ## The mg-365e revision
 
@@ -98,7 +108,38 @@ re-statement (no new math, no refutation):
 A minor point (the `prop:sphere-sgn` proof assumed more than its
 stated hypothesis) is also corrected.
 
+## The mg-894c revision
+
+The independent Phase-2 **re-validation** (`mg-5221`,
+`docs/Frankl-ForkA-Phase2-Revalidation.md`) returned **AMBER**: the
+three mg-365e fixes landed and the spine was re-confirmed sound, but a
+**third over-claim of the identical shape** survived — the
+twisted-bridge null-homotopy `ι_x* ≃ 0`, presented in Construction
+`constr:bridge` as a discharged, ported input. It is a
+`χ_S`-isotype-sub-complex fact (`mg-56b8` §3.2, §8.1) with no Fork A
+referent, since Fork A drops the `(Z/2)^n`-action and so has no
+`V_S^*` sub-complex. This revision corrects it by honest re-statement
+(no new math, no refutation):
+
+- **`constr:bridge`** is re-stated — it now ports only the geometric
+  prism operator `h`; the twisted-bridge null-homotopy is demoted to
+  the open sub-residual **R1c** (new Remark `rem:bridge-not-ported`).
+- **`thm:y1-reduction`** now reduces `Y1`-A to **three** steps (R1a,
+  R1b, R1c), and the simultaneous-induction base case (`n = 2`) is
+  stated.
+- An **exhaustive sweep** of every fact in `refoundation.tex` ported
+  from the pre-Fork-A Walsh / `χ_S`-isotype-graded framework was
+  carried out, certifying there is **no fourth prong** — every ported
+  Walsh fact has a genuine Fork A referent, is explicitly dropped, or
+  is a named residual. The sweep is the §2 ledger of
+  `docs/Frankl-ForkA-Phase2-Revision2.md`.
+
+A minor point (the punctured-poset-to-`F⋆` extension inside
+`prop:fact-one`) is also made explicit.
+
 ## Next
 
-Independent **re-validation** of the revised `refoundation.tex`, then
-Phase 3 (Lean) — each gated on the previous returning GREEN.
+A further independent **re-validation** of the twice-revised
+`refoundation.tex` — carrying an explicit pattern-sweep mandate to
+audit the mg-894c Walsh-fact sweep — then the residual-closing work
+and Phase 3 (Lean), each gated on the previous returning GREEN.
