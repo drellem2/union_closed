@@ -32,6 +32,7 @@ resolved the re-foundation fork to **Fork A**:
 | File | Contents |
 |------|----------|
 | `refoundation.tex` | the standalone Fork A re-foundation (Phase 1) |
+| `Fobs-spectral-sequence.tex` | the `F_obs` cell-level spectral sequence, pinned (P0 — `mg-02b5`) |
 | `README.md` | this file |
 
 ## Building
@@ -137,9 +138,38 @@ referent, since Fork A drops the `(Z/2)^n`-action and so has no
 A minor point (the punctured-poset-to-`F⋆` extension inside
 `prop:fact-one`) is also made explicit.
 
+## P0 — the `F_obs` cell-level spectral sequence (`Fobs-spectral-sequence.tex`)
+
+The `mg-0882` residual-closing roadmap
+(`docs/Frankl-ForkA-Residuals-Roadmap.md`) names one **prerequisite**,
+**P0**, that gates all seven residuals: pin the cell-level
+Bousfield–Kan / spectral-sequence model of the obstruction sheaf
+`F_obs` — the infrastructure `refoundation.tex`'s `rem:holim-prereq`
+explicitly defers ("the cell-level structure of `F_obs` and its
+spectral sequence (not pinned here)").
+
+`Fobs-spectral-sequence.tex` (work item `mg-02b5`) is P0. It pins: the
+cell-level obstruction complex `F_obs` (supplying the definition
+`def:obs-sheaf` left implicit); the Čech double complex of the trace
+cover, verified a genuine bounded bicomplex; both spectral sequences,
+with full convergence and pinned page structure (the named
+`E₂ = Č H^p(U; ℋ^q(F_obs))`); and the cell-level `BK` model of
+`H*(C_n;X)` as the comparison target for residual R3. One finding: the
+trace cover is cell-level acyclic, so the spectral sequence
+degenerates and the obstruction's non-triviality is carried entirely
+by the comparison map (residual R3) — a sharpening of the
+wrapper-risk, not a resolution.
+
+**P0 is infrastructure, not a residual.** It closes no residual and
+adds no hypothesis to `thm:contradiction`; the `mg-bf5c` "exactly
+seven residuals" certification stands. See `Fobs-spectral-sequence.tex`
+§0 for the scorecard and `docs/Frankl-ForkA-Fobs-SS-Pinning.md` for
+the P0 ledger note.
+
 ## Next
 
 A further independent **re-validation** of the twice-revised
 `refoundation.tex` — carrying an explicit pattern-sweep mandate to
 audit the mg-894c Walsh-fact sweep — then the residual-closing work
-and Phase 3 (Lean), each gated on the previous returning GREEN.
+(now unblocked at Checkpoint 0 by P0) and Phase 3 (Lean), each gated
+on the previous returning GREEN.

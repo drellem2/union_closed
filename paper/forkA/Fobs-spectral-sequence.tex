@@ -1,0 +1,1518 @@
+% =====================================================================
+%  The F_obs cell-level spectral sequence, pinned.
+%  Phase 0 (P0) of the Fork A residual-closing arc.
+%
+%  Work item mg-02b5 (Frankl-ForkA-P0 / Frankl-ForkA-Fobs-SS-Pinning).
+%  Per the mg-0882 residual-closing roadmap
+%  (docs/Frankl-ForkA-Residuals-Roadmap.md): P0 is the shared
+%  prerequisite that gates all seven Fork A residuals -- it pins the
+%  cell-level Bousfield--Kan / spectral-sequence model of the
+%  obstruction sheaf F_obs that the residual-attack phase runs on.
+%
+%  P0 is NOT an eighth hypothesis of the conditional theorem
+%  thm:contradiction. The mg-bf5c "exactly seven residuals"
+%  certification stands unchanged. P0 is infrastructure for CLOSING the
+%  residuals, not a residual.
+%
+%  This is a STANDALONE document. It does not modify the thrice-validated
+%  refoundation.tex; it supplies the cell-level pinning that
+%  refoundation.tex's Remark rem:holim-prereq explicitly defers to the
+%  residual-attack phase ("the cell-level structure of F_obs and its
+%  spectral sequence (not pinned here)").
+%
+%  Build:  pdflatex Fobs-spectral-sequence && pdflatex Fobs-spectral-sequence
+%  (self-contained; no bibliography, no external inputs).
+% =====================================================================
+\documentclass[11pt,oneside]{amsart}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{stmaryrd}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xcolor}
+\usepackage[margin=1.1in]{geometry}
+
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{2}
+
+% ---- theorem environments ------------------------------------------
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{conjecture}[theorem]{Conjecture}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{construction}[theorem]{Construction}
+
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{notation}[theorem]{Notation}
+
+% Honesty / status callouts (same convention as refoundation.tex).
+\newtheoremstyle{honeststyle}{6pt}{6pt}{\normalfont}{}%
+  {\bfseries}{.}{.5em}{}
+\theoremstyle{honeststyle}
+\newtheorem{status}[theorem]{Status}
+\newtheorem{pinned}[theorem]{Pinned}
+
+% ---- macros (consistent with refoundation.tex) ----------------------
+\newcommand{\F}{\mathcal{F}}
+\newcommand{\G}{\mathcal{G}}
+\newcommand{\Fstar}{\F^{\star}}
+\newcommand{\bias}{\beta}
+\newcommand{\sgn}{\mathrm{sgn}}
+\newcommand{\Sym}{\mathfrak{S}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Cn}{\mathcal{C}^{\cap}_n}
+\newcommand{\Xbb}{\mathbb{X}}
+\newcommand{\hocolim}{\operatorname*{hocolim}}
+\newcommand{\ob}{\mathrm{ob}}
+\newcommand{\tr}{\mathrm{tr}}
+\newcommand{\BK}{\mathrm{BK}}
+\newcommand{\Tot}{\mathrm{Tot}}
+\newcommand{\fobs}{\mathcal{F}_{\mathrm{obs}}}
+\newcommand{\walsh}[1]{\chi_{#1}}
+\newcommand{\Ch}{\mathrm{Ch}}
+\newcommand{\Pp}{\mathcal{P}}
+\newcommand{\Uf}{\mathfrak{U}}
+\newcommand{\rare}{R}
+\newcommand{\Ccheck}{\check{C}}
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\DeclareMathOperator{\im}{im}
+\DeclareMathOperator{\Hom}{Hom}
+\DeclareMathOperator{\gr}{gr}
+
+\title[The $\fobs$ cell-level spectral sequence, pinned]{%
+  The $\fobs$ cell-level spectral sequence, pinned\\
+  \normalsize Phase 0 (P0) of the Fork A residual-closing arc}
+
+\author{The \texttt{union\_closed} development}
+\date{Work item \texttt{mg-02b5} (Frankl-ForkA-P0) --- \today\\[2pt]
+  \normalfont\small The shared prerequisite of the
+  \texttt{mg-0882} residual-closing roadmap}
+
+\begin{document}
+
+\begin{abstract}
+The Fork~A re-foundation of the Frankl cohomology
+(\texttt{paper/forkA/refoundation.tex}, work items \texttt{mg-c15b} /
+\texttt{mg-365e} / \texttt{mg-894c}, certified by \texttt{mg-bf5c}) is
+a sound conditional theorem resting on seven named open residuals.
+Its Remark \texttt{rem:holim-prereq} names one \emph{foundational
+prerequisite} that is not one of the seven but gates all of them: the
+cell-level Bousfield--Kan model of the obstruction sheaf $\fobs$ and
+its spectral sequence, explicitly left ``not pinned here \dots\ for the
+residual-attack phase.'' The \texttt{mg-0882} roadmap calls this
+prerequisite \textbf{P0} and makes it a hard checkpoint: no
+residual-attack computation may be reported on un-pinned
+$\fobs$-foundations.
+
+This document is P0. It pins, at the level of cubical cells: (i) the
+\emph{cell-level obstruction complex} $\fobs$ --- the precise complex
+of presheaves that Definition \texttt{def:obs-sheaf} of
+\texttt{refoundation.tex} left implicit; (ii) the \v{C}ech double
+complex $\Ccheck^{\,*,*}(\Uf;\fobs)$ of the trace cover, verified to be
+a genuine first-quadrant, \emph{bounded} bicomplex; (iii) its
+\textbf{two spectral sequences}, with full \textbf{convergence} (both
+abut to $H^{*}(\Tot\Ccheck)$, with finite-page degeneration forced by
+boundedness) and \textbf{page structure} ($E_{0}$, $E_{1}$, the named
+$E_{2}^{p,q}=\check H^{p}(\Uf;\mathcal H^{q}(\fobs))$, and the
+differential bidegrees); (iv) the \emph{cell-level $\BK$ model} of the
+target $H^{*}(\Cn;X)$, against which the residual edge map is to be
+compared.
+
+P0 also delivers one genuine structural \textbf{finding}: the trace
+cover $\Uf$ is \emph{cell-level acyclic} --- every cover-intersection
+is, locally at each cell, a full simplex --- so the $\fobs$ spectral
+sequence \emph{degenerates}, $\check H^{p}(\Uf;\mathcal
+H^{q}(\fobs))=0$ for $p\ge1$, and $H^{k}(\Tot\Ccheck)\cong\bigoplus
+H^{k}(X(\G))$ over the punctured trace poset. The honest consequence,
+recorded as a sharpening of the wrapper-risk: the obstruction
+\v{C}ech cocycle $\{m_{xy}\}$ is $\check\delta$-exact \emph{within}
+$\fobs$, so the entire non-triviality of $\ob(\Fstar)$ is carried by
+the comparison map into $H^{*}(\Cn;X)$ --- that is, by residual R3
+(R3a existence, R3b degree, R3c injectivity). P0 pins both endpoints
+of that comparison map and thereby makes R3a, R3b, R3c well-posed,
+without discharging any of them.
+
+\textbf{P0 is infrastructure, not a residual.} It is not an eighth
+hypothesis of the conditional theorem \texttt{thm:contradiction}; the
+\texttt{mg-bf5c} ``exactly seven residuals'' certification stands
+unchanged. P0 has no RED-risk: it equips the residual attack, it
+cannot refute Fork~A. \textbf{Verdict: GREEN --- the $\fobs$
+cell-level spectral sequence is pinned}, with convergence, page
+structure, and the cell-level $\BK$ comparison target, and with the
+degeneration finding recorded honestly.
+\end{abstract}
+
+\maketitle
+
+\tableofcontents
+
+% =====================================================================
+\section*{\S0\quad Verdict (top of page)}
+\addcontentsline{toc}{section}{\S0\quad Verdict (top of page)}
+% =====================================================================
+
+\subsection*{0.1\quad Headline}
+
+\noindent\textbf{GREEN --- FORK-A-P0-DELIVERED.} The cell-level
+spectral sequence of the obstruction sheaf $\fobs$ is pinned. The
+\v{C}ech double complex $\Ccheck^{\,*,*}(\Uf;\fobs)$ of the trace
+cover is constructed and verified to be a genuine bicomplex
+(Theorem~\ref{thm:bicomplex}); it is first-quadrant and \emph{bounded}
+(Proposition~\ref{prop:bounded}); its two spectral sequences are
+constructed and \emph{converge}, with finite-page degeneration forced
+by boundedness (Theorem~\ref{thm:convergence}); their pages are pinned
+explicitly, including the roadmap's named
+$E_{2}^{p,q}=\check H^{p}(\Uf;\mathcal H^{q}(\fobs))$
+(Theorem~\ref{thm:pages}); and the cell-level Bousfield--Kan model of
+the residual target $H^{*}(\Cn;X)$ is pinned as the codomain of the
+comparison map (\S\ref{sec:bk}). P0 returns one structural finding:
+the trace cover is cell-level acyclic, so the $\fobs$ spectral
+sequence degenerates (Theorem~\ref{thm:degeneration}), and the
+obstruction's non-triviality is therefore carried \emph{entirely} by
+the comparison map --- residual R3 (\S\ref{sec:obstruction-located}).
+
+\smallskip
+\noindent\textbf{P0 is NOT a residual and NOT a hypothesis.} It does
+not attempt, prove, or refute any of the seven residuals R1a, R1b,
+R1c, R2, R3a, R3b, R3c. The conditional theorem
+\texttt{thm:contradiction} of \texttt{refoundation.tex} is unchanged;
+the \texttt{mg-bf5c} certification that it rests on exactly seven open
+residuals stands. P0 is the construction those residuals run on.
+
+\subsection*{0.2\quad The P0 scorecard}
+
+{\small
+\renewcommand{\arraystretch}{1.25}
+\begin{longtable}{p{0.40\textwidth}p{0.13\textwidth}p{0.38\textwidth}}
+\toprule
+\textbf{P0 deliverable component} & \textbf{Status} & \textbf{Where} \\
+\midrule
+Punctured trace poset $\Pp$ and trace cover $\Uf$ pinned
+  & \textbf{GREEN} & \S\ref{sec:poset}; Prop.~\ref{prop:cover} \\
+Cell-level obstruction complex $\fobs$ pinned (the definition
+  \texttt{def:obs-sheaf} left implicit)
+  & \textbf{GREEN} & \S\ref{sec:fobs}; Def.~\ref{def:fobs} \\
+\v{C}ech double complex $\Ccheck^{\,*,*}(\Uf;\fobs)$ a genuine
+  bicomplex
+  & \textbf{GREEN} & Thm.~\ref{thm:bicomplex} \\
+First-quadrant, bounded
+  & \textbf{GREEN} & Prop.~\ref{prop:bounded} \\
+Both spectral sequences constructed; convergence
+  & \textbf{GREEN} & Thm.~\ref{thm:convergence} \\
+Page structure $E_{0},E_{1},E_{2}$ and differentials pinned
+  & \textbf{GREEN} & Thm.~\ref{thm:pages} \\
+Trace cover cell-level acyclic; SS degenerates
+  & \textbf{GREEN} & Thm.~\ref{thm:degeneration} \\
+$H^{*}(\Tot\Ccheck)$ computed
+  & \textbf{GREEN} & Cor.~\ref{cor:totalcohom} \\
+Obstruction data $\widehat b_{x}$, $\{m_{xy}\}$ located in the
+  bigrading
+  & \textbf{GREEN} & \S\ref{sec:obstruction-located} \\
+Cell-level $\BK$ model of $H^{*}(\Cn;X)$ pinned as comparison target
+  & \textbf{GREEN} & \S\ref{sec:bk}; Def.~\ref{def:bkmodel} \\
+The comparison map (R3a) --- \emph{constructed}
+  & \textbf{open --- R3a} & \S\ref{sec:bk}: P0 pins its endpoints, not the map \\
+Its degree-$(n-1)$ behaviour (R3b)
+  & \textbf{open --- R3b} & \S\ref{sec:bk}: well-posed after P0 \\
+Its injectivity (R3c)
+  & \textbf{open --- R3c} & \S\ref{sec:obstruction-located}: well-posed after P0 \\
+\bottomrule
+\end{longtable}}
+
+\subsection*{0.3\quad What P0 is, and is not}
+
+\noindent\emph{P0 is} a construction: it builds the cell-level
+spectral sequence the residual-attack phase needs, with the
+convergence and the page structure made explicit, so that no residual
+computation is reported on un-pinned foundations
+(\texttt{rem:holim-prereq}: ``a computation reported on un-pinned
+$\fobs$-foundations would repeat the Phase-1.5 failure mode and must
+not be attempted before the pinning'').
+
+\smallskip
+\noindent\emph{P0 is not} a closure. It discharges no residual. It
+makes R3a, R3b, R3c \emph{well-posed} --- it pins the domain and
+codomain of the comparison edge map they concern --- but it constructs
+no comparison map, verifies no degree, proves no injectivity. It does
+not touch R1 or R2. It does not prove Frankl. P0 has no RED-risk: a
+construction equips a proof, it cannot refute one.
+
+\smallskip
+\noindent\emph{P0 surfaces} one definitional gap and closes it: the
+Definition \texttt{def:obs-sheaf} of \texttt{refoundation.tex} names
+the obstruction sheaf $\fobs$ and its \v{C}ech double complex but does
+not pin $\fobs^{q}(U)$ as a complex of presheaves --- the data needed
+to even \emph{write down} the spectral sequence. \S\ref{sec:fobs}
+supplies the precise definition. This is exactly the pinning
+\texttt{rem:holim-prereq} defers to ``the residual-attack phase'';
+P0 is that pinning.
+
+% =====================================================================
+\section{Scope, method, and the standing setup}
+\label{sec:scope}
+% =====================================================================
+
+\subsection{The charge}
+\label{ssec:charge}
+
+The \texttt{mg-0882} roadmap (\texttt{docs/Frankl-ForkA-Residuals-Roadmap.md},
+\S1.3 and \S6 ticket~1) charges P0 with pinning:
+\begin{itemize}[leftmargin=1.7em]
+\item the cell-level structure of the obstruction sheaf $\fobs$ on the
+  punctured trace poset $\Cn(\Fstar)\setminus\{\Fstar\}$;
+\item the \v{C}ech double complex $\Ccheck^{\,*,*}(\Uf;\fobs)$ and its
+  spectral sequence with $E_{2}^{p,q}=\check H^{p}(\Uf;\mathcal
+  H^{q}(\fobs))$;
+\item the cell-level Bousfield--Kan model of $H^{*}(\Cn;X)$ against
+  which the obstruction edge map (residual R3) is to be compared;
+\end{itemize}
+``construct it properly, with the convergence and the page structure
+the residual-closing work needs.'' This document does exactly that.
+
+\subsection{Method}
+\label{ssec:method}
+
+Everything is over $\Q$; $n\ge3$ is fixed; $[n]=\{1,\dots,n\}$. We
+work strictly at the level of \emph{cells} --- the cubical cells
+$C(A,T')$ of the per-family complexes $X(\G)$ --- and of finite
+$\Q$-vector spaces of cochains. No homotopy-theoretic input beyond the
+two facts \texttt{refoundation.tex} already establishes is used: that
+the trace projection $\pi_{T}$ is a chain map and a covariant functor
+(\texttt{thm:projection}), and that the Fork~A object is genuinely
+defined, $D^{2}=0$ (\texttt{thm:welldefined}). The spectral-sequence
+theory invoked is the elementary theory of the two filtrations of a
+bounded double complex; we prove the one convergence statement we need
+from boundedness directly (Theorem~\ref{thm:convergence}), so the
+document is self-contained.
+
+The method is deliberately conservative. Where a construction has a
+genuine choice (\S\ref{sec:fobs}: cell-level presheaf versus genuine
+sheaf), we pin the choice the roadmap names --- the \emph{cell-level}
+model --- record the alternative honestly, and locate the difference
+between them precisely at the comparison map (\S\ref{sec:bk}), which is
+residual R3.
+
+\subsection{The standing setup, recalled}
+\label{ssec:setup}
+
+We recall, fixing notation, the objects of \texttt{refoundation.tex}
+that P0 builds on. None of this is new; the labels in
+\texttt{\textbackslash texttt} are the \texttt{refoundation.tex} cross-references.
+
+\begin{notation}[The trace category and the per-family complex]
+\label{not:standing}
+$\Cn$ (\texttt{def:category}) is the \emph{trace category}: objects
+are pointed intersection-closed families $(S,\F)$ with
+$S\subseteq[n]$, $\F\subseteq2^{S}$ intersection-closed,
+$\bigcup\F=S$, $S\in\F$; a morphism $(S,\F)\to(T,\G)$ exists iff
+$T\subseteq S$ and $\G=\F|_{T}=\{A\cap T:A\in\F\}$, written $\tr_{T}$.
+$\Cn$ is finite and thin. For each $(S,\F)$, $X(\F)$
+(\texttt{def:xf}) is the cubical-defect cochain complex: its $q$-cells
+are the pairs $C(A,T')$ with $A\in\F$, $T'\subseteq S\setminus A$,
+$|T'|=q$, all $2^{q}$ vertices of the subcube in $\F$; $C^{q}(X(\F);\Q)
+=\Hom(X(\F),\Q)$ is the cubical cochain space, with coboundary $d$.
+The trace projection $\pi_{T}\colon X(\F)\to X(\F|_{T})$
+(\texttt{thm:projection}) makes $X\colon\Cn\to\Ch_{\Q}$ a covariant
+functor; dually $\pi_{T}^{*}\colon C^{q}(X(\F|_{T}))\to C^{q}(X(\F))$
+is a cochain map. $\Sym_{n}$ acts on $\Cn$ by relabelling
+(\texttt{not:sn}) and the whole construction is $\Sym_{n}$-equivariant.
+\end{notation}
+
+\begin{notation}[The minimal counterexample and the bias]
+\label{not:counterexample}
+Work in the intersection-closed dialect. A \emph{minimal
+counterexample} $\Fstar$ (\texttt{def:minimal}) is an
+intersection-closed family on $[n]$ with $\bias_{x}(\Fstar)>0$ for
+every $x\in[n]$ (no rare coordinate), of least $|\Fstar|$ then least
+$n$. Here $\bias_{x}(\F)=-2^{n}\widehat{\mathbf 1_{\F}}(\{x\})$ is the
+bias, the (rescaled, signed) level-$1$ Walsh--Fourier coefficient of
+the family indicator (\texttt{rem:walsh-role2}); $x$ is \emph{rare}
+for $\F$ when $\bias_{x}(\F)\le0$. The \emph{defect} is
+$b_{x}(\F):=-\bias_{x}(\F)$, so $x$ rare $\iff b_{x}(\F)\ge0$.
+Throughout, $\Fstar$ is a fixed minimal counterexample; P0 constructs
+the spectral sequence \emph{relative to} $\Fstar$, exactly as the
+obstruction theory of \texttt{refoundation.tex} \S6 does. (If no
+minimal counterexample exists, Frankl holds on $[n]$ and there is
+nothing to pin; the construction is the contrapositive's
+infrastructure.)
+\end{notation}
+
+\begin{notation}[The Walsh $0$-cochain]
+\label{not:walsh}
+For a ground set $S$ and $x\in S$, the level-$1$ Walsh character
+$\walsh{\{x\}}\colon2^{S}\to\{\pm1\}$, $\walsh{\{x\}}(A)=(-1)^{|\{x\}
+\cap A|}$, is a function on the vertices of the cube $2^{S}$, hence ---
+restricted to the $0$-cells $C(A,\varnothing)$, $A\in\F$, of $X(\F)$
+--- a cubical \emph{$0$-cochain} $\walsh{\{x\}}|_{X(\F)}\in
+C^{0}(X(\F);\Q)$. ``Level $1$'' is its \emph{harmonic} type, not its
+cochain degree: $\walsh{\{x\}}|_{X(\F)}$ sits in cochain degree $0$.
+The cubical coboundary $d$ does \emph{not} preserve harmonic level
+(\texttt{rem:walsh-role2}); P0 uses the Walsh $0$-cochain only as a
+fixed element of $C^{0}$, never as a grading.
+\end{notation}
+
+% =====================================================================
+\section{The punctured trace poset and the trace cover}
+\label{sec:poset}
+% =====================================================================
+
+\subsection{The trace poset}
+\label{ssec:tracepost}
+
+\begin{definition}[The trace poset and its puncture]
+\label{def:poset}
+The \emph{trace poset of $\Fstar$} is the full subcategory
+$\Cn(\Fstar)\subseteq\Cn$ on the objects $\{\Fstar|_{T}:T\subseteq
+[n]\}$ --- the traces of $\Fstar$. The \emph{punctured trace poset} is
+\[
+  \Pp\;:=\;\Cn(\Fstar)\setminus\{\Fstar\},
+\]
+the full subcategory on the \emph{proper} traces $\Fstar|_{T}$,
+$T\subsetneq[n]$.
+\end{definition}
+
+\begin{lemma}[The trace poset is the Boolean lattice]
+\label{lem:boolean}
+The assignment $T\mapsto(T,\Fstar|_{T})$ is a bijection from
+$2^{[n]}$ onto the object set of $\Cn(\Fstar)$, and a morphism
+$(T,\Fstar|_{T})\to(T',\Fstar|_{T'})$ of $\Cn$ exists iff
+$T'\subseteq T$, in which case it is unique (namely $\tr_{T'}$).
+Hence $\Cn(\Fstar)$ is the Boolean lattice $2^{[n]}$ ordered by
+\emph{reverse} inclusion, with greatest object $\Fstar=\Fstar|_{[n]}$
+and least object $\Fstar|_{\varnothing}$; it is a finite poset with
+$2^{n}$ objects. The puncture $\Pp$ removes the greatest object and
+has $2^{n}-1$ objects.
+\end{lemma}
+
+\begin{proof}
+Each $\Fstar|_{T}$ is a genuine object: $T=[n]\cap T\in\Fstar|_{T}$
+since $[n]\in\Fstar$, and $\bigcup\Fstar|_{T}=(\bigcup\Fstar)\cap T=T$.
+The object is the \emph{pair} $(T,\Fstar|_{T})$, so distinct $T$ give
+distinct objects; the assignment is a bijection onto its image. $\Cn$
+is thin, so between two objects there is at most one morphism; a
+morphism $(T,\Fstar|_{T})\to(T',\Fstar|_{T'})$ requires $T'\subseteq
+T$ and $\Fstar|_{T'}=(\Fstar|_{T})|_{T'}$, and the latter holds
+automatically since $(\Fstar|_{T})|_{T'}=\Fstar|_{T'}$ for
+$T'\subseteq T$ (composition of traces is trace, \texttt{def:category}).
+Conversely $T'\subseteq T$ supplies the morphism $\tr_{T'}$.
+Finiteness and the counts are immediate.
+\end{proof}
+
+\begin{notation}
+\label{not:posetorder}
+We write $(T,\Fstar|_{T})\preceq(T',\Fstar|_{T'})$ for the poset order
+of $\Cn(\Fstar)$ --- by Lemma~\ref{lem:boolean}, $T'\subseteq T$. We
+abbreviate an object $(T,\Fstar|_{T})$ to $\Fstar|_{T}$, or to a
+running symbol $(T,\G)$ with $\G=\Fstar|_{T}$, whichever is clearer.
+\end{notation}
+
+\subsection{The rare-coordinate stratification and the trace cover}
+\label{ssec:cover}
+
+\begin{proposition}[Minimality--element, recalled]
+\label{prop:minimality}
+Every proper trace $\Fstar|_{T}$, $T\subsetneq[n]$, has a rare
+coordinate: some $x\in T$ with $\bias_{x}(\Fstar|_{T})\le0$.
+\end{proposition}
+
+\begin{proof}
+\texttt{prop:minimality} of \texttt{refoundation.tex}: $\Fstar|_{T}$
+is a strictly smaller intersection-closed family; were it without a
+rare coordinate it would be a smaller counterexample, contradicting
+the minimality of $\Fstar$.
+\end{proof}
+
+\begin{definition}[The rare set of a proper trace]
+\label{def:rareset}
+For $(T,\G)\in\Pp$ put
+\[
+  \rare(T,\G)\;:=\;\{x\in T:\bias_{x}(\G)\le0\}\;\subseteq\;T,
+\]
+the set of coordinates rare in $\G$. By Proposition~\ref{prop:minimality},
+$\rare(T,\G)\neq\varnothing$ for every $(T,\G)\in\Pp$.
+\end{definition}
+
+\begin{definition}[The trace cover]
+\label{def:cover}
+For $x\in[n]$ the \emph{rare-$x$ stratum} is
+\[
+  U_{x}\;:=\;\{(T,\G)\in\Pp:x\in\rare(T,\G)\}
+   \;=\;\{(T,\G)\neq\Fstar:x\in T,\ \bias_{x}(\G)\le0\},
+\]
+a full subposet of $\Pp$. The \emph{trace cover} is the indexed family
+$\Uf=\{U_{x}\}_{x\in[n]}$. For $\varnothing\neq\sigma\subseteq[n]$ the
+\emph{$\sigma$-overlap} is the full subposet
+\[
+  U_{\sigma}\;:=\;\bigcap_{x\in\sigma}U_{x}
+   \;=\;\{(T,\G)\in\Pp:\sigma\subseteq\rare(T,\G)\}.
+\]
+\end{definition}
+
+The identity $U_{\sigma}=\{(T,\G):\sigma\subseteq\rare(T,\G)\}$ is
+immediate from Definition~\ref{def:cover}: $(T,\G)\in U_{\sigma}$ iff
+$(T,\G)\in U_{x}$ for all $x\in\sigma$ iff every $x\in\sigma$ lies in
+$\rare(T,\G)$. We use it constantly.
+
+\begin{proposition}[The trace cover covers, and its support bound]
+\label{prop:cover}
+\begin{enumerate}[label=\textup{(\arabic*)},leftmargin=2.4em]
+\item $\bigcup_{x\in[n]}U_{x}=\Pp$: the trace cover is a genuine cover
+  of the punctured trace poset.
+\item For $\varnothing\neq\sigma\subseteq[n]$: if $U_{\sigma}\neq
+  \varnothing$ then $\sigma\subsetneq[n]$. Hence $U_{\sigma}=\varnothing$
+  whenever $|\sigma|=n$, and a non-empty overlap has $|\sigma|\le n-1$.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+(1) Every $(T,\G)\in\Pp$ has $\rare(T,\G)\neq\varnothing$
+(Proposition~\ref{prop:minimality}); picking $x\in\rare(T,\G)$ puts
+$(T,\G)\in U_{x}$.
+
+(2) If $(T,\G)\in U_{\sigma}$ then $\sigma\subseteq\rare(T,\G)\subseteq
+T$, and $(T,\G)\in\Pp$ forces $T\subsetneq[n]$, so $\sigma\subseteq
+T\subsetneq[n]$.
+\end{proof}
+
+% =====================================================================
+\section{The cell-level obstruction complex $\fobs$, pinned}
+\label{sec:fobs}
+% =====================================================================
+
+This section closes the definitional gap. Definition
+\texttt{def:obs-sheaf} of \texttt{refoundation.tex} \emph{names} the
+obstruction sheaf $\fobs$, places the bias data $\widehat b_{x}$ on
+the strata, and writes the \v{C}ech double complex
+$\Ccheck^{\,p,q}(\Uf;\fobs)=\bigoplus_{x_{0}<\cdots<x_{p}}
+\fobs^{q}(U_{x_{0}}\cap\cdots\cap U_{x_{p}})$ --- but it does not pin
+$\fobs^{q}(U)$ \emph{as a complex of presheaves}: the value
+$\fobs^{q}(U)$, the internal differential, the restriction maps. Those
+data are exactly what is needed to write the spectral sequence down.
+\texttt{rem:holim-prereq} is explicit that this is deferred (``the
+cell-level structure of $\fobs$ \dots\ not pinned here''). P0 supplies
+it now.
+
+\subsection{The cell-level obstruction presheaf}
+\label{ssec:fobsdef}
+
+\begin{definition}[The cell-level obstruction complex $\fobs$]
+\label{def:fobs}
+Write $C^{q}(\G):=C^{q}(X(\G);\Q)$ for the cubical cochain space of
+$X(\G)$ in degree $q$, and $d\colon C^{q}(\G)\to C^{q+1}(\G)$ for the
+cubical coboundary. The \emph{cell-level obstruction complex} $\fobs$
+is the complex of presheaves on $\Pp$ defined as follows. For a subset
+$V$ of the object set of $\Pp$, and $q\ge0$,
+\[
+  \fobs^{q}(V)\;:=\;\bigoplus_{(T,\G)\in V}C^{q}(\G),
+\]
+the finite direct sum of the cell-level cubical $q$-cochains of the
+per-family complexes over the objects of $V$. It carries:
+\begin{itemize}[leftmargin=1.6em]
+\item the \emph{internal differential} $d\colon\fobs^{q}(V)\to
+  \fobs^{q+1}(V)$, the direct sum of the cubical coboundaries,
+  one summand at a time;
+\item for $V'\subseteq V$ the \emph{restriction}
+  $\rho^{V}_{V'}\colon\fobs^{q}(V)\to\fobs^{q}(V')$, the projection
+  onto the sub-sum indexed by $V'$.
+\end{itemize}
+Then $(\fobs^{\bullet},d)$ is a complex (the cubical identity
+$d^{2}=0$ holds summand-wise), and $\rho$ is functorial
+($\rho^{V'}_{V''}\circ\rho^{V}_{V'}=\rho^{V}_{V''}$ for
+$V''\subseteq V'\subseteq V$, $\rho^{V}_{V}=\mathrm{id}$), commuting
+with $d$ summand-wise. So $\fobs^{\bullet}$ is a complex of presheaves
+on the poset of subsets of $\Pp$ ordered by inclusion. Its
+\emph{cohomology presheaf} is $\mathcal H^{q}(\fobs)$,
+$\mathcal H^{q}(\fobs)(V)=H^{q}(\fobs^{\bullet}(V),d)=\bigoplus_{(T,\G)
+\in V}H^{q}(X(\G);\Q)$, with the projection restrictions.
+\end{definition}
+
+The superscript ``cell-level'' is literal: $\fobs^{q}(V)$ is built
+directly from the cubical \emph{cells}, with no quotient and no
+gluing. This is the model \texttt{rem:holim-prereq} names by ``the
+cell-level Bousfield--Kan model'' and ``the cell-level structure of
+$\fobs$.'' Definition~\ref{def:fobs} is the precise form of
+Definition \texttt{def:obs-sheaf}'s ``$\fobs^{q}(U)$.''
+
+\begin{remark}[Cell-level presheaf versus genuine sheaf --- the
+choice, pinned and recorded]
+\label{rem:presheaf-vs-sheaf}
+There is a genuine modelling choice here, and P0 makes it explicitly.
+The presheaf of Definition~\ref{def:fobs} takes $\fobs^{q}(V)$ to be
+the \emph{unconstrained} direct sum of cell-level cochains --- a
+section over $V$ is an arbitrary cochain at each object of $V$, with
+\emph{no} compatibility imposed under the trace morphisms. This is the
+\emph{cell-level} model. The alternative is the \emph{genuine sheaf}:
+take $\fobs^{q}_{\mathrm{sh}}(V)$ to be the trace-compatible families
+--- the limit $\varprojlim_{(T,\G)\in V}C^{q}(\G)$ along $\pi^{*}$ ---
+which is a non-constant coefficient system on $\Pp$.
+
+The two models differ, and the difference is not cosmetic:
+\begin{itemize}[leftmargin=1.5em]
+\item The bias data are sections of the \emph{cell-level} presheaf
+  but \emph{not} of the genuine sheaf: $\widehat b_{x}$
+  (Definition~\ref{def:bias} below) is an unconstrained cell-level
+  $0$-cochain, and it is \emph{not} trace-compatible, because the
+  defect $b_{x}(\G)$ is not trace-invariant (the bias genuinely
+  changes under trace --- that is the whole subtlety of minimal
+  counterexamples). So the obstruction \emph{data} live, honestly, in
+  the cell-level model.
+\item The roadmap names the \emph{cell-level} model
+  (``cell-level structure of $\fobs$,'' ``cell-level Bousfield--Kan
+  model''), and the cell-level model is the one whose spectral
+  sequence the residual phase computes \emph{in}. P0 therefore pins
+  the cell-level model.
+\item The genuine-sheaf model is not discarded: it reappears,
+  precisely, as the target side of the comparison map of
+  \S\ref{sec:bk}. The non-constant derived content of the genuine
+  sheaf is exactly what the comparison into $H^{*}(\Cn;X)$ carries ---
+  i.e.\ it is residual R3. P0 keeps the two models cleanly separated
+  and locates their difference at R3, where it belongs.
+\end{itemize}
+Recording this choice \emph{is} part of the pinning: it is the
+distinction whose blurring would ``repeat the Phase-1.5 failure mode''
+(\texttt{rem:holim-prereq}).
+\end{remark}
+
+\subsection{The bias data as cell-level sections}
+\label{ssec:bias}
+
+\begin{definition}[The local bias $0$-cochain]
+\label{def:bias}
+For $x\in[n]$, the \emph{local bias $0$-cochain} is the section
+$\widehat b_{x}\in\fobs^{0}(U_{x})$ whose component at $(T,\G)\in
+U_{x}$ is the cubical $0$-cochain
+\[
+  \widehat b_{x}(T,\G)\;\in\;C^{0}(\G),\qquad
+  \widehat b_{x}(T,\G)\colon\,C(A,\varnothing)\longmapsto
+  b_{x}(\G)\cdot\walsh{\{x\}}(A)
+  \quad(A\in\G),
+\]
+the defect $b_{x}(\G)=-\bias_{x}(\G)\ge0$ (non-negative since
+$(T,\G)\in U_{x}$ means $x$ is rare in $\G$) times the level-$1$
+Walsh $0$-cochain $\walsh{\{x\}}|_{X(\G)}$ of Notation~\ref{not:walsh}.
+For $x\neq y$ the \emph{mismatch $0$-cochain} is
+\[
+  m_{xy}\;:=\;\rho^{U_{x}}_{U_{x}\cap U_{y}}(\widehat b_{x})
+            -\rho^{U_{y}}_{U_{x}\cap U_{y}}(\widehat b_{y})
+   \;\in\;\fobs^{0}(U_{x}\cap U_{y}).
+\]
+\end{definition}
+
+Definition~\ref{def:bias} is the cell-level form of the data
+Definition \texttt{def:obs-sheaf} ``places on $U_{x}$'' and ``on
+$U_{x}\cap U_{y}$.'' Because $\fobs^{0}(U_{x})$ is the unconstrained
+direct sum (Remark~\ref{rem:presheaf-vs-sheaf}), $\widehat b_{x}$ is a
+genuine element of it: no compatibility is required, only a cochain at
+each object. The obstruction $0$-cochain sits in internal degree
+$q=0$.
+
+% =====================================================================
+\section{The \v{C}ech double complex of the trace cover}
+\label{sec:bicomplex}
+% =====================================================================
+
+\subsection{Construction}
+\label{ssec:bicomplexdef}
+
+\begin{definition}[The \v{C}ech double complex]
+\label{def:bicomplex}
+The \emph{\v{C}ech double complex of the trace cover with coefficients
+in $\fobs$} is the bigraded $\Q$-vector space
+\[
+  \Ccheck^{\,p,q}(\Uf;\fobs)\;:=\;
+  \bigoplus_{\substack{\sigma\subseteq[n]\\|\sigma|=p+1}}\fobs^{q}(U_{\sigma}),
+  \qquad p,q\ge0,
+\]
+with $\fobs^{q}(U_{\sigma})$ as in Definition~\ref{def:fobs} (and the
+convention $\fobs^{q}(\varnothing)=0$, so empty overlaps contribute
+nothing). It carries two differentials:
+\begin{itemize}[leftmargin=1.6em]
+\item the \emph{vertical} (internal) differential $d\colon
+  \Ccheck^{\,p,q}\to\Ccheck^{\,p,q+1}$, the cubical coboundary of
+  Definition~\ref{def:fobs} on each summand;
+\item the \emph{horizontal} (\v{C}ech) differential $\check\delta\colon
+  \Ccheck^{\,p,q}\to\Ccheck^{\,p+1,q}$: for an element with
+  $\sigma$-component $s_{\sigma}\in\fobs^{q}(U_{\sigma})$, and a
+  $(p+2)$-set $\tau=\{x_{0}<\cdots<x_{p+1}\}$,
+  \[
+    (\check\delta s)_{\tau}\;=\;\sum_{j=0}^{p+1}(-1)^{j}\,
+    \rho^{U_{\tau\setminus\{x_{j}\}}}_{U_{\tau}}
+       \bigl(s_{\tau\setminus\{x_{j}\}}\bigr),
+  \]
+  the alternating sum of restrictions along the $p+2$ codimension-one
+  faces (well-defined since $U_{\tau}\subseteq U_{\tau\setminus
+  \{x_{j}\}}$ for each $j$).
+\end{itemize}
+Index the summands so that the standard generator of $\Sym_{n}$
+permutes them by relabelling. The \emph{total complex} is
+$\Tot^{k}\Ccheck=\bigoplus_{p+q=k}\Ccheck^{\,p,q}$ with total
+differential $D=\check\delta+(-1)^{p}d$.
+\end{definition}
+
+\begin{theorem}[$\Ccheck^{\,*,*}(\Uf;\fobs)$ is a genuine bicomplex]
+\label{thm:bicomplex}
+The two differentials satisfy $d^{2}=0$, $\check\delta^{2}=0$, and
+$d\check\delta=\check\delta d$. Consequently $D^{2}=0$, and
+$\Tot\Ccheck$ is a genuine cochain complex.
+\end{theorem}
+
+\begin{proof}
+\emph{$d^{2}=0$.} Summand-wise, $d$ is the cubical coboundary, and
+$d^{2}=0$ is the cubical cochain identity (Notation~\ref{not:standing}).
+
+\emph{$\check\delta^{2}=0$.} The restrictions $\rho$ are projections
+onto sub-sums; in particular for $V''\subseteq V'\subseteq V$ they
+compose strictly, $\rho^{V'}_{V''}\rho^{V}_{V'}=\rho^{V}_{V''}$, with
+no coherence error. Hence $\check\delta$ is, term for term, the
+simplicial coboundary of an alternating sum over omitted indices, and
+$\check\delta^{2}=0$ is the standard simplicial identity: in
+$(\check\delta^{2}s)_{\tau}$ the term omitting indices $i<j$ appears
+twice, once with sign $(-1)^{i}(-1)^{j-1}$ and once with sign
+$(-1)^{j}(-1)^{i}$, and the two cancel. (The strict composition of the
+projections is what makes this the literal simplicial cancellation,
+with no correction term.)
+
+\emph{$d\check\delta=\check\delta d$.} Both differentials act on the
+single ambient direct sum $\bigoplus_{\sigma}\bigoplus_{(T,\G)\in
+U_{\sigma}}C^{q}(\G)$. The vertical $d$ acts inside each fixed factor
+$C^{q}(\G)$ and changes no index; the horizontal $\check\delta$
+permutes and projects factors and touches no element of $C^{q}(\G)$
+internally. Two operations on a direct sum, one acting only within
+factors and the other only on the indexing, commute strictly:
+$(d\check\delta s)_{\tau}=\sum_{j}(-1)^{j}\rho(d\,s_{\tau\setminus
+\{x_{j}\}})=\sum_{j}(-1)^{j}d(\rho\,s_{\tau\setminus\{x_{j}\}})
+=(\check\delta d\,s)_{\tau}$, using that $d$ commutes with the
+projection $\rho$ summand-wise (Definition~\ref{def:fobs}). So
+$d\check\delta=\check\delta d$.
+
+\emph{$D^{2}=0$.} With $D=\check\delta+(-1)^{p}d$ on $\Ccheck^{\,p,q}$,
+$D^{2}=\check\delta^{2}+\bigl((-1)^{p+1}+(-1)^{p}\bigr)\,d\check\delta
+\,(\text{or }\check\delta d)+d^{2}=0+0+0$, the cross term vanishing
+because $d$ and $\check\delta$ commute and the two sign factors are
+opposite. Hence $\Tot\Ccheck$ is a cochain complex.
+\end{proof}
+
+\begin{remark}[Relation to \texttt{thm:welldefined}]
+\label{rem:vs-welldefined}
+Theorem~\ref{thm:bicomplex} is the obstruction-side analogue of
+\texttt{thm:welldefined} ($D^{2}=0$ for the $\BK$ double complex). It
+is \emph{strictly easier}: the $\BK$ horizontal differential involves
+the genuine chain map $\pi_{T}^{*}$ and its functoriality is what
+makes $\delta_{\BK}^{2}=0$ non-trivial there. Here the horizontal
+$\check\delta$ is a pure simplicial coboundary of projections;
+$\check\delta^{2}=0$ is combinatorial. The trace structure does
+\emph{not} enter the bicomplex --- it enters only the comparison map
+of \S\ref{sec:bk}. This is the precise sense in which the cell-level
+$\fobs$ spectral sequence is ``the harder half discharged''
+(\texttt{rem:holim-prereq}: the structure map is pinned; what remains
+is the spectral sequence, pinned here, and the comparison, R3).
+\end{remark}
+
+\subsection{First-quadrant boundedness}
+\label{ssec:bounded}
+
+\begin{proposition}[The bicomplex is first-quadrant and bounded]
+\label{prop:bounded}
+$\Ccheck^{\,p,q}(\Uf;\fobs)=0$ unless
+\[
+  0\le p\le n-2
+  \qquad\text{and}\qquad
+  0\le q\le n-1.
+\]
+In particular the bicomplex is concentrated in the bounded rectangle
+$[0,n-2]\times[0,n-1]$; the total complex is concentrated in degrees
+$0\le k\le 2n-3$, and each $\Tot^{k}\Ccheck$ is finite-dimensional.
+\end{proposition}
+
+\begin{proof}
+\emph{Horizontal bound.} A non-zero summand needs $|\sigma|=p+1$ with
+$U_{\sigma}\neq\varnothing$, which by Proposition~\ref{prop:cover}(2)
+forces $|\sigma|\le n-1$, i.e.\ $p\le n-2$; and $p\ge0$ by definition.
+
+\emph{Vertical bound.} A non-zero summand $C^{q}(\G)$ has $(T,\G)\in
+U_{\sigma}\subseteq\Pp$, so $\G=\Fstar|_{T}$ with $T\subsetneq[n]$,
+hence $|T|\le n-1$. A $q$-cell $C(A,T')$ of $X(\G)$ has $T'\subseteq
+T\setminus A$ with $|T'|=q$, so $q\le|T|\le n-1$; and $q\ge0$.
+
+Each per-family $C^{q}(\G)$ is finite-dimensional and the index sets
+are finite, so every $\Ccheck^{\,p,q}$ is finite-dimensional; the
+total degrees run $0\le p+q\le(n-2)+(n-1)=2n-3$.
+\end{proof}
+
+Proposition~\ref{prop:bounded} is the single fact that drives all of
+the convergence theory below: a double complex confined to a bounded
+rectangle has nothing subtle about its spectral sequences.
+
+% =====================================================================
+\section{The two spectral sequences and their convergence}
+\label{sec:ss}
+% =====================================================================
+
+A double complex carries two spectral sequences, one per filtration of
+the total complex. Both are pinned here; both converge, by
+boundedness; the page structure is made explicit. We then identify the
+roadmap's named $E_{2}$.
+
+\subsection{The two filtrations}
+\label{ssec:filtrations}
+
+\begin{definition}[The column and row filtrations]
+\label{def:filtrations}
+On $\Tot^{k}\Ccheck=\bigoplus_{p+q=k}\Ccheck^{\,p,q}$ define
+\[
+  {}^{\mathrm{I}}F^{\,p}\Tot^{k}
+   =\bigoplus_{\substack{p'+q'=k\\p'\ge p}}\Ccheck^{\,p',q'},
+  \qquad
+  {}^{\mathrm{II}}F^{\,q}\Tot^{k}
+   =\bigoplus_{\substack{p'+q'=k\\q'\ge q}}\Ccheck^{\,p',q'}.
+\]
+${}^{\mathrm{I}}F$ is the \emph{column} ($p$-) filtration,
+${}^{\mathrm{II}}F$ the \emph{row} ($q$-) filtration. Both are
+$D$-stable decreasing filtrations. By Proposition~\ref{prop:bounded}
+each is \emph{finite}: ${}^{\mathrm{I}}F^{\,0}=\Tot$ and
+${}^{\mathrm{I}}F^{\,n-1}=0$, ${}^{\mathrm{II}}F^{\,0}=\Tot$ and
+${}^{\mathrm{II}}F^{\,n}=0$.
+\end{definition}
+
+\begin{definition}[The two spectral sequences]
+\label{def:twoss}
+${}^{\mathrm{I}}E$ is the spectral sequence of the column filtration:
+it takes \emph{vertical} ($d$-)cohomology first. ${}^{\mathrm{II}}E$
+is the spectral sequence of the row filtration: it takes
+\emph{horizontal} ($\check\delta$-)cohomology first. Their first pages
+are the standard ones:
+\[
+  {}^{\mathrm{I}}E_{0}^{p,q}=\Ccheck^{\,p,q},\quad
+  {}^{\mathrm{I}}E_{0}\text{-differential}=\pm d;
+  \qquad
+  {}^{\mathrm{II}}E_{0}^{p,q}=\Ccheck^{\,q,p}\ \text{(transposed)},\quad
+  \text{differential}=\pm\check\delta.
+\]
+The differential on ${}^{\mathrm{I}}E_{r}$ has bidegree $(r,1-r)$:
+$d_{r}\colon{}^{\mathrm{I}}E_{r}^{p,q}\to
+{}^{\mathrm{I}}E_{r}^{p+r,q-r+1}$. The differential on
+${}^{\mathrm{II}}E_{r}$ has bidegree $(1-r,r)$.
+\end{definition}
+
+\subsection{Convergence}
+\label{ssec:convergence}
+
+\begin{theorem}[Convergence of both spectral sequences]
+\label{thm:convergence}
+Both spectral sequences of $\Ccheck^{\,*,*}(\Uf;\fobs)$ converge to
+the cohomology of the total complex:
+\[
+  {}^{\mathrm{I}}E_{\infty}^{p,q}\;\cong\;
+  \gr^{p}_{{}^{\mathrm{I}}F}H^{p+q}(\Tot\Ccheck,D),
+  \qquad
+  {}^{\mathrm{II}}E_{\infty}^{p,q}\;\cong\;
+  \gr^{q}_{{}^{\mathrm{II}}F}H^{p+q}(\Tot\Ccheck,D).
+\]
+Moreover the convergence is \emph{strong} and \emph{finite}: for each
+spectral sequence there is a finite page from which it is stationary,
+\[
+  {}^{\mathrm{I}}E_{r}={}^{\mathrm{I}}E_{\infty}\ \ (r\ge n-1),
+  \qquad
+  {}^{\mathrm{II}}E_{r}={}^{\mathrm{II}}E_{\infty}\ \ (r\ge n),
+\]
+because every higher differential has its source or its target
+outside the bounded rectangle of Proposition~\ref{prop:bounded}.
+\end{theorem}
+
+\begin{proof}
+By Proposition~\ref{prop:bounded} the bicomplex is confined to the
+rectangle $0\le p\le n-2$, $0\le q\le n-1$. For ${}^{\mathrm{I}}E$ the
+differential $d_{r}$ has bidegree $(r,1-r)$; if $r\ge n-1$ then for
+any $(p,q)$ in the rectangle the target column index $p+r\ge p+(n-1)
+\ge n-1>n-2$ lies outside the rectangle, so $d_{r}=0$ and
+${}^{\mathrm{I}}E_{r}={}^{\mathrm{I}}E_{r+1}$; the page is stationary
+from $r=n-1$. For ${}^{\mathrm{II}}E$, $d_{r}$ has bidegree $(1-r,r)$;
+if $r\ge n$ the target row index exceeds $n-1$, so $d_{r}=0$ from
+$r=n$.
+
+Each filtration of Definition~\ref{def:filtrations} is finite and
+exhausts $\Tot$. For a finite filtration of a cochain complex the
+associated spectral sequence converges strongly to the cohomology,
+with $E_{\infty}^{p,q}=\gr^{p}F\,H^{p+q}$: with finitely many filtration
+steps, the groups $E_{r}^{p,q}$ stabilise to the subquotient
+$Z_{\infty}^{p,q}/B_{\infty}^{p,q}$ where $Z_{\infty}$ is the image in
+$E_{0}$ of the $D$-cocycles in $F^{p}$ and $B_{\infty}$ the image of
+$D$-coboundaries, and these are exactly $\gr^{p}F\,H^{p+q}(\Tot,D)$.
+The boundedness just shown identifies that stable value with a
+\emph{finite} page. Both statements together give strong, finite
+convergence.
+\end{proof}
+
+\begin{remark}[Why this convergence is unconditional]
+\label{rem:conv-unconditional}
+Convergence of a spectral sequence is, in general, a hypothesis to be
+checked --- the place where ``un-pinned foundations'' silently fail.
+Here it is \emph{unconditional}: it follows from
+Proposition~\ref{prop:bounded} alone, and Proposition~\ref{prop:bounded}
+is pure cell-counting ($q\le|T|\le n-1$, $p\le n-2$). No finiteness of
+$\fobs$-cohomology, no acyclicity, no homotopy input is needed for
+convergence. This is the convergence ``the residual-closing work
+needs'' (\texttt{mg-0882} \S6 ticket~1): the residual phase may invoke
+$E_{2}\Rightarrow H^{*}(\Tot\Ccheck)$ as an established fact.
+\end{remark}
+
+\subsection{The page structure, pinned}
+\label{ssec:pages}
+
+\begin{theorem}[The pages of the $\fobs$ spectral sequence]
+\label{thm:pages}
+For the spectral sequence ${}^{\mathrm{I}}E$ (vertical-first), the
+pages are:
+\begin{enumerate}[label=\textup{(\arabic*)},leftmargin=2.4em]
+\item \textup{($E_{0}$)} ${}^{\mathrm{I}}E_{0}^{p,q}=
+  \Ccheck^{\,p,q}(\Uf;\fobs)=\bigoplus_{|\sigma|=p+1}\fobs^{q}
+  (U_{\sigma})$, with differential the cubical coboundary $d$.
+\item \textup{($E_{1}$)} ${}^{\mathrm{I}}E_{1}^{p,q}=
+  \bigoplus_{|\sigma|=p+1}\mathcal H^{q}(\fobs)(U_{\sigma})
+  =\check C^{p}\bigl(\Uf;\mathcal H^{q}(\fobs)\bigr)$, the \v{C}ech
+  $p$-cochains of the cover with coefficients in the cohomology
+  presheaf $\mathcal H^{q}(\fobs)$; the differential $d_{1}$ is the
+  induced \v{C}ech differential $\check\delta$.
+\item \textup{($E_{2}$, the named page)} ${}^{\mathrm{I}}E_{2}^{p,q}=
+  \check H^{p}\bigl(\Uf;\mathcal H^{q}(\fobs)\bigr)$, the \v{C}ech
+  cohomology of the trace cover with coefficients in $\mathcal
+  H^{q}(\fobs)$. This is the $E_{2}$ named by \texttt{rem:promotion}
+  of \texttt{refoundation.tex} and by the \texttt{mg-0882} roadmap.
+\item \textup{($d_{r}$, $r\ge2$)} $d_{r}\colon
+  {}^{\mathrm{I}}E_{r}^{p,q}\to{}^{\mathrm{I}}E_{r}^{p+r,q-r+1}$, of
+  bidegree $(r,1-r)$, and $d_{r}=0$ for $r\ge n-1$
+  (Theorem~\ref{thm:convergence}).
+\end{enumerate}
+For the spectral sequence ${}^{\mathrm{II}}E$ (horizontal-first):
+${}^{\mathrm{II}}E_{1}^{p,q}=\check H^{p}(\Uf;\fobs^{q})$ and
+${}^{\mathrm{II}}E_{2}^{p,q}=H^{q}_{d}\bigl(\check H^{p}(\Uf;
+\fobs^{\bullet})\bigr)$, with $d_{r}$ of bidegree $(1-r,r)$.
+\end{theorem}
+
+\begin{proof}
+${}^{\mathrm{I}}E_{0}$ is the column filtration's $E_{0}$ by
+Definition~\ref{def:twoss}. Its differential is the vertical $d$.
+Taking $d$-cohomology: $H^{q}\bigl(\Ccheck^{\,p,\bullet},d\bigr)
+=H^{q}\bigl(\bigoplus_{|\sigma|=p+1}\fobs^{\bullet}(U_{\sigma}),d
+\bigr)=\bigoplus_{|\sigma|=p+1}H^{q}(\fobs^{\bullet}(U_{\sigma}),d)
+=\bigoplus_{|\sigma|=p+1}\mathcal H^{q}(\fobs)(U_{\sigma})$, since
+cohomology commutes with finite direct sums and $d$ acts summand-wise;
+this is by definition $\check C^{p}(\Uf;\mathcal H^{q}(\fobs))$. That
+gives $E_{1}$. The induced first differential is the map $\check\delta$
+induces on $d$-cohomology, which is the \v{C}ech differential of the
+presheaf $\mathcal H^{q}(\fobs)$ (it is $\check\delta$ of
+Definition~\ref{def:bicomplex} applied to representatives;
+well-defined because $d\check\delta=\check\delta d$,
+Theorem~\ref{thm:bicomplex}). Hence $E_{2}=H^{p}_{\check\delta}\bigl(
+\check C^{\bullet}(\Uf;\mathcal H^{q}(\fobs))\bigr)=\check H^{p}(\Uf;
+\mathcal H^{q}(\fobs))$. The differential bidegrees and the vanishing
+range are Definition~\ref{def:twoss} and Theorem~\ref{thm:convergence}.
+The ${}^{\mathrm{II}}E$ statements are the same computation with the
+roles of $d$ and $\check\delta$ exchanged: $\check\delta$-cohomology
+first gives ${}^{\mathrm{II}}E_{1}^{p,q}=\check H^{p}(\Uf;\fobs^{q})$,
+then $d$ gives ${}^{\mathrm{II}}E_{2}$.
+\end{proof}
+
+\begin{pinned}[The $\fobs$ spectral sequence]
+\label{pin:ss}
+The cell-level spectral sequence of $\fobs$ is pinned: it is the
+spectral sequence ${}^{\mathrm{I}}E$ of the bounded bicomplex
+$\Ccheck^{\,*,*}(\Uf;\fobs)$, with
+\[
+  E_{2}^{p,q}\;=\;\check H^{p}\bigl(\Uf;\mathcal H^{q}(\fobs)\bigr)
+  \;\Longrightarrow\;H^{p+q}(\Tot\Ccheck,D),
+\]
+converging strongly and finitely (Theorem~\ref{thm:convergence}),
+with the page structure of Theorem~\ref{thm:pages}, and a second
+spectral sequence ${}^{\mathrm{II}}E$ abutting to the same total
+cohomology. Every ingredient is a finite-dimensional $\Q$-vector
+space; the whole structure is $\Sym_{n}$-equivariant
+(Notation~\ref{not:standing}: the cover, the strata, the per-family
+complexes, and both differentials are natural in $[n]$).
+\end{pinned}
+
+% =====================================================================
+\section{The cover is cell-level acyclic: degeneration}
+\label{sec:degeneration}
+% =====================================================================
+
+The spectral sequence is now pinned; this section computes it. The
+computation is short and has one genuine, recordable consequence.
+
+\subsection{Cell-level acyclicity}
+\label{ssec:acyclicity}
+
+\begin{lemma}[Local-nerve lemma]
+\label{lem:localnerve}
+Fix an object $(T,\G)\in\Pp$. The set of $\sigma$ with $(T,\G)\in
+U_{\sigma}$ is exactly $\{\sigma:\varnothing\neq\sigma\subseteq
+\rare(T,\G)\}$ --- the non-empty faces of the full simplex on the
+vertex set $\rare(T,\G)$. Since $\rare(T,\G)\neq\varnothing$
+(Proposition~\ref{prop:minimality}), this simplex is non-empty.
+\end{lemma}
+
+\begin{proof}
+$(T,\G)\in U_{\sigma}\iff\sigma\subseteq\rare(T,\G)$, the identity
+following Definition~\ref{def:cover}.
+\end{proof}
+
+\begin{theorem}[Cell-level acyclicity of the trace cover]
+\label{thm:degeneration}
+Let $\mathcal G$ be any presheaf on $\Pp$ of the cell-level form
+$\mathcal G(V)=\bigoplus_{(T,\G)\in V}\mathcal G_{(T,\G)}$ with
+projection restrictions --- for instance $\mathcal G=\fobs^{q}$ or
+$\mathcal G=\mathcal H^{q}(\fobs)$. Then the \v{C}ech cohomology of
+the trace cover with coefficients in $\mathcal G$ is concentrated in
+\v{C}ech degree $0$:
+\[
+  \check H^{p}(\Uf;\mathcal G)\;\cong\;
+  \begin{cases}
+    \bigoplus_{(T,\G)\in\Pp}\mathcal G_{(T,\G)}, & p=0,\\[4pt]
+    0, & p\ge1.
+  \end{cases}
+\]
+Consequently the $\fobs$ spectral sequence \emph{degenerates}:
+\[
+  {}^{\mathrm{I}}E_{2}^{p,q}=\check H^{p}(\Uf;\mathcal H^{q}(\fobs))
+  =0\quad(p\ge1),
+  \qquad
+  {}^{\mathrm{I}}E_{2}={}^{\mathrm{I}}E_{\infty},
+\]
+the spectral sequence is concentrated in the column $p=0$, and all
+higher differentials vanish.
+\end{theorem}
+
+\begin{proof}
+Write the \v{C}ech complex $\check C^{p}(\Uf;\mathcal G)=
+\bigoplus_{|\sigma|=p+1}\mathcal G(U_{\sigma})=\bigoplus_{|\sigma|=p+1}
+\bigoplus_{(T,\G)\in U_{\sigma}}\mathcal G_{(T,\G)}$ and re-index the
+double sum by the object $(T,\G)$ first:
+\[
+  \check C^{p}(\Uf;\mathcal G)\;=\;
+  \bigoplus_{(T,\G)\in\Pp}\ \Bigl(\,
+  \bigoplus_{\substack{|\sigma|=p+1\\(T,\G)\in U_{\sigma}}}
+  \mathcal G_{(T,\G)}\,\Bigr).
+\]
+The \v{C}ech differential $\check\delta$ is the alternating sum of
+projections; it sends the $\sigma$-summand at $(T,\G)$ identically
+into the $\tau$-summands at the \emph{same} $(T,\G)$ for $\tau\supseteq
+\sigma$ with $(T,\G)\in U_{\tau}$. So $\check\delta$ preserves the
+$(T,\G)$-blocks of the re-indexed sum, and $\check C^{\bullet}(\Uf;
+\mathcal G)$ splits as a direct sum, over $(T,\G)\in\Pp$, of the
+sub-complexes
+\[
+  K^{\bullet}_{(T,\G)}\;:=\;
+  \mathcal G_{(T,\G)}\otimes_{\Q}
+  C^{\bullet}_{\mathrm{simp}}\bigl(\Delta^{\rare(T,\G)}\bigr),
+\]
+where $C^{\bullet}_{\mathrm{simp}}(\Delta^{\rare(T,\G)})$ is the
+(non-augmented) simplicial cochain complex of the full simplex on the
+vertex set $\rare(T,\G)$ --- its degree-$p$ part spanned by the
+$(p+1)$-subsets of $\rare(T,\G)$ (Lemma~\ref{lem:localnerve}), with
+the simplicial coboundary, which is precisely the alternating sum of
+inclusions that $\check\delta$ restricts to.
+
+The full simplex on a non-empty finite vertex set is contractible;
+its non-augmented simplicial cohomology is $H^{0}=\Q$ and $H^{p}=0$
+for $p\ge1$. Hence $H^{p}(K^{\bullet}_{(T,\G)})=\mathcal G_{(T,\G)}$
+for $p=0$ and $0$ for $p\ge1$. Summing over $(T,\G)\in\Pp$ gives the
+displayed $\check H^{p}(\Uf;\mathcal G)$.
+
+Apply this with $\mathcal G=\mathcal H^{q}(\fobs)$ (which is of the
+required cell-level form, Definition~\ref{def:fobs}): ${}^{\mathrm{I}}
+E_{2}^{p,q}=\check H^{p}(\Uf;\mathcal H^{q}(\fobs))=0$ for $p\ge1$.
+A spectral sequence whose $E_{2}$ page is concentrated in a single
+column has every $d_{r}$ ($r\ge2$) with source or target zero, so
+$d_{r}=0$ and ${}^{\mathrm{I}}E_{2}={}^{\mathrm{I}}E_{\infty}$.
+\end{proof}
+
+\begin{remark}[Why the cover is acyclic: the rare-set combinatorics]
+\label{rem:why-acyclic}
+The acyclicity is not an accident of the coefficients; it is a
+property of the \emph{cover}. The trace cover is indexed by $[n]$ and a
+proper trace lies in $U_{\sigma}$ exactly when every coordinate of
+$\sigma$ is rare in it --- so the simplices of the cover's nerve
+through a fixed object $(T,\G)$ are precisely the subsets of the rare
+set $\rare(T,\G)$, a \emph{down-closed} family, i.e.\ a full simplex.
+A full simplex is contractible. There is no room for a \v{C}ech
+$1$-class. This is a genuine, pinned structural fact about the trace
+cover, and it holds for \emph{every} cell-level coefficient presheaf.
+\end{remark}
+
+\subsection{The total cohomology}
+\label{ssec:totalcohom}
+
+\begin{corollary}[The total cohomology of the \v{C}ech bicomplex]
+\label{cor:totalcohom}
+\[
+  H^{k}(\Tot\Ccheck(\Uf;\fobs),D)\;\cong\;
+  \bigoplus_{(T,\G)\in\Pp}H^{k}\bigl(X(\G);\Q\bigr),
+  \qquad k\ge0,
+\]
+naturally in $\Sym_{n}$. Both spectral sequences exhibit this:
+${}^{\mathrm{I}}E_{2}^{0,k}={}^{\mathrm{II}}E_{2}^{0,k}=
+\bigoplus_{(T,\G)\in\Pp}H^{k}(X(\G))$ and all other $E_{2}$ terms
+vanish.
+\end{corollary}
+
+\begin{proof}
+By Theorem~\ref{thm:degeneration}, ${}^{\mathrm{I}}E_{2}$ is
+concentrated in $p=0$, with ${}^{\mathrm{I}}E_{2}^{0,q}=\check
+H^{0}(\Uf;\mathcal H^{q}(\fobs))=\bigoplus_{(T,\G)\in\Pp}H^{q}(X(\G))$.
+A spectral sequence concentrated in one column has $E_{\infty}=E_{2}$
+and the abutment equal, in each total degree, to the single non-zero
+term: $H^{k}(\Tot\Ccheck)\cong{}^{\mathrm{I}}E_{\infty}^{0,k}=
+\bigoplus_{(T,\G)\in\Pp}H^{k}(X(\G))$. (Equivalently via
+${}^{\mathrm{II}}E$: ${}^{\mathrm{II}}E_{1}^{p,q}=\check H^{p}(\Uf;
+\fobs^{q})$ is concentrated in $p=0$ by Theorem~\ref{thm:degeneration},
+so ${}^{\mathrm{II}}E_{2}^{0,q}=H^{q}_{d}\bigl(\bigoplus_{(T,\G)}
+C^{\bullet}(\G)\bigr)=\bigoplus_{(T,\G)}H^{q}(X(\G))$, same answer ---
+the two spectral sequences agree, as they must.) Naturality in
+$\Sym_{n}$ is Pinned~\ref{pin:ss}.
+\end{proof}
+
+% =====================================================================
+\section{The obstruction data, located}
+\label{sec:obstruction-located}
+% =====================================================================
+
+With the spectral sequence pinned and computed, we locate the
+obstruction data of \texttt{refoundation.tex} \S6 in the bigraded
+picture, and state --- honestly --- what P0's computation does and
+does not say about $\ob(\Fstar)$.
+
+\subsection{The mismatch cocycle in the bigrading}
+\label{ssec:mismatch}
+
+\begin{proposition}[The bias and mismatch data, located]
+\label{prop:located}
+With $\widehat b_{x}$ and $m_{xy}$ as in Definition~\ref{def:bias}:
+\begin{enumerate}[label=\textup{(\arabic*)},leftmargin=2.4em]
+\item The tuple $\{\widehat b_{x}\}_{x\in[n]}$ is an element of
+  $\Ccheck^{\,0,0}(\Uf;\fobs)=\bigoplus_{x}\fobs^{0}(U_{x})$ ---
+  bidegree $(0,0)$, total degree $0$.
+\item The tuple $\{m_{xy}\}$ is an element of $\Ccheck^{\,1,0}(\Uf;
+  \fobs)=\bigoplus_{x<y}\fobs^{0}(U_{x}\cap U_{y})$ --- bidegree
+  $(1,0)$, total degree $1$ --- and it is \v{C}ech-exact:
+  $\{m_{xy}\}=-\,\check\delta\{\widehat b_{x}\}$.
+\item $\{m_{xy}\}$ is a \v{C}ech cocycle: $\check\delta\{m_{xy}\}=0$;
+  concretely $m_{xy}+m_{yz}+m_{zx}=0$ on every triple overlap.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+(1), (2): the cochain degree of $\widehat b_{x}$ and $m_{xy}$ is $0$
+(Definition~\ref{def:bias}); $\widehat b_{x}\in\fobs^{0}(U_{x})$ sits
+at $|\sigma|=1$, $p=0$; $m_{xy}\in\fobs^{0}(U_{x}\cap U_{y})$ sits at
+$|\sigma|=2$, $p=1$. Reading the $p=0\to1$ \v{C}ech differential of
+Definition~\ref{def:bicomplex} on $\{\widehat b_{x}\}$:
+$(\check\delta\{\widehat b\})_{xy}=\rho(\widehat b_{y})-\rho(\widehat
+b_{x})=-m_{xy}$, since $m_{xy}=\rho(\widehat b_{x})-\rho(\widehat
+b_{y})$ (Definition~\ref{def:bias}). Hence $\{m_{xy}\}=
+-\,\check\delta\{\widehat b_{x}\}$, a \v{C}ech coboundary. (The
+overall sign is the standard \v{C}ech-convention sign and is
+immaterial to every statement below; \texttt{lem:cocycle} of
+\texttt{refoundation.tex} records the same fact, $\{m_{xy}\}=
+\check\delta^{0}\{\widehat b_{x}\}$, in the opposite sign convention.)
+(3): $\check\delta^{2}=0$ (Theorem~\ref{thm:bicomplex}), so
+$\check\delta\{m_{xy}\}=-\,\check\delta^{2}\{\widehat b_{x}\}=0$;
+the triple-overlap form is the $p=1\to2$ component, $m_{xy}-m_{xz}
++m_{yz}=0$, i.e.\ $m_{xy}+m_{yz}+m_{zx}=0$ (using $m_{zx}=-m_{xz}$).
+This re-proves \texttt{lem:cocycle}.
+\end{proof}
+
+\subsection{What P0's computation says about $\ob(\Fstar)$ --- honestly}
+\label{ssec:honest-ob}
+
+\begin{status}[The obstruction is, within $\fobs$, $\check\delta$-exact]
+\label{status:exact}
+By Proposition~\ref{prop:located}(2), $\{m_{xy}\}=-\,\check\delta
+\{\widehat b_{x}\}$ is a \v{C}ech coboundary in
+$\Ccheck^{\,*,0}(\Uf;\fobs)$.
+Independently, by Theorem~\ref{thm:degeneration} the entire group
+$\check H^{1}(\Uf;\fobs^{0})$ is zero. So the class of the mismatch
+cocycle in the $\fobs$ spectral sequence is \emph{zero}: it carries
+no obstruction \emph{within} $\Ccheck^{\,*,*}(\Uf;\fobs)$.
+\end{status}
+
+This is not a defect and not a surprise --- it is exactly what
+\texttt{rem:promotion} of \texttt{refoundation.tex} already says
+honestly: ``$\ob(\Fstar)$ is, in Phase~1, a well-defined \v{C}ech
+\emph{cocycle}; its promotion into a genuine element of
+$\widetilde H^{n-1}(\Cn;X)$ is conditional on R3a and R3b,'' and
+\texttt{lem:cocycle} already records $\{m_{xy}\}=\check\delta^{0}
+\{\widehat b_{x}\}$. P0's computation pins the precise content of that
+honesty:
+
+\begin{status}[P0's finding: the obstruction's non-triviality is
+carried entirely by R3]
+\label{status:finding}
+The cell-level $\fobs$ spectral sequence is degenerate
+(Theorem~\ref{thm:degeneration}) and detects no obstruction
+(Status~\ref{status:exact}). Therefore the obstruction class
+$\ob(\Fstar)$ acquires whatever non-triviality it has \emph{solely}
+through the comparison map into $H^{*}(\Cn;X)$ --- the
+\v{C}ech-to-cohomology edge map of \texttt{def:ob}, whose three
+properties are residual R3: existence (R3a), degree-$(n-1)$ landing
+(R3b), injectivity (R3c). P0 does not construct that map and does not
+prejudge those three properties; it pins both its endpoints
+(\S\ref{sec:bk}) so that R3a, R3b, R3c are well-posed questions about
+a precisely-specified comparison.
+\end{status}
+
+\begin{remark}[A sharpening of the wrapper-risk, not a resolution]
+\label{rem:wrapper-sharpened}
+Status~\ref{status:finding} sharpens \texttt{rem:wrapper} of
+\texttt{refoundation.tex}. \texttt{rem:wrapper} localizes the
+``wrapper-risk'' --- the standing concern that the obstruction is
+family-blind and the contradiction hollow --- to the edge-map
+injectivity R3c. P0 adds the precise reason that localization is
+\emph{exhaustive}: the $\fobs$-internal \v{C}ech cohomology is acyclic
+(Theorem~\ref{thm:degeneration}), so it contributes \emph{nothing} to
+the obstruction; there is no second, $\fobs$-internal source of
+non-triviality that a faithfulness analysis might overlook. Every
+ounce of Fact One's content passes through the comparison map.
+Concretely: the residual phase, when it attacks R3c, may take as
+\emph{given} that the source of the edge map is $\bigoplus_{(T,\G)\in
+\Pp}H^{*}(X(\G))$ (Corollary~\ref{cor:totalcohom}), a completely
+explicit cell-level object, and that the only question is the map out
+of it. This is a genuine narrowing of the R3c attack surface ---
+\emph{and nothing more}. P0 does \emph{not} resolve R3c; whether the
+comparison map is injective remains the make-or-break residual, with
+its pre-identified HIGH RED-risk (\texttt{mg-0882} \S4.2) intact.
+\end{remark}
+
+% =====================================================================
+\section{The cell-level $\BK$ model and the comparison map}
+\label{sec:bk}
+% =====================================================================
+
+P0's third charge (\S\ref{ssec:charge}) is to pin the cell-level
+Bousfield--Kan model of $H^{*}(\Cn;X)$ ``against which the edge map is
+to be compared.'' We recall it, pin it as the comparison \emph{target},
+and specify precisely --- without constructing it --- the comparison
+map that residual R3 concerns.
+
+\subsection{The cell-level $\BK$ double complex}
+\label{ssec:bkdouble}
+
+\begin{definition}[The cell-level $\BK$ model, recalled and pinned]
+\label{def:bkmodel}
+The Fork~A cohomology object is $H^{*}(\Cn;X)=H^{*}(\Tot\BK,D_{\BK})$
+(\texttt{def:bk}, \texttt{thm:welldefined}), where the
+Bousfield--Kan double complex is
+\[
+  \BK^{p,q}\;=\;
+  \bigoplus_{\F_{0}\xrightarrow{\,\tr\,}\cdots\xrightarrow{\,\tr\,}\F_{p}
+  \ \text{in }\Cn}C^{q}\bigl(X(\F_{0});\Q\bigr),
+\]
+the cell-level cubical $q$-cochains taken at the first object of each
+length-$p$ bar string of $\Cn$, with vertical differential the
+cubical coboundary $d$ and horizontal (bar) differential
+$\delta_{\BK}$, whose only diagram-valued face $d_{0}^{*}$ uses the
+trace pullback $\pi_{T}^{*}$. \emph{This is already a cell-level
+model} --- its $q$-grading is the cubical cell degree, exactly as in
+$\Ccheck^{\,*,*}(\Uf;\fobs)$. P0 pins it, in this role, as the
+\emph{comparison target}. $\BK$ is a first-quadrant double complex
+with bounded rows ($p\ge0$; $0\le q\le n-1$ exactly as in
+Proposition~\ref{prop:bounded}, since the first object $\F_{0}$ of a
+bar string has $|S_{0}|\le n$ and so $X(\F_{0})$ has cells in
+dimensions $\le n-1$ for $\F_{0}\neq\Fstar$, and $\le n$ for
+$\F_{0}=\Fstar$). A first-quadrant double complex has two convergent
+spectral sequences --- in each total degree only finitely many
+bidegrees contribute --- so $H^{*}(\Cn;X)$ is the abutment of two
+convergent spectral sequences. (Since $\Cn$ is a finite thin category,
+hence a finite poset, the normalised bar complex is moreover bounded,
+$0\le p\le n$; P0 does not need this, only first-quadrant
+convergence.)
+\end{definition}
+
+\begin{proposition}[The bar-filtration spectral sequence of $\BK$]
+\label{prop:bkss}
+The bar ($p$-)filtration of $\BK$ gives a convergent spectral
+sequence
+\[
+  {}^{\mathrm{bar}}E_{2}^{p,q}\;=\;H^{p}\bigl(\Cn;\mathcal
+  H^{q}(X)\bigr)\;\Longrightarrow\;H^{p+q}(\Cn;X),
+\]
+where $\mathcal H^{q}(X)$ is the covariant coefficient system
+$\F\mapsto H^{q}(X(\F);\Q)$ on $\Cn$ and $H^{p}(\Cn;-)$ is the
+cohomology of the category $\Cn$ (the bar cohomology of the diagram).
+It converges because $\BK$ is a first-quadrant double complex
+(Definition~\ref{def:bkmodel}); the convergence is of the same
+elementary kind as in Theorem~\ref{thm:convergence}.
+\end{proposition}
+
+\begin{proof}
+Taking vertical $d$-cohomology of $\BK^{p,\bullet}$ degreewise gives
+$E_{1}^{p,q}=\bigoplus_{\text{strings}}H^{q}(X(\F_{0}))=\check
+C^{p}_{\mathrm{bar}}(\Cn;\mathcal H^{q}(X))$, the bar $p$-cochains of
+the coefficient system $\mathcal H^{q}(X)$ (vertical cohomology
+commutes with the finite direct sum, and $\delta_{\BK}$ descends since
+$d\,\delta_{\BK}=\pm\,\delta_{\BK}\,d$, \texttt{thm:welldefined}). Its
+cohomology is $E_{2}^{p,q}=H^{p}(\Cn;\mathcal H^{q}(X))$. The
+first-quadrant property gives convergence to $H^{p+q}(\Cn;X)$: in each
+total degree the filtration is finite, so the spectral sequence
+converges strongly, exactly as in the second half of the proof of
+Theorem~\ref{thm:convergence}.
+\end{proof}
+
+Proposition~\ref{prop:bkss} pins the \emph{target} structure: the
+residual target $\widetilde H^{n-1}(\Cn;X)$ in which $\ob(\Fstar)$
+must land (R3b) and within which R1/R2 analyse isotypes is the
+abutment of an explicit, convergent, cell-level spectral sequence.
+
+\subsection{The comparison map: pinned as a question, not constructed}
+\label{ssec:comparison}
+
+\begin{status}[The comparison map is residual R3, made well-posed]
+\label{status:comparison}
+P0 has now pinned, as fully explicit cell-level objects:
+\begin{itemize}[leftmargin=1.6em]
+\item the \emph{source} of the obstruction edge map --- the \v{C}ech
+  bicomplex $\Ccheck^{\,*,*}(\Uf;\fobs)$ on the cover $\Uf$ of the
+  \emph{punctured trace poset} $\Pp$, with total cohomology
+  $\bigoplus_{(T,\G)\in\Pp}H^{*}(X(\G))$ (Corollary~\ref{cor:totalcohom}),
+  carrying the mismatch cocycle $\{m_{xy}\}$ at bidegree $(1,0)$
+  (Proposition~\ref{prop:located});
+\item the \emph{target} --- the $\BK$ bicomplex on the \emph{whole
+  category} $\Cn$, with total cohomology $H^{*}(\Cn;X)$
+  (Definition~\ref{def:bkmodel}, Proposition~\ref{prop:bkss}).
+\end{itemize}
+The obstruction edge map of \texttt{def:ob} is a comparison from the
+first into the second. P0 does \emph{not} construct it. Its three
+load-bearing properties are exactly the three-part residual R3, now
+\emph{well-posed} because both endpoints are pinned:
+\begin{itemize}[leftmargin=1.6em]
+\item[\textbf{R3a}] \emph{(existence)} --- construct a map
+  $H^{*}(\Tot\Ccheck(\Uf;\fobs))\to H^{*}(\Cn;X)$ (equivalently a
+  suitable map of bicomplexes). The genuine content R3a must cross is
+  the \emph{object mismatch} P0 makes explicit: $\Uf$ covers the
+  punctured poset $\Pp$, a full subcategory of $\Cn$ \emph{minus} its
+  top object $\Fstar$, whereas $\BK$ resolves all of $\Cn$. R3a
+  includes the punctured-poset-to-$\Fstar$ extension
+  (\texttt{rem:promotion}, \texttt{status:fact-one}).
+\item[\textbf{R3b}] \emph{(degree)} --- the mismatch class sits at
+  \v{C}ech bidegree $(1,0)$, total degree $1$
+  (Proposition~\ref{prop:located}); R3b is the assertion that the
+  comparison carries it to total degree $n-1$ in $H^{*}(\Cn;X)$.
+  P0 pins the bigradings on both sides --- \v{C}ech-degree on $\Uf$
+  versus bar-degree on $\Cn$, with the cubical $q$-degree shared ---
+  so that ``what degree does it land in'' is a precise computation,
+  not a re-label inherited from the defunct pre-Fork-A object
+  (\texttt{rem:promotion}).
+\item[\textbf{R3c}] \emph{(injectivity)} --- whether the comparison is
+  injective on the mismatch class. By Status~\ref{status:finding} this
+  is, after P0, the \emph{sole} carrier of Fact One; it is the
+  make-or-break residual.
+\end{itemize}
+None of R3a, R3b, R3c is touched by P0. P0's deliverable is precisely
+that they are now questions about a pinned pair of objects rather than
+about ``un-pinned $\fobs$-foundations.''
+\end{status}
+
+\begin{remark}[Where the genuine sheaf re-enters]
+\label{rem:sheaf-reenters}
+Remark~\ref{rem:presheaf-vs-sheaf} flagged the genuine-sheaf model ---
+the trace-compatible, non-constant coefficient system --- as the
+honest alternative to the cell-level presheaf, and promised it would
+reappear at the comparison map. It does, here. The target
+$H^{*}(\Cn;X)$ is the cohomology of a genuine covariant homotopy
+colimit; its bar-filtration spectral sequence
+(Proposition~\ref{prop:bkss}) has $E_{2}=H^{p}(\Cn;\mathcal
+H^{q}(X))$, the cohomology of the \emph{category} with its
+\emph{non-constant} coefficient system --- which is exactly the
+derived, trace-aware content the cell-level presheaf omits. So the
+passage cell-level $\Rightarrow$ genuine-categorical is the comparison
+map, i.e.\ R3. P0's separation of the two models
+(Remark~\ref{rem:presheaf-vs-sheaf}) is therefore not a side comment:
+it is the structural statement that \emph{all} of the trace-aware
+content the obstruction theory needs is concentrated in R3, and none
+of it is hidden in the cell-level spectral sequence. That is the
+precise content of ``Fork~A discharges the harder half \dots\ and
+leaves the spectral sequence of $\fobs$ for the residual-attack
+phase'' (\texttt{rem:holim-prereq}).
+\end{remark}
+
+% =====================================================================
+\section{Verdict, what P0 delivered, and what stays open}
+\label{sec:verdict}
+% =====================================================================
+
+\subsection{Verdict}
+\label{ssec:verdict}
+
+\textbf{GREEN --- FORK-A-P0-DELIVERED.} The $\fobs$ cell-level
+spectral sequence is pinned. The cell-level obstruction complex
+$\fobs$ is defined precisely (Definition~\ref{def:fobs}), closing the
+gap Definition \texttt{def:obs-sheaf} left implicit. The \v{C}ech
+double complex $\Ccheck^{\,*,*}(\Uf;\fobs)$ is constructed and is a
+genuine bicomplex (Theorem~\ref{thm:bicomplex}), first-quadrant and
+bounded (Proposition~\ref{prop:bounded}). Its two spectral sequences
+are constructed and \emph{converge} strongly and finitely
+(Theorem~\ref{thm:convergence}), with the page structure pinned ---
+$E_{0}$, $E_{1}$, the named $E_{2}^{p,q}=\check H^{p}(\Uf;\mathcal
+H^{q}(\fobs))$, and the differential bidegrees
+(Theorem~\ref{thm:pages}, Pinned~\ref{pin:ss}). The cell-level $\BK$
+model of $H^{*}(\Cn;X)$ is pinned as the comparison target
+(Definition~\ref{def:bkmodel}, Proposition~\ref{prop:bkss}). This is
+the construction, the convergence, and the page structure the
+residual-closing work needs.
+
+P0 returns one genuine structural finding: the trace cover is
+cell-level acyclic (Theorem~\ref{thm:degeneration}), so the $\fobs$
+spectral sequence degenerates and $H^{*}(\Tot\Ccheck)\cong
+\bigoplus_{(T,\G)\in\Pp}H^{*}(X(\G))$ (Corollary~\ref{cor:totalcohom}).
+The honest consequence (Status~\ref{status:finding},
+Remark~\ref{rem:wrapper-sharpened}): the obstruction's non-triviality
+is carried entirely by the comparison map, residual R3 --- a
+sharpening of the wrapper-risk localization, not a resolution of it.
+
+\subsection{What P0 delivered (positive content)}
+\label{ssec:delivered}
+
+\begin{enumerate}[leftmargin=2.0em]
+\item \textbf{The cell-level obstruction complex $\fobs$}, pinned as a
+  complex of presheaves (Definition~\ref{def:fobs}), with the
+  modelling choice cell-level-presheaf-versus-genuine-sheaf made
+  explicit and recorded (Remark~\ref{rem:presheaf-vs-sheaf}).
+\item \textbf{The \v{C}ech double complex} $\Ccheck^{\,*,*}(\Uf;
+  \fobs)$, a genuine bounded first-quadrant bicomplex
+  (Theorems~\ref{thm:bicomplex}, Proposition~\ref{prop:bounded}).
+\item \textbf{Both spectral sequences}, with strong finite
+  \textbf{convergence} (Theorem~\ref{thm:convergence}) and pinned
+  \textbf{page structure} (Theorem~\ref{thm:pages}), including the
+  roadmap's named $E_{2}=\check H^{p}(\Uf;\mathcal H^{q}(\fobs))$.
+\item \textbf{The degeneration computation}
+  (Theorem~\ref{thm:degeneration}, Corollary~\ref{cor:totalcohom}):
+  the cover is cell-level acyclic; the total cohomology is the
+  explicit cell-level sum $\bigoplus_{(T,\G)\in\Pp}H^{*}(X(\G))$.
+\item \textbf{The obstruction data located}: $\widehat b_{x}$ at
+  $(0,0)$, $\{m_{xy}\}$ at $(1,0)$, $\check\delta$-cocycle and
+  $\check\delta$-exact (Proposition~\ref{prop:located}).
+\item \textbf{The cell-level $\BK$ comparison target}
+  (Definition~\ref{def:bkmodel}, Proposition~\ref{prop:bkss}), and the
+  comparison map pinned \emph{as} the well-posed three-part residual
+  R3 (Status~\ref{status:comparison}).
+\end{enumerate}
+
+\subsection{What stays open --- and is not P0's to close}
+\label{ssec:open}
+
+P0 closes nothing on the residual list. It makes the following
+well-posed and leaves them open, exactly as the \texttt{mg-0882}
+roadmap intends:
+
+\begin{itemize}[leftmargin=1.7em]
+\item \textbf{R3a, R3b, R3c} --- the comparison edge map's existence,
+  degree-$(n-1)$ landing, and injectivity. P0 pins both endpoints
+  (Status~\ref{status:comparison}); it constructs no map. R3c remains
+  the make-or-break residual with HIGH RED-risk.
+\item \textbf{R2} --- whether $\ob(\Fstar)$ avoids the $\sgn_{\Sym_{n}}$
+  isotype. A representation-theoretic question about $\fobs$ that the
+  pinned structure now equips but does not answer.
+\item \textbf{R1a, R1b, R1c} --- the $Y_{1}$-A vanishing arc. P0
+  provides the pinned spectral-sequence foundation
+  (\texttt{rem:holim-prereq}: ``both attacks require first pinning the
+  cell-level spectral sequence of $\fobs$''); it computes no cofiber,
+  branches no isotype, discharges no null-homotopy.
+\end{itemize}
+
+\subsection{P0 is infrastructure, not a hypothesis}
+\label{ssec:not-hypothesis}
+
+P0 does not enlarge the conditional theorem. \texttt{thm:contradiction}
+of \texttt{refoundation.tex} rests on exactly the seven residuals R1a,
+R1b, R1c, R2, R3a, R3b, R3c, as certified by \texttt{mg-bf5c}; P0 adds
+no eighth. A pinned spectral sequence is not an assumption the
+contradiction depends on --- it is the construction within which the
+seven residuals are stated, attacked, and (the roadmap intends)
+closed. Should every residual close, \texttt{thm:contradiction}
+becomes unconditional and Frankl follows for all $n\ge3$; P0's only
+role in that outcome is to have been the well-pinned ground the
+closures stood on. P0 has no RED-risk: it equips the proof and cannot
+refute it. The one finding it returned (the degeneration, the
+all-of-R3 localization) is GREEN news for the roadmap --- it confirms
+and sharpens the make-or-break analysis of \texttt{mg-0882} \S4
+rather than disturbing it.
+
+\subsection{The honest one-paragraph summary}
+\label{ssec:summary}
+
+The \texttt{mg-0882} roadmap names one prerequisite, P0, that gates
+all seven Fork~A residuals: pin the cell-level spectral sequence of
+the obstruction sheaf $\fobs$. This document does that. It pins the
+cell-level obstruction complex (supplying the definition
+\texttt{def:obs-sheaf} left implicit), constructs the \v{C}ech double
+complex of the trace cover and verifies it is a genuine bounded
+bicomplex, builds both spectral sequences and proves their convergence
+and pins their pages --- including the named $E_{2}=\check
+H^{p}(\Uf;\mathcal H^{q}(\fobs))$ --- and pins the cell-level $\BK$
+model of $H^{*}(\Cn;X)$ as the comparison target, thereby making the
+three-part faithfulness residual R3 a well-posed question about a
+precisely-specified pair of objects. The one finding: the trace cover
+is cell-level acyclic, so the $\fobs$ spectral sequence degenerates
+and the obstruction's non-triviality is carried entirely by the
+comparison map --- a sharpening of the wrapper-risk that narrows the
+R3c attack surface without resolving it. P0 closes no residual,
+adds no hypothesis, and has no RED-risk. \textbf{Verdict: GREEN ---
+the $\fobs$ cell-level spectral sequence is pinned, and the
+residual-attack phase may now proceed on pinned foundations.}
+
+% =====================================================================
+\section*{Cross-references}
+\addcontentsline{toc}{section}{Cross-references}
+% =====================================================================
+
+\begin{itemize}[leftmargin=1.6em]
+\item \textbf{Brief:} \texttt{mg-02b5} (Frankl-ForkA-P0). \textbf{Routes
+  to:} Daniel, via \texttt{pm-onethird}.
+\item \textbf{The roadmap that scopes P0:}
+  \texttt{docs/Frankl-ForkA-Residuals-Roadmap.md} (\texttt{mg-0882})
+  --- \S1.3 (P0 as Checkpoint~0), \S3 (P0 gates everything), \S6
+  ticket~1.
+\item \textbf{The re-foundation P0 builds on:}
+  \texttt{paper/forkA/refoundation.tex} --- \texttt{def:category},
+  \texttt{def:xf}, \texttt{thm:projection}, \texttt{def:bk},
+  \texttt{thm:welldefined}, \texttt{thm:maschke},
+  \texttt{def:minimal}, \texttt{prop:minimality},
+  \texttt{def:obs-sheaf}, \texttt{lem:cocycle}, \texttt{def:ob},
+  \texttt{rem:promotion}, \texttt{rem:walsh-role2},
+  \texttt{debt:faithful-localized} (R3a/R3b/R3c), \texttt{rem:wrapper},
+  \texttt{rem:holim-prereq}, \texttt{thm:contradiction}.
+\item \textbf{The certified residual list:}
+  \texttt{docs/Frankl-ForkA-Phase2-Revalidation2.md} (\texttt{mg-bf5c}).
+\item \textbf{Ledger note for this deliverable:}
+  \texttt{docs/Frankl-ForkA-Fobs-SS-Pinning.md} (\texttt{mg-02b5}).
+\item \textbf{Onboarding:} \texttt{docs/PROOF-STRUCTURE-ONBOARDING.md}.
+\end{itemize}
+
+\bigskip
+\noindent\rule{\textwidth}{0.4pt}
+
+\smallskip
+\noindent\footnotesize P0 pinning by polecat \texttt{cat-mg-02b5}.
+Deliverable on \texttt{main}: this document plus the ledger note. P0
+is infrastructure for the Fork~A residual-closing arc, not one of its
+residuals: it pins the cell-level $\fobs$ spectral sequence ---
+construction, convergence, page structure --- and the cell-level
+$\BK$ comparison target, so that R3a, R3b, R3c, R2, and R1 may be
+attacked on pinned foundations. It closes no residual and adds no
+hypothesis to \texttt{thm:contradiction}; the \texttt{mg-bf5c}
+``exactly seven residuals'' certification stands. Verdict GREEN for
+the P0 scope.
+
+\end{document}
