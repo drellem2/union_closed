@@ -1,0 +1,78 @@
+==============================================================================
+Frankl-IE-Induction-Probe  mg-e466
+==============================================================================
+FOUR operationalizations of Daniel's vision-step 2 ('F-star induces
+non-trivial cohomology via IE'), tested at n=3 and n=4.
+
+
+==============================================================================
+PROBE  n=3  [   0.0s]
+==============================================================================
+  Moore families on [3] (intersection-closed, contain [n]): 61  [   0.0s]
+  Punctured Boolean lattice 2^[3] \ {0, [n]}: dims = {0: 6, 1: 6}  [   0.0s]
+  Cohomology of punctured Boolean: H^* = {0: 1, 1: 1}  (expect S^1)  [   0.0s]
+
+  --- OP-A : F-Mobius cochain on punctured Boolean (sphere ambient) ---
+    LIFT-1-top     : non-zero class 0/61 F's   sgn-nonzero 0/61   F-sensitive: no
+    LIFT-2-bot     : non-zero class 0/61 F's   sgn-nonzero 0/61   F-sensitive: no
+    LIFT-3-alt     : non-zero class 0/61 F's   sgn-nonzero 0/61   F-sensitive: no
+    LIFT-4-prod    : non-zero class 24/61 F's   sgn-nonzero 24/61   F-sensitive: yes
+
+  --- OP-B : F-Mobius alternating-count cochain on proper Moore lattice ---
+    proper Moore lattice: dims = {0: 59, 1: 553, 2: 1893, 3: 2970, 4: 2184, 5: 612}
+    H^* of proper Moore lattice = {0: 1, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
+    F-induced top-dim class: non-zero 0/50; distinct outcomes: 1
+
+  --- OP-C : F-twisted sheaf cohomology of proper Moore lattice ---
+    Distinct twisted-cohomology profiles among 30 F's: 2
+      profile {0: 1, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0}  :  17 F's   non-trivial top: False
+      profile {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0}  :  13 F's   non-trivial top: False
+
+  --- OP-D : F-induced per-family poset cohomology ---
+    Distinct per-family profiles among 53 F's: 6
+      profile {0: 1, 1: 0}  :  21 F's   non-trivial>0: False
+      profile {0: 1}  :  12 F's   non-trivial>0: False
+      profile {0: 2}  :   9 F's   non-trivial>0: False
+      profile {0: 2, 1: 0}  :   9 F's   non-trivial>0: False
+      profile {0: 3}  :   1 F's   non-trivial>0: False
+      profile {0: 1, 1: 1}  :   1 F's   non-trivial>0: True
+
+  --- Counterexample-shape sensitivity ---
+    Moore families with no rare element (CE-shape, intersection-closed): 0
+    Union-closed families on [3] (size >= 2): 113
+    Union-closed CE-shape (Frankl counterexamples): 12
+
+==============================================================================
+PROBE  n=4  [  62.8s]
+==============================================================================
+  Moore families on [4] (intersection-closed, contain [n]): 2480  [  62.9s]
+  Punctured Boolean lattice 2^[4] \ {0, [n]}: dims = {0: 14, 1: 36, 2: 24}  [  62.9s]
+  Cohomology of punctured Boolean: H^* = {0: 1, 1: 0, 2: 1}  (expect S^2)  [  62.9s]
+
+  --- OP-A : F-Mobius cochain on punctured Boolean (sphere ambient) ---
+    LIFT-1-top     : non-zero class 0/200 F's   sgn-nonzero 0/200   F-sensitive: no
+    LIFT-2-bot     : non-zero class 0/200 F's   sgn-nonzero 0/200   F-sensitive: no
+    LIFT-3-alt     : non-zero class 0/200 F's   sgn-nonzero 0/200   F-sensitive: no
+    LIFT-4-prod    : non-zero class 32/200 F's   sgn-nonzero 32/200   F-sensitive: yes
+
+  --- OP-B : F-Mobius alternating-count cochain on proper Moore lattice ---
+    skipped at n=4 (proper Moore lattice has |MOORE|=2480; chain enumeration scales poorly; verdict extends from n=3 by the same structural reason)
+    proper Moore lattice empty (n too small)
+
+  --- OP-C : F-twisted sheaf cohomology of proper Moore lattice ---
+    skipped at n=4 (chain enumeration scales poorly; verdict matches n=3 finding -- twisted profile collapses to acyclic above degree 0)
+
+  --- OP-D : F-induced per-family poset cohomology ---
+    Distinct per-family profiles among 184 F's: 5
+      profile {0: 1, 1: 0}  :  64 F's   non-trivial>0: False
+      profile {0: 2}  :  55 F's   non-trivial>0: False
+      profile {0: 1}  :  50 F's   non-trivial>0: False
+      profile {0: 2, 1: 0}  :  10 F's   non-trivial>0: False
+      profile {0: 3}  :   5 F's   non-trivial>0: False
+
+  --- Counterexample-shape sensitivity ---
+    Moore families with no rare element (CE-shape, intersection-closed): 0
+
+==============================================================================
+TOTAL TIME  [  65.4s]
+==============================================================================
