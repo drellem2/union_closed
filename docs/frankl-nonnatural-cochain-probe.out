@@ -1,0 +1,193 @@
+/Users/daniel/.pogo/polecats/e1e2/docs/frankl-nonnatural-cochain-probe.py:28: SyntaxWarning: "\ " is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\ "? A raw string is also an option.
+  sgn-class of c_F^d in H^{n-2}(2^[n] \ {0, [n]}; Q) ~ sgn_{S_n}.  At n=3
+==============================================================================
+Frankl-NonNatural-Cochain-Probe  mg-e1e2  (n=3)
+==============================================================================
+
+Testing non-F-natural IE cochain candidates on the 12 CE-shape
+families at n=3.  Per mg-e466 each is RED for every F-natural
+construction; this probe tests whether the structurally identified
+escape (non-natural data d breaks F's symmetry) actually fires.
+
+==============================================================================
+Aut(F)-classification of the 12 CE-shape families:
+==============================================================================
+  size  3  |aut(F)|=2  Z_2 = <(1 2)>              [{3} {1,2} {1,2,3}]
+  size  3  |aut(F)|=2  Z_2 = <(1 3)>              [{2} {1,3} {1,2,3}]
+  size  3  |aut(F)|=2  Z_2 = <(2 3)>              [{1,2} {1,3} {1,2,3}]
+  size  3  |aut(F)|=2  Z_2 = <(2 3)>              [{1} {2,3} {1,2,3}]
+  size  3  |aut(F)|=2  Z_2 = <(1 3)>              [{1,2} {2,3} {1,2,3}]
+  size  3  |aut(F)|=2  Z_2 = <(1 2)>              [{1,3} {2,3} {1,2,3}]
+  size  4  |aut(F)|=6  S_3 (full sym)             [{1,2} {1,3} {2,3} {1,2,3}]
+  size  5  |aut(F)|=6  S_3 (full sym)             [0 {1,2} {1,3} {2,3} {1,2,3}]
+  size  5  |aut(F)|=2  Z_2 = <(2 3)>              [{1} {1,2} {1,3} {2,3} {1,2,3}]
+  size  5  |aut(F)|=2  Z_2 = <(1 3)>              [{2} {1,2} {1,3} {2,3} {1,2,3}]
+  size  5  |aut(F)|=2  Z_2 = <(1 2)>              [{3} {1,2} {1,3} {2,3} {1,2,3}]
+  size  7  |aut(F)|=6  S_3 (full sym)             [{1} {2} {3} {1,2} {1,3} {2,3} {1,2,3}]
+
+==============================================================================
+CONTROL: F-natural LIFT-4-prod (mg-e466 baseline)
+==============================================================================
+For each F, check cycle_integral of LIFT-4-prod and of its sgn-projection:
+
+  [{3} {1,2} {1,2,3}]                         cycle_int=  0  sgn_class=ZERO
+  [{2} {1,3} {1,2,3}]                         cycle_int=  0  sgn_class=ZERO
+  [{1,2} {1,3} {1,2,3}]                       cycle_int=  0  sgn_class=ZERO
+  [{1} {2,3} {1,2,3}]                         cycle_int=  0  sgn_class=ZERO
+  [{1,2} {2,3} {1,2,3}]                       cycle_int=  0  sgn_class=ZERO
+  [{1,3} {2,3} {1,2,3}]                       cycle_int=  0  sgn_class=ZERO
+  [{1,2} {1,3} {2,3} {1,2,3}]                 cycle_int=  0  sgn_class=ZERO
+  [0 {1,2} {1,3} {2,3} {1,2,3}]               cycle_int=  0  sgn_class=ZERO
+  [{1} {1,2} {1,3} {2,3} {1,2,3}]             cycle_int=  0  sgn_class=ZERO
+  [{2} {1,2} {1,3} {2,3} {1,2,3}]             cycle_int=  0  sgn_class=ZERO
+  [{3} {1,2} {1,3} {2,3} {1,2,3}]             cycle_int=  0  sgn_class=ZERO
+  [{1} {2} {3} {1,2} {1,3} {2,3} {1,2,3}]     cycle_int=  0  sgn_class=ZERO
+
+  F-natural baseline: 12/12 CE-shape give zero sgn-class
+  (mg-e466 reports 12/12; this should match)
+
+==============================================================================
+NON-NATURAL CONSTRUCTIONS
+==============================================================================
+
+--- (a) Marked element x in [n] ---
+
+  Construction mark_top: c = m_F(s0)*m_F(s1)*[x in s1]
+    -> non-zero sgn-class on 3/12 CE-shape families
+       [{3} {1,2} {1,2,3}]                        (x=1: cls=-6, x=2: cls=6)
+       [{2} {1,3} {1,2,3}]                        (x=1: cls=6, x=3: cls=-6)
+       [{1} {2,3} {1,2,3}]                        (x=2: cls=-6, x=3: cls=6)
+
+  Construction mark_bot: c = m_F(s0)*m_F(s1)*[x in s0]
+    -> non-zero sgn-class on 0/12 CE-shape families
+
+  Construction mark_added: c = m_F(s0)*m_F(s1)*[x = added]
+    -> non-zero sgn-class on 3/12 CE-shape families
+       [{3} {1,2} {1,2,3}]                        (x=1: cls=-6, x=2: cls=6)
+       [{2} {1,3} {1,2,3}]                        (x=1: cls=6, x=3: cls=-6)
+       [{1} {2,3} {1,2,3}]                        (x=2: cls=-6, x=3: cls=6)
+
+  Construction mark_chiF: c = chi_F(s0 u {x}) - chi_F(s1 u {x})
+    -> non-zero sgn-class on 0/12 CE-shape families
+
+  Construction mark_extension: c = m_F(s0 u {x})*m_F(s1)
+    -> non-zero sgn-class on 6/12 CE-shape families
+       [{3} {1,2} {1,2,3}]                        (x=1: cls=-12, x=2: cls=12)
+       [{2} {1,3} {1,2,3}]                        (x=1: cls=12, x=3: cls=-12)
+       [{1} {2,3} {1,2,3}]                        (x=2: cls=-12, x=3: cls=12)
+       [{1} {1,2} {1,3} {2,3} {1,2,3}]            (x=2: cls=-6, x=3: cls=6)
+       [{2} {1,2} {1,3} {2,3} {1,2,3}]            (x=1: cls=6, x=3: cls=-6)
+       [{3} {1,2} {1,3} {2,3} {1,2,3}]            (x=1: cls=-6, x=2: cls=6)
+
+  Construction mark_top_only: c = m_F(s1)*[x in s0]   (no m_F(s0) factor)
+    -> non-zero sgn-class on 9/12 CE-shape families
+       [{3} {1,2} {1,2,3}]                        (x=1: cls=12, x=2: cls=-12)
+       [{2} {1,3} {1,2,3}]                        (x=1: cls=-12, x=3: cls=12)
+       [{1,2} {1,3} {1,2,3}]                      (x=2: cls=-6, x=3: cls=6)
+       [{1} {2,3} {1,2,3}]                        (x=2: cls=12, x=3: cls=-12)
+       [{1,2} {2,3} {1,2,3}]                      (x=1: cls=6, x=3: cls=-6)
+       [{1,3} {2,3} {1,2,3}]                      (x=1: cls=-6, x=2: cls=6)
+       ... (3 more)
+
+  Construction mark_chiF_top: c = chi_F(s1 u {x}) - chi_F(s0 u {x})
+    -> non-zero sgn-class on 0/12 CE-shape families
+
+--- (b) Ordering pi of [n] ---
+
+  Construction order_min_added: c = m_F(s0)*m_F(s1)*[pi-min(s1) in s0]
+    -> non-zero sgn-class on 5/12 CE-shape families
+       [{3} {1,2} {1,2,3}]                        (pi=(1, 3, 2), cls=6 (and 1 other pi's))
+       [{2} {1,3} {1,2,3}]                        (pi=(1, 2, 3), cls=-6 (and 1 other pi's))
+       [{1} {2,3} {1,2,3}]                        (pi=(2, 1, 3), cls=6 (and 1 other pi's))
+       [0 {1,2} {1,3} {2,3} {1,2,3}]              (pi=(1, 2, 3), cls=-12 (and 5 other pi's))
+       ... (1 more)
+
+  Construction order_added_min: c = m_F(s0)*m_F(s1)*[added = pi-min(s1)]
+    -> non-zero sgn-class on 5/12 CE-shape families
+       [{3} {1,2} {1,2,3}]                        (pi=(1, 3, 2), cls=-6 (and 1 other pi's))
+       [{2} {1,3} {1,2,3}]                        (pi=(1, 2, 3), cls=6 (and 1 other pi's))
+       [{1} {2,3} {1,2,3}]                        (pi=(2, 1, 3), cls=-6 (and 1 other pi's))
+       [0 {1,2} {1,3} {2,3} {1,2,3}]              (pi=(1, 2, 3), cls=12 (and 5 other pi's))
+       ... (1 more)
+
+  Construction order_sgn_perm: c = m_F(s0)*m_F(s1)*sgn(s1-numerical-vs-pi)
+    -> non-zero sgn-class on 3/12 CE-shape families
+       [{3} {1,2} {1,2,3}]                        (pi=(1, 3, 2), cls=-12 (and 1 other pi's))
+       [{2} {1,3} {1,2,3}]                        (pi=(1, 3, 2), cls=12 (and 3 other pi's))
+       [{1} {2,3} {1,2,3}]                        (pi=(2, 1, 3), cls=12 (and 1 other pi's))
+
+  Construction order_sgn_pair: c = m_F(s1)*sgn(pi-rank(added)-pi-rank(s0))
+    -> non-zero sgn-class on 12/12 CE-shape families
+       [{3} {1,2} {1,2,3}]                        (pi=(1, 2, 3), cls=12 (and 5 other pi's))
+       [{2} {1,3} {1,2,3}]                        (pi=(1, 2, 3), cls=-36 (and 5 other pi's))
+       [{1,2} {1,3} {1,2,3}]                      (pi=(2, 1, 3), cls=-24 (and 1 other pi's))
+       [{1} {2,3} {1,2,3}]                        (pi=(1, 2, 3), cls=12 (and 5 other pi's))
+       ... (8 more)
+
+  Construction order_chiF_pair: c = chi_F(s1)*sgn(pi-rank(added)-pi-rank(s0))
+    -> non-zero sgn-class on 12/12 CE-shape families
+       [{3} {1,2} {1,2,3}]                        (pi=(1, 2, 3), cls=12 (and 5 other pi's))
+       [{2} {1,3} {1,2,3}]                        (pi=(1, 2, 3), cls=-12 (and 5 other pi's))
+       [{1,2} {1,3} {1,2,3}]                      (pi=(2, 1, 3), cls=-24 (and 1 other pi's))
+       [{1} {2,3} {1,2,3}]                        (pi=(1, 2, 3), cls=12 (and 5 other pi's))
+       ... (8 more)
+
+--- (c) External reference family F_0 (not equal to F) ---
+
+  Construction ext_prod: c = m_F(s0)*m_F0(s1)
+    -> non-zero sgn-class on 6/12 CE-shape families
+       [{3} {1,2} {1,2,3}]                        (F0={{1}}: cls=-6, F0={{1},{1,2,3}}: cls=-6, F0={{2}}: cls=6, ...)
+       [{2} {1,3} {1,2,3}]                        (F0={{1}}: cls=6, F0={{1},{1,2,3}}: cls=6, F0={{1},{2}}: cls=6, ...)
+       [{1} {2,3} {1,2,3}]                        (F0={{2}}: cls=-6, F0={{1},{2}}: cls=-6, F0={{1},{1,2}}: cls=6, ...)
+       [{1} {1,2} {1,3} {2,3} {1,2,3}]            (F0={{2}}: cls=-6, F0={{1},{2}}: cls=-6, F0={{1},{1,2}}: cls=6, ...)
+       [{2} {1,2} {1,3} {2,3} {1,2,3}]            (F0={{1}}: cls=6, F0={{1},{1,2,3}}: cls=6, F0={{1},{2}}: cls=6, ...)
+       [{3} {1,2} {1,3} {2,3} {1,2,3}]            (F0={{1}}: cls=-6, F0={{1},{1,2,3}}: cls=-6, F0={{2}}: cls=6, ...)
+
+  Construction ext_symdiff: c = LIFT-4-prod of (F symdiff F0)
+    -> non-zero sgn-class on 11/12 CE-shape families
+       [{3} {1,2} {1,2,3}]                        (F0={{1}}: cls=6, F0={{1},{1,2,3}}: cls=6, F0={{2}}: cls=-6)
+       [{2} {1,3} {1,2,3}]                        (F0={{1}}: cls=-6, F0={{1},{1,2,3}}: cls=-6, F0={{1},{2}}: cls=-6, ...)
+       [{1,2} {1,3} {1,2,3}]                      (F0={{2}}: cls=-6, F0={{1},{2}}: cls=-6, F0={{1},{1,2}}: cls=-6, ...)
+       [{1} {2,3} {1,2,3}]                        (F0={{2}}: cls=6, F0={{1},{2}}: cls=6, F0={{1},{2},{1,2,3}}: cls=6)
+       [{1,2} {2,3} {1,2,3}]                      (F0={{1}}: cls=6, F0={{1},{1,2,3}}: cls=6, F0=principal-1: cls=-6, ...)
+       [{1,3} {2,3} {1,2,3}]                      (F0={{1}}: cls=-6, F0={{1},{1,2,3}}: cls=-6, F0={{2}}: cls=6, ...)
+       ... (5 more)
+
+  Construction ext_quot: c = m_F(s0)*(m_F(s1) - m_F0(s1))
+    -> non-zero sgn-class on 6/12 CE-shape families
+       [{3} {1,2} {1,2,3}]                        (F0={{1}}: cls=6, F0={{1},{1,2,3}}: cls=6, F0={{2}}: cls=-6, ...)
+       [{2} {1,3} {1,2,3}]                        (F0={{1}}: cls=-6, F0={{1},{1,2,3}}: cls=-6, F0={{1},{2}}: cls=-6, ...)
+       [{1} {2,3} {1,2,3}]                        (F0={{2}}: cls=6, F0={{1},{2}}: cls=6, F0={{1},{1,2}}: cls=-6, ...)
+       [{1} {1,2} {1,3} {2,3} {1,2,3}]            (F0={{2}}: cls=6, F0={{1},{2}}: cls=6, F0={{1},{1,2}}: cls=-6, ...)
+       [{2} {1,2} {1,3} {2,3} {1,2,3}]            (F0={{1}}: cls=-6, F0={{1},{1,2,3}}: cls=-6, F0={{1},{2}}: cls=-6, ...)
+       [{3} {1,2} {1,3} {2,3} {1,2,3}]            (F0={{1}}: cls=6, F0={{1},{1,2,3}}: cls=6, F0={{2}}: cls=-6, ...)
+
+==============================================================================
+AGGREGATE SUMMARY
+==============================================================================
+
+Across ALL tested non-natural constructions, the count of CE-shape
+families F for which SOME non-natural construction (with SOME choice
+of d) gives non-zero sgn-class:
+
+  [{3} {1,2} {1,2,3}]                         aut=Z_2=(<1,2>)                ESCAPED  (39 non-natural escapes found)
+  [{2} {1,3} {1,2,3}]                         aut=Z_2=(<1,3>)                ESCAPED  (42 non-natural escapes found)
+  [{1,2} {1,3} {1,2,3}]                       aut=Z_2=(<2,3>)                ESCAPED  (11 non-natural escapes found)
+  [{1} {2,3} {1,2,3}]                         aut=Z_2=(<2,3>)                ESCAPED  (39 non-natural escapes found)
+  [{1,2} {2,3} {1,2,3}]                       aut=Z_2=(<1,3>)                ESCAPED  (11 non-natural escapes found)
+  [{1,3} {2,3} {1,2,3}]                       aut=Z_2=(<1,2>)                ESCAPED  (10 non-natural escapes found)
+  [{1,2} {1,3} {2,3} {1,2,3}]                 aut=S_3                        ESCAPED  (14 non-natural escapes found)
+  [0 {1,2} {1,3} {2,3} {1,2,3}]               aut=S_3                        ESCAPED  (26 non-natural escapes found)
+  [{1} {1,2} {1,3} {2,3} {1,2,3}]             aut=Z_2=(<2,3>)                ESCAPED  (26 non-natural escapes found)
+  [{2} {1,2} {1,3} {2,3} {1,2,3}]             aut=Z_2=(<1,3>)                ESCAPED  (25 non-natural escapes found)
+  [{3} {1,2} {1,3} {2,3} {1,2,3}]             aut=Z_2=(<1,2>)                ESCAPED  (29 non-natural escapes found)
+  [{1} {2} {3} {1,2} {1,3} {2,3} {1,2,3}]     aut=S_3                        ESCAPED  (26 non-natural escapes found)
+
+  TOTAL: 12/12 CE-shape families admit a non-natural escape.
+
+==============================================================================
+VERDICT (per ticket mg-e1e2 §SCOPE)
+==============================================================================
+NON-NATURAL WORKS on ALL 12 CE-shape families: every CE-shape F admits
+at least one non-natural construction giving non-zero sgn-class.
+
