@@ -1,0 +1,35 @@
+n=4: enumerating union-closed...
+  total union-closed (size >= 1): 4959
+  CE-shape F-stars: 582
+  punctured-Boolean top-dim chains at n=4: 24 (= n!)
+  coboundary columns: 36
+
+  Sample CE-shape F's at n=4: sgn-class non-zero per cochain
+  F                                                             sz S-MTOP  S-DEF  S-CNT S-MBOT   S-MP
+  [{4} {1,2,3} {1,2,3,4}]                                        3      1      1      1      1      1
+  [{3} {1,2,4} {1,2,3,4}]                                        3      1      1      1      1      1
+  [{2} {1,3,4} {1,2,3,4}]                                        3      1      1      1      1      1
+  [{1} {2,3,4} {1,2,3,4}]                                        3      1      1      1      1      1
+  [{1,4} {2,3} {1,2,3,4}]                                        3      1      1      1      0      0
+  [{2} {4} {1,2} {1,3} {1,4} {2,3} {2,4} {3,4} {1,2,3} {1,2,4} {1,3,4} {2,3,4} {1,2,3,4}]  13      1      1      1      1      0
+  [{3} {4} {1,2} {1,3} {1,4} {2,3} {2,4} {3,4} {1,2,3} {1,2,4} {1,3,4} {2,3,4} {1,2,3,4}]  13      1      1      1      1      0
+  [{1} {2} {3} {4} {1,2} {1,3} {1,4} {2,3} {2,4} {3,4} {1,2,3} {1,2,4} {1,3,4} {2,3,4} {1,2,3,4}]  15      1      1      1      1      1
+  [{2} {1,4} {2,3} {1,2,3} {1,2,4} {1,3,4} {2,3,4} {1,2,3,4}]    8      1      1      1      1      1
+
+  -- Full aggregate over all 582 CE-shape F's at n=4 --
+   [50/582, 0.4s]
+   [100/582, 0.8s]
+   [150/582, 1.2s]
+   [200/582, 1.6s]
+   [250/582, 2.1s]
+   [300/582, 2.5s]
+   [350/582, 3.0s]
+   [400/582, 3.4s]
+   [450/582, 3.8s]
+   [500/582, 4.3s]
+   [550/582, 4.7s]
+  C-SGN-MOB-TOP      : non-zero sgn-class 560/582 CE-shape F's
+  C-SGN-DEFICIT      : non-zero sgn-class 582/582 CE-shape F's
+  C-SGN-COUNT        : non-zero sgn-class 582/582 CE-shape F's
+  C-SGN-MOB-BOT      : non-zero sgn-class 409/582 CE-shape F's
+  C-SGN-MOB-PROD     : non-zero sgn-class 358/582 CE-shape F's

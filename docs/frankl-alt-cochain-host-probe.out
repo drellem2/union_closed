@@ -1,0 +1,107 @@
+==============================================================================
+Frankl-Alt-Cochain-Host-Probe  mg-1b24
+==============================================================================
+
+==============================================================================
+PROBE n=3  [   0.0s]
+==============================================================================
+  union-closed families on [3] (size >= 2): 113
+  CE-shape F-star candidates: 12
+  punctured-Boolean top-dim chains: 6
+  coboundary columns: 6 (image rank in C^1)
+  rank(δ_0) = 5 -> H^1(PB) ≅ Q (sgn_{S_3})
+
+  -- Per-CE-shape-F cochain class table  (sgn_nz = 1 means cochain has non-zero sgn-class)
+  F (CE-shape)                                        ENT  LOG PAIR  CNT  CML S-MT S-MB S-MP  S-D  S-C I-MT
+  [{3} {1,2} {1,2,3}]                                   0    0    0    0    0    1    1    1    1    1    1
+  [{2} {1,3} {1,2,3}]                                   0    0    0    0    0    1    1    1    1    1    1
+  [{1,2} {1,3} {1,2,3}]                                 0    0    0    0    0    1    0    0    1    1    0
+  [{1} {2,3} {1,2,3}]                                   0    0    0    0    0    1    1    1    1    1    1
+  [{1,2} {2,3} {1,2,3}]                                 0    0    0    0    0    1    0    0    1    1    1
+  [{1,3} {2,3} {1,2,3}]                                 0    0    0    0    0    1    0    0    1    1    0
+  [{1,2} {1,3} {2,3} {1,2,3}]                           0    0    0    0    0    1    0    0    1    1    1
+  [0 {1,2} {1,3} {2,3} {1,2,3}]                         0    0    0    0    0    1    1    1    1    1    1
+  [{1} {1,2} {1,3} {2,3} {1,2,3}]                       0    0    0    0    0    1    1    0    1    1    1
+  [{2} {1,2} {1,3} {2,3} {1,2,3}]                       0    0    0    0    0    1    1    0    1    1    1
+  [{3} {1,2} {1,3} {2,3} {1,2,3}]                       0    0    0    0    0    1    1    0    1    1    1
+  [{1} {2} {3} {1,2} {1,3} {2,3} {1,2,3}]               0    0    0    0    0    1    1    1    1    1    1
+
+  --- Aggregate (sgn-class non-zero count on CE-shape F⋆, n=3) ---
+    C-ENT-prod         (strict   ) : raw  0/12, sgn-proj  0/12  -> fails
+    C-LOG-prod         (strict   ) : raw  0/12, sgn-proj  0/12  -> fails
+    C-PAIR-DIFF        (strict   ) : raw  0/12, sgn-proj  0/12  -> fails
+    C-COUNT-prod       (strict   ) : raw  0/12, sgn-proj  0/12  -> fails
+    C-CUMUL            (strict   ) : raw  0/12, sgn-proj  0/12  -> fails
+    C-SGN-MOB-TOP      (sgn-TWIST) : raw 12/12, sgn-proj 12/12  -> WORKS
+    C-SGN-MOB-BOT      (sgn-TWIST) : raw  8/12, sgn-proj  8/12  -> WORKS
+    C-SGN-MOB-PROD     (sgn-TWIST) : raw  5/12, sgn-proj  5/12  -> WORKS
+    C-SGN-DEFICIT      (sgn-TWIST) : raw 12/12, sgn-proj 12/12  -> WORKS
+    C-SGN-COUNT        (sgn-TWIST) : raw 12/12, sgn-proj 12/12  -> WORKS
+    C-INV-MOB-TOP      (sgn-TWIST) : raw 10/12, sgn-proj 10/12  -> WORKS
+
+  --- HOST-SUSP-PB : simplicial suspension of punctured Boolean ---
+    suspension top-dim chains: 12
+    coboundary columns: 18
+    rank(δ_1^susp) = 11; H^2(susp) dim = 1
+    Per-F summary (raw / sgn-projection class non-zero):
+    F                                                         MOB-TOP       MOB-PROD    SGN-MOB-TOP   SGN-MOB-PROD
+    [{3} {1,2} {1,2,3}]                                  raw=0 sgn=0   raw=0 sgn=0   raw=0 sgn=0   raw=0 sgn=0
+    [{2} {1,3} {1,2,3}]                                  raw=0 sgn=0   raw=0 sgn=0   raw=0 sgn=0   raw=0 sgn=0
+    [{1,2} {1,3} {1,2,3}]                                raw=0 sgn=0   raw=0 sgn=0   raw=0 sgn=0   raw=0 sgn=0
+    [{1} {2,3} {1,2,3}]                                  raw=0 sgn=0   raw=0 sgn=0   raw=0 sgn=0   raw=0 sgn=0
+    [{1,2} {2,3} {1,2,3}]                                raw=0 sgn=0   raw=0 sgn=0   raw=0 sgn=0   raw=0 sgn=0
+    [{1,3} {2,3} {1,2,3}]                                raw=0 sgn=0   raw=0 sgn=0   raw=0 sgn=0   raw=0 sgn=0
+    [{1,2} {1,3} {2,3} {1,2,3}]                          raw=0 sgn=0   raw=0 sgn=0   raw=0 sgn=0   raw=0 sgn=0
+    [0 {1,2} {1,3} {2,3} {1,2,3}]                        raw=0 sgn=0   raw=0 sgn=0   raw=0 sgn=0   raw=0 sgn=0
+    [{1} {1,2} {1,3} {2,3} {1,2,3}]                      raw=0 sgn=0   raw=0 sgn=0   raw=0 sgn=0   raw=0 sgn=0
+    [{2} {1,2} {1,3} {2,3} {1,2,3}]                      raw=0 sgn=0   raw=0 sgn=0   raw=0 sgn=0   raw=0 sgn=0
+    [{3} {1,2} {1,3} {2,3} {1,2,3}]                      raw=0 sgn=0   raw=0 sgn=0   raw=0 sgn=0   raw=0 sgn=0
+    [{1} {2} {3} {1,2} {1,3} {2,3} {1,2,3}]              raw=0 sgn=0   raw=0 sgn=0   raw=0 sgn=0   raw=0 sgn=0
+
+  --- HOST-COUNT-GRD : count-graded cochain on punctured Boolean ---
+    [{3} {1,2} {1,2,3}]                                  raw raw_nz=False sgn=False   sgn-twist raw_nz=True sgn=True
+    [{2} {1,3} {1,2,3}]                                  raw raw_nz=False sgn=False   sgn-twist raw_nz=True sgn=True
+    [{1,2} {1,3} {1,2,3}]                                raw raw_nz=False sgn=False   sgn-twist raw_nz=False sgn=False
+    [{1} {2,3} {1,2,3}]                                  raw raw_nz=False sgn=False   sgn-twist raw_nz=True sgn=True
+    [{1,2} {2,3} {1,2,3}]                                raw raw_nz=False sgn=False   sgn-twist raw_nz=False sgn=False
+    [{1,3} {2,3} {1,2,3}]                                raw raw_nz=False sgn=False   sgn-twist raw_nz=False sgn=False
+    [{1,2} {1,3} {2,3} {1,2,3}]                          raw raw_nz=False sgn=False   sgn-twist raw_nz=False sgn=False
+    [0 {1,2} {1,3} {2,3} {1,2,3}]                        raw raw_nz=False sgn=False   sgn-twist raw_nz=True sgn=True
+    [{1} {1,2} {1,3} {2,3} {1,2,3}]                      raw raw_nz=False sgn=False   sgn-twist raw_nz=True sgn=True
+    [{2} {1,2} {1,3} {2,3} {1,2,3}]                      raw raw_nz=False sgn=False   sgn-twist raw_nz=True sgn=True
+    [{3} {1,2} {1,3} {2,3} {1,2,3}]                      raw raw_nz=False sgn=False   sgn-twist raw_nz=True sgn=True
+    [{1} {2} {3} {1,2} {1,3} {2,3} {1,2,3}]              raw raw_nz=False sgn=False   sgn-twist raw_nz=True sgn=True
+
+  --- HOST-A_3-EQUIV : A_n-equivariant projection (alternating group) ---
+    |A_3| = 3
+    Projecting LIFT-4-prod-style cochain c_F(chain) = ∏ m_F(σ_i) onto trivial-A_n isotype
+    [{3} {1,2} {1,2,3}]                                 A_n-triv raw=0  sgn after=0
+    [{2} {1,3} {1,2,3}]                                 A_n-triv raw=0  sgn after=0
+    [{1,2} {1,3} {1,2,3}]                               A_n-triv raw=0  sgn after=0
+    [{1} {2,3} {1,2,3}]                                 A_n-triv raw=0  sgn after=0
+    [{1,2} {2,3} {1,2,3}]                               A_n-triv raw=0  sgn after=0
+    [{1,3} {2,3} {1,2,3}]                               A_n-triv raw=0  sgn after=0
+    [{1,2} {1,3} {2,3} {1,2,3}]                         A_n-triv raw=0  sgn after=0
+    [0 {1,2} {1,3} {2,3} {1,2,3}]                       A_n-triv raw=0  sgn after=0
+    [{1} {1,2} {1,3} {2,3} {1,2,3}]                     A_n-triv raw=0  sgn after=0
+    [{2} {1,2} {1,3} {2,3} {1,2,3}]                     A_n-triv raw=0  sgn after=0
+    [{3} {1,2} {1,3} {2,3} {1,2,3}]                     A_n-triv raw=0  sgn after=0
+    [{1} {2} {3} {1,2} {1,3} {2,3} {1,2,3}]             A_n-triv raw=0  sgn after=0
+
+  --- Structural diagnostic: orbit-averaged Möbius (the underlying scalar) ---
+    [{3} {1,2} {1,2,3}]                                 Σ_top m_F = -1  Σ_bot m_F = +1  Σ_mid m_F = +0
+    [{2} {1,3} {1,2,3}]                                 Σ_top m_F = -1  Σ_bot m_F = +1  Σ_mid m_F = +0
+    [{1,2} {1,3} {1,2,3}]                               Σ_top m_F = +2  Σ_bot m_F = +0  Σ_mid m_F = +0
+    [{1} {2,3} {1,2,3}]                                 Σ_top m_F = -1  Σ_bot m_F = +1  Σ_mid m_F = +0
+    [{1,2} {2,3} {1,2,3}]                               Σ_top m_F = +2  Σ_bot m_F = +0  Σ_mid m_F = +0
+    [{1,3} {2,3} {1,2,3}]                               Σ_top m_F = +2  Σ_bot m_F = +0  Σ_mid m_F = +0
+    [{1,2} {1,3} {2,3} {1,2,3}]                         Σ_top m_F = +3  Σ_bot m_F = +0  Σ_mid m_F = +0
+    [0 {1,2} {1,3} {2,3} {1,2,3}]                       Σ_top m_F = +6  Σ_bot m_F = -3  Σ_mid m_F = +0
+    [{1} {1,2} {1,3} {2,3} {1,2,3}]                     Σ_top m_F = +1  Σ_bot m_F = +1  Σ_mid m_F = +0
+    [{2} {1,2} {1,3} {2,3} {1,2,3}]                     Σ_top m_F = +1  Σ_bot m_F = +1  Σ_mid m_F = +0
+    [{3} {1,2} {1,3} {2,3} {1,2,3}]                     Σ_top m_F = +1  Σ_bot m_F = +1  Σ_mid m_F = +0
+    [{1} {2} {3} {1,2} {1,3} {2,3} {1,2,3}]             Σ_top m_F = -3  Σ_bot m_F = +3  Σ_mid m_F = +0
+
+==============================================================================
+TOTAL  [   0.0s]
+==============================================================================
