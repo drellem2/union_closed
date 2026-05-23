@@ -1,0 +1,249 @@
+==============================================================================
+Frankl-Numerical-Coincidence-Sharpening  mg-3978
+==============================================================================
+Per mg-e466: 'Frankl truth iff LIFT-4-prod sgn vanishes for CE-shape F-star'
+holds 100% at n=3 (12/12) and 86% at n=4 (498/582).  This probe sharpens
+the 14% non-vanish at n=4 (84 families) and tests at n=5.
+
+
+==============================================================================
+PHASE 1  n=4 sharpening  [    0.0s]
+==============================================================================
+  Punctured Boolean simplices at n=4: {0: 14, 1: 36, 2: 24}  [    0.0s]
+  Coboundary basis: 36 columns -> 24 top-dim chains  [    0.0s]
+  Enumerating UC families on [4] exhaustively...  [    0.0s]
+  Non-empty UC families: 4959  [    0.2s]
+  CE-shape UC families (|F|>=2, no rare elt): 582  [    0.3s]
+  Characterizing all 582 CE-shape families...  [    0.3s]
+    ... 100/582  [    0.4s]
+    ... 200/582  [    0.5s]
+    ... 300/582  [    0.6s]
+    ... 400/582  [    0.7s]
+    ... 500/582  [    0.8s]
+  Done.  [    0.9s]
+
+  CE-shape sgn-non-vanishing: 84 / 582 (14.4%)
+  CE-shape sgn-vanishing:     498 / 582 (85.6%)
+
+  --- |Aut(F)| in S_4 (= |S_n-stabilizer|) cross-tab ---
+    |Aut| | sgn=nonzero | sgn=zero | total
+        1 |          72 |       24 |    96
+        2 |          12 |      336 |   348
+        4 |           0 |       66 |    66
+        6 |           0 |       52 |    52
+        8 |           0 |       15 |    15
+       24 |           0 |        5 |     5
+
+  --- has-transposition-symmetry cross-tab ---
+    has_trans=False: sgn_nz=84, sgn_z=60
+    has_trans=True: sgn_nz=0, sgn_z=438
+
+  --- Hypothesis A: sgn_nz <=> no-transposition-symmetry? ---
+    no transp + sgn_z  : 60  (false-pos for hypothesis)
+    no transp + sgn_nz : 84 (consistent)
+    has transp + sgn_z : 438 (consistent / sym kills)
+    has transp + sgn_nz: 0 (sym present but class non-zero)
+
+  --- Hypothesis B (sharpened): sgn_nz <=> Aut(F) has no ODD element? ---
+    no odd-stab + sgn_z  : 60  (false-pos for hypothesis)
+    no odd-stab + sgn_nz : 84 (consistent)
+    has odd-stab + sgn_z : 438 (consistent / odd elt kills)
+    has odd-stab + sgn_nz: 0 (odd elt present but class non-zero)
+    -> If 'has odd-stab + sgn_nz' = 0 and 'no odd-stab + sgn_z' is small,
+       hypothesis B refines hypothesis A and gives the cleanest characterisation.
+
+  --- |F| cross-tab ---
+    |F| | sgn_nz | sgn_z | total | %nz
+      3 |      0 |    25 |    25 |   0.0%
+      4 |      0 |    10 |    10 |   0.0%
+      5 |      0 |    81 |    81 |   0.0%
+      6 |      0 |    23 |    23 |   0.0%
+      7 |     24 |   119 |   143 |  16.8%
+      8 |      0 |    43 |    43 |   0.0%
+      9 |     48 |    81 |   129 |  37.2%
+     10 |      0 |    33 |    33 |   0.0%
+     11 |     12 |    67 |    79 |  15.2%
+     12 |      0 |     5 |     5 |   0.0%
+     13 |      0 |    10 |    10 |   0.0%
+     15 |      0 |     1 |     1 |   0.0%
+
+  --- #generators (= #join-irreducibles) cross-tab ---
+    #gens=2: sgn_nz=0, sgn_z=25
+    #gens=3: sgn_nz=0, sgn_z=32
+    #gens=4: sgn_nz=0, sgn_z=129
+    #gens=5: sgn_nz=60, sgn_z=166
+    #gens=6: sgn_nz=24, sgn_z=116
+    #gens=7: sgn_nz=0, sgn_z=26
+    #gens=8: sgn_nz=0, sgn_z=4
+
+  --- element-count balance (max a_F(x) - min a_F(x)) cross-tab ---
+    balance=0: sgn_nz=0, sgn_z=42
+    balance=1: sgn_nz=60, sgn_z=304
+    balance=2: sgn_nz=24, sgn_z=144
+    balance=3: sgn_nz=0, sgn_z=8
+
+  --- gen-size profile of the 84 non-vanishing CE-shape ---
+    distinct profiles: 4
+      (1, 2, 2, 2, 3)                                    : 24
+      (1, 2, 2, 2, 3, 3)                                 : 24
+      (1, 2, 2, 3, 3)                                    : 24
+      (1, 1, 2, 2, 2)                                    : 12
+
+  --- element-count sorted profile cross-tab ---
+    sorted (a_F(x_1) <= ... <= a_F(x_n)): sgn_nz / sgn_z
+      (2, 2, 2, 2)                   :   0 /   7
+      (2, 2, 2, 3)                   :   0 /  12
+      (2, 2, 3, 3)                   :   0 /   6
+      (3, 3, 3, 3)                   :   0 /  12
+      (3, 3, 3, 4)                   :   0 /  20
+      (3, 3, 3, 5)                   :   0 /   4
+      (3, 3, 4, 4)                   :   0 /  30
+      (3, 3, 4, 5)                   :   0 /  12
+      (3, 4, 4, 4)                   :   0 /  12
+      (4, 4, 4, 4)                   :   0 /   8
+      (4, 4, 4, 5)                   :   0 /  32
+      (4, 4, 4, 6)                   :   0 /  24
+      (4, 4, 4, 7)                   :   0 /   4
+      (4, 4, 5, 5)                   :  24 /  12
+      (4, 4, 5, 6)                   :   0 /  36
+      (4, 5, 5, 5)                   :   0 /  12
+      (4, 5, 5, 6)                   :   0 /  12
+      (5, 5, 5, 5)                   :   0 /   6
+      (5, 5, 5, 6)                   :   0 /  48
+      (5, 5, 5, 7)                   :   0 /   8
+      (5, 5, 5, 8)                   :   0 /   4
+      (5, 5, 6, 6)                   :   0 /  30
+      (5, 5, 6, 7)                   :  24 /  12
+      (5, 6, 6, 6)                   :  24 /   4
+      (5, 6, 6, 7)                   :   0 /  12
+      (6, 6, 6, 6)                   :   0 /   6
+      (6, 6, 6, 7)                   :   0 /  48
+      (6, 6, 6, 8)                   :   0 /  12
+      (6, 6, 7, 7)                   :  12 /  12
+      (6, 6, 7, 8)                   :   0 /  12
+      (6, 7, 7, 7)                   :   0 /  12
+      (7, 7, 7, 7)                   :   0 /   2
+      (7, 7, 7, 8)                   :   0 /   8
+      (7, 7, 8, 8)                   :   0 /   6
+      (8, 8, 8, 8)                   :   0 /   1
+
+  --- S_4-orbit structure of CE-shape families ---
+    S_4-orbits of CE-shape: 67
+    orbits all-non-zero: 4
+    orbits all-zero:     63
+    orbits mixed:        0
+
+  --- 84 non-vanishing CE-shape: one representative per orbit ---
+    distinct orbits: 4
+    orbit (size 7, |Aut|=1, #in-orbit=24, ec=(4, 4, 5, 5), transps=[]):
+      [{2} {1,4} {2,3} {1,2,3} {1,2,4} {1,3,4} {1,2,3,4}]
+    orbit (size 9, |Aut|=1, #in-orbit=24, ec=(5, 5, 6, 7), transps=[]):
+      [{1} {1,2} {1,4} {2,3} {1,2,3} {1,2,4} {1,3,4} {2,3,4} {1,2,3,4}]
+    orbit (size 9, |Aut|=1, #in-orbit=24, ec=(5, 6, 6, 6), transps=[]):
+      [{3} {1,2} {1,4} {2,3} {1,2,3} {1,2,4} {1,3,4} {2,3,4} {1,2,3,4}]
+    orbit (size 11, |Aut|=2, #in-orbit=12, ec=(6, 6, 7, 7), transps=[]):
+      [{1} {3} {1,3} {1,4} {2,3} {2,4} {1,2,3} {1,2,4} {1,3,4} {2,3,4} {1,2,3,4}]
+
+  --- CE-shape orbits split by |Aut| ---
+    |Aut|=1: 4 orbits
+    |Aut|=2: 29 orbits
+    |Aut|=4: 11 orbits
+    |Aut|=6: 13 orbits
+    |Aut|=8: 5 orbits
+    |Aut|=24: 5 orbits
+
+==============================================================================
+PHASE 2  n=5 sharpening (bounded enumeration)  [    1.0s]
+==============================================================================
+  Punctured Boolean simplices at n=5: {0: 30, 1: 150, 2: 240, 3: 120}  [    1.0s]
+  Coboundary basis: 240 columns -> 120 top-dim chains  [    1.0s]
+  Coboundary rank (cached): 119  [    1.0s]
+
+  --- size cap |F| <= 6  [    1.0s] ---
+    UC families on [5] with [n] in F, |F|<=6: 18908  [    3.0s]
+    of which CE-shape: 1571  [    3.2s]
+      ... 200/1571  [    8.4s]
+      ... 400/1571  [   13.6s]
+      ... 600/1571  [   18.9s]
+      ... 800/1571  [   24.2s]
+      ... 1000/1571  [   29.4s]
+      ... 1200/1571  [   34.6s]
+      ... 1400/1571  [   39.7s]
+    done.  [   44.2s]
+    CE-shape sgn-nonzero: 0 / 1571 (0.0%)
+    cross-tab (transp_sym x sgn_nz):
+      no_trans + sgn_z  : 120
+      no_trans + sgn_nz : 0
+      has_trans + sgn_z : 1451
+      has_trans + sgn_nz: 0
+
+  --- size cap |F| <= 7  [   44.2s] ---
+    UC families on [5] with [n] in F, |F|<=7: 47369  [   52.0s]
+    of which CE-shape: 6212  [   52.6s]
+      ... 200/6212  [   57.9s]
+      ... 400/6212  [   63.3s]
+      ... 600/6212  [   68.5s]
+      ... 800/6212  [   73.7s]
+      ... 1000/6212  [   79.0s]
+      ... 1200/6212  [   84.2s]
+      ... 1400/6212  [   89.4s]
+      ... 1600/6212  [   94.6s]
+      ... 1800/6212  [   99.9s]
+      ... 2000/6212  [  105.2s]
+      ... 2200/6212  [  110.4s]
+      ... 2400/6212  [  115.7s]
+      ... 2600/6212  [  120.9s]
+      ... 2800/6212  [  126.1s]
+      ... 3000/6212  [  131.4s]
+      ... 3200/6212  [  136.6s]
+      ... 3400/6212  [  141.9s]
+      ... 3600/6212  [  147.2s]
+      ... 3800/6212  [  152.4s]
+      ... 4000/6212  [  157.6s]
+      ... 4200/6212  [  162.8s]
+      ... 4400/6212  [  168.0s]
+      ... 4600/6212  [  173.3s]
+      ... 4800/6212  [  178.5s]
+      ... 5000/6212  [  183.9s]
+      ... 5200/6212  [  189.1s]
+      ... 5400/6212  [  194.4s]
+      ... 5600/6212  [  199.6s]
+      ... 5800/6212  [  204.8s]
+      ... 6000/6212  [  210.0s]
+      ... 6200/6212  [  215.2s]
+    done.  [  215.5s]
+    CE-shape sgn-nonzero: 0 / 6212 (0.0%)
+    cross-tab (transp_sym x sgn_nz):
+      no_trans + sgn_z  : 1740
+      no_trans + sgn_nz : 0
+      has_trans + sgn_z : 4472
+      has_trans + sgn_nz: 0
+
+  Unique CE-shape families across all caps: 6212
+    sgn-nonzero: 0 / 6212 (0.0%)
+
+  --- ACCUMULATED (de-duped) cross-tab (transp_sym x sgn_nz) at n=5 ---
+    no_trans + sgn_z  : 1740
+    no_trans + sgn_nz : 0
+    has_trans + sgn_z : 4472
+    has_trans + sgn_nz: 0
+
+  --- ACCUMULATED (de-duped) SHARP cross-tab (odd-stab x sgn_nz) at n=5 ---
+    no odd-stab + sgn_z  : 1740  (false-pos for hyp B)
+    no odd-stab + sgn_nz : 0 (consistent)
+    has odd-stab + sgn_z : 4472 (consistent / odd elt kills)
+    has odd-stab + sgn_nz: 0 (odd elt + class non-zero)
+
+  --- |Aut(F)| cross-tab at n=5 (de-duped CE-shape) ---
+    |Aut|=1: sgn_nz=0, sgn_z=1320
+    |Aut|=2: sgn_nz=0, sgn_z=3120
+    |Aut|=4: sgn_nz=0, sgn_z=1230
+    |Aut|=6: sgn_nz=0, sgn_z=260
+    |Aut|=8: sgn_nz=0, sgn_z=90
+    |Aut|=12: sgn_nz=0, sgn_z=160
+    |Aut|=24: sgn_nz=0, sgn_z=30
+    |Aut|=120: sgn_nz=0, sgn_z=2
+
+==============================================================================
+TOTAL TIME  [  215.5s]
+==============================================================================
