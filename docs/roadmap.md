@@ -30,7 +30,7 @@ Two human-action items still pending on Daniel (mg-344a conceptual bridge theore
 - **mg-b8f9** — Hopkins (#2) collaboration outreach email; drafted in outreach/collaboration_log.md. Send decision = Daniel's. Ready modulo swapping the placeholder URL for the public mirror + re-verifying 3 structural items on origin/main.
 
 ## Recently shipped (last ~48h)
-- **mg-a7c5** — archived 2026-07-14 — L1b (B) any-width re-scope; AMBER. Removed the width-3 Cauchy-Schwarz crutch; proved the GID exact width-free identity; reduced (B) to an exact iff + one named residual; refuted per-pair freezing (commit 8baa902, branch polecat-a7c5, OneThird-L1b-general-Bwall-state.md). NOTE: 8baa902 is on branch polecat-a7c5, not yet on main — watching (see Gaps).
+- **mg-a7c5** — archived 2026-07-14 — L1b (B) any-width re-scope; AMBER. Removed the width-3 Cauchy-Schwarz crutch; proved the GID exact width-free identity; reduced (B) to an exact iff + one named residual; refuted per-pair freezing (commit 8baa902, OneThird-L1b-general-Bwall-state.md; merged to origin/main — verified).
 - **mg-c899** — archived 2026-07-14 — drift audit (Daniel-commissioned): confirmed the L1b certificate arc had silently narrowed to width-3 at mg-8201; the spectral .tex has zero width bounds. Verdict drove the mg-a7c5 re-scope.
 - **mg-4052** — archived 2026-07-14 — Frankl step-4 host-enrichment; RED. All three enriched hosts fail; sgn-twisted-F-natural / host-enrichment family exhausted (commit 271936b, Frankl-Enriched-Host-VisionStep4.md).
 
