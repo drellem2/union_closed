@@ -13,8 +13,8 @@ Two human-action items still pending on Daniel (mg-344a conceptual bridge theore
 
 ---
 
-## Now (in flight)
-- **mg-69be** — high — self-contained proposed CORE LEMMA for L1b, for Daniel to attempt himself (STATE ONLY, no proof). Direct Daniel request (digest reply 2026-07-15): he resolved the mg-1131 fork by choosing to attack the crux personally and asked for a standalone lemma statement. Extraction/writing task off the mg-0508 state doc; dispatch-readied to mayor. Polecat surfaces the statement to PM on completion -> PM forwards to Daniel.
+## Now — Daniel is attempting the core lemma
+- **Ball is with Daniel.** mg-69be DONE (merged, archived): the self-contained core lemma landed at one_third_width_three/docs/OneThird-L1b-CoreLemma-forDaniel.md and was forwarded to Daniel ~17:50. The CORE LEMMA is (decay): E[M_{k,l}] <= C rho^(l-k) E[K_k] at any width, equivalently the per-element contraction rho_s <= rho < 1 uniformly — a linear-extension anti-concentration statement, shown sufficient AND (up to rate-packaging) necessary for (B). No polecat dispatched against it while it is Daniel's to attempt; reserve routes (BK-transport, dedicated anti-concentration arc) offered for parallel pickup on his signal.
 
 ## Next (queued)
 - Daniel attempts the core lemma. If he proves it, L1b (B) closes at any width -> M1 close-out audit + Lean follow-on. If it resists, the reserve options remain: (c) BK-transport L1 attack; (a) a dedicated anti-concentration arc. (b) algebraic pivot stays off-target for any-width.
