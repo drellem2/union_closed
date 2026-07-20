@@ -1,6 +1,6 @@
 # pm-onethird product roadmap (1/3-2/3 + Union-Closed compatibility-geometry program)
 
-*Updated by pm-onethird 2026-07-20 09:00 BST — morning sweep (silent). **Canonical current doc = STATE.md in github.com/drellem2/onethird_program (onethird_program repo, in scope).** This roadmap is the thin operational summary; STATE.md holds the full attempt index + proofs. Quiescent overnight (no polecat activity); CI clean (one_third's April red is stale/superseded); fleet idle pending two Daniel research calls. Frankl shelved. Manual edits overwritten next sweep.*
+*Updated by pm-onethird 2026-07-21 00:20 BST — evening sweep for 07-20, run ~7h late as a sleep catch-up (host slept 13:50→00:14; pogod replayed the schedule on wake, replay=once so exactly one catch-up sweep). **Canonical current doc = STATE.md in github.com/drellem2/onethird_program (onethird_program repo, in scope).** This roadmap is the thin operational summary; STATE.md holds the full attempt index + proofs. CI clean (one_third's April red is stale/superseded — latest main run is green). Frankl shelved. Manual edits overwritten next sweep.*
 
 **Scope.** Repos: onethird_program (canonical), union_closed, one_third_width_three, one_third. Tags: onethird, one-third, lean, audit, union-closed, frankl.
 
@@ -15,10 +15,14 @@ Two human-action items pending on Daniel (mg-344a, mg-b8f9). No URGENT signals.
 
 ---
 
-## Now — fleet idle by directive; two Daniel calls open
-- **Ball with Daniel.** The L1b crux is Daniel's to attempt; the productive target is now sharply located (break the wrong-signed `(B-cov)` covariance / equivalently prove `ρ_s < 1` under freezing). No-new-computation directive stands.
+## Now — counterexample search LIVE (computation authorized, scoped)
+- **mg-0eac IN FLIGHT** (high prio, polecat `0eacb`). Daniel filed it 2026-07-20 12:04Z and **lifted the no-computation hold for the counterexample search specifically**. Coherence-guided perturbation search for a **primitive** poset with `δ < β ≈ 0.3488`, seeded from the β-extremal families (ladders / Chen / Sah). Primary deliverable is the **min-δ-per-size profile** at `n ≥ 12`; a counterexample is unlikely and is not what success is indexed to.
+  - Novel path = the proven "`δ<1/3` ⟹ coherent distinguished `e`" structure, which Peczarski did not use. Exhaustive-search ≤ n=11 is done in the literature and is explicitly out of scope.
+  - **This ticket is on its second attempt.** The first polecat died in the 2026-07-20 fleet restart; its work survived on branch `polecat-0eac` (`c583212`) plus three newer *uncommitted* files in the stale worktree. The RESUME preamble directs recovery-before-restart, and `0eacb` respawned on the 00:14 wake carrying it.
+- **The lift is scoped.** It covers the counterexample search only — it does **not** unblock the n=7 overlap test below. Treating it as a general lift would be inferring an instruction Daniel didn't give.
+- **L1b crux still ball-with-Daniel.** Productive target unchanged: break the wrong-signed `(B-cov)` covariance / equivalently prove `ρ_s < 1` under freezing.
 - **Two pending Daniel research calls** (offered, awaiting his word):
-  1. **n=7 overlap test** — the one decisive check of the conditional-standard-dominance picture (overlap `c` at 3 known n=7 off-regime posets). Blocked by the no-computation directive; would need a narrow exception. Dataset-revert of the mg-4a86 over-run is held pending this call.
+  1. **n=7 overlap test** — the one decisive check of the conditional-standard-dominance picture (overlap `c` at 3 known n=7 off-regime posets). **Still blocked**; needs its own narrow exception. Dataset-revert of the mg-4a86 over-run is held pending this call.
   2. **`O(1)` locality probe** — prove `Σ_{y∥x} Pr[{x,y} inverts] = O(1)` under freezing (mg-0ed7's residual; the `(B-bias)` lemma). Natural next swing at the crux.
 - **STATE.md maintained on every verdict** (canonical; through @e1b8fb2, incl. Appendix A audit-stage process).
 
@@ -47,6 +51,8 @@ Two human-action items pending on Daniel (mg-344a, mg-b8f9). No URGENT signals.
 - Earlier 07-19: entropy-discontinuity arcs (mg-a1ec/48ab/dcae) + 4 entropy probes (A-D) + State-of-the-Wall doc & repo.
 
 ## Trajectory / gaps I'm watching
-- **Converging, not stalling.** Zero forward progress on the crux this cycle, but the wall is now a single named object reached from three sides, and several overstated/erroneous claims were caught and corrected — the map is honest and sharp. The bottleneck is the `(B-cov)` covariance sign, unchanged.
+- **Converging, not stalling.** No forward progress on the crux this cycle — the fleet was down ~10h overnight and the day's only research motion is mg-0eac's first attempt dying and being resumed. The wall remains a single named object reached from three sides; the bottleneck is the `(B-cov)` covariance sign, unchanged.
+- **mg-0eac is on attempt 2 — watch that recovery actually happened.** The value at risk is the three uncommitted files in the stale `0eac` worktree. The success signal is the polecat's deliverable explicitly reporting how far attempt 1 got vs. what it added; a deliverable that silently rewrites from scratch means the recovery step was skipped and the prior work was lost, not superseded. Checking on the next sweep.
 - **Consolidation pending:** STATE.md (onethird_program) is canonical; this roadmap + the stale one_third_width_three/docs/roadmap.md (~65d old) are redundant. Consolidate to STATE.md + a thin roadmap.
-- **No-computation directive vs the decisive test:** the n=7 overlap test that would settle conditional standard dominance is the one thing the directive blocks — flagged to Daniel, his call.
+- **No-computation directive vs the decisive test:** the n=7 overlap test that would settle conditional standard dominance remains blocked — mg-0eac's lift is scoped to the counterexample search and does not reach it. Still Daniel's call.
+- **Stale checkout hazard in one_third_width_three** (mg-2ed2, low prio, filed this sweep; not touched). The main working copy sits on abandoned May branch `mayor-a5-g2-status`, 99 behind origin/main, with 83 staged adds. Verified non-destructive to fix: every one of the 83 staged paths already exists on origin/main (`git cat-file -e origin/main:<path>` for all 83), so nothing is unpublished. The risk is a human or agent working in that directory against 2-month-stale files without noticing.
