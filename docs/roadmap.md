@@ -1,47 +1,52 @@
 # pm-onethird product roadmap (1/3-2/3 + Union-Closed compatibility-geometry program)
 
-*Updated by pm-onethird on 2026-07-19 17:00 BST — evening sweep (digest SILENT: Daniel was live in a full-day conceptual session, so a status mail would be pure noise). **Canonical current doc is STATE.md in github.com/drellem2/onethird_program (in config; the roadmap will consolidate there on restart).** Today: 7 arcs filed+merged+archived — entropy-discontinuity (mg-a1ec diagnostic; mg-48ab folklore-endpoint proof; mg-dcae REFUTED the external k=1-stability residual + gave the variance/bias (B) split) and 4 isolated entropy probes (A frozen-constraint INERT, B position-matrix proven bound, C direct-count proves conj for s≤2 + 5/18 on part of s=3, D incomparability-graph inert+insufficient). Every one adversarially audited before it touched the canonical doc or Daniel. Frankl stays shelved. Fleet idle by directive. Manual edits will be overwritten next sweep.*
+*Updated by pm-onethird 2026-07-20 09:00 BST — morning sweep (silent). **Canonical current doc = STATE.md in github.com/drellem2/onethird_program (onethird_program repo, in scope).** This roadmap is the thin operational summary; STATE.md holds the full attempt index + proofs. Quiescent overnight (no polecat activity); CI clean (one_third's April red is stale/superseded); fleet idle pending two Daniel research calls. Frankl shelved. Manual edits overwritten next sweep.*
 
-**Scope.** Repos: union_closed, one_third_width_three, one_third — **plus the new `onethird_program`** (canonical state, pending config add). Tags: onethird, one-third, lean, audit, union-closed, frankl.
+**Scope.** Repos: onethird_program (canonical), union_closed, one_third_width_three, one_third. Tags: onethird, one-third, lean, audit, union-closed, frankl.
 
-**Headline (2026-07-19).** The L1b crux is now cleanly mapped and the whole program is one document.
+**Headline.** After a full-day 2026-07-19 research push (11 arcs, every one adversarially audited before touching STATE.md or Daniel), the wall is precisely triangulated and the record is honest. No forward progress on the crux, but a much sharper map + several corrected claims.
 
-- **Canonical State of the Wall — built and in a repo.** github.com/drellem2/onethird_program (STATE.md) + interactive artifact (claude.ai/code/artifact/ab5fcd05-...). Two axes (near-ordinal-sumness vs the balance constant delta), the proof chain (proven links vs the one open link, L1b), the single lemma, and an attempt index so nothing gets re-walked. This is the new READ-FIRST canonical picture; roadmap.md here stays the operational sweep artifact until `onethird_program` is in my config.
-- **The wall converges to ONE open theorem.** Everything — the (B)/LIB anti-concentration, the convexity route, the entropy-discontinuity idea, and Brightwell's open "can delta -> 1/3?" — reduces to: *a real poset's uniform / connected / order-polytope structure forces the slot probabilities to decay (rho_s < 1).* Convexity dispenses the two-atom witness but is silent on the flat slot law (the real LIB-violator); the untried tool is Aleksandrov-Fenchel / the combinatorial atlas (Chan-Pak-Panova), never aimed at the 1/3 gap.
-- **Elementary "why 1/3" anchor — PROVEN.** Pr[x<y]+Pr[y<z]+Pr[z<x] <= 2 forbids any strong 3-cycle, so at delta<1/3 every pair-orientation coheres into one total order (the distinguished e); 2/3 is exactly that 3-cycle threshold = delta = 1/3. This is the elementary reason the conjecture's number is 1/3, and it anchors Daniel's entropy-discontinuity angle — which a 4-way literature search confirmed is NOVEL. The gap above 1/3 is proven only for width-2 (Sah, arXiv:1811.01500) by opaque casework with no reason given.
+- **The wall is ONE object, reached by three independent routes.** The open crux is a joint / between-window-location / `ρ_s ≈ 1` term = mg-dcae's wrong-signed same-side **`(B-cov)` covariance**. The Stanley-stability route (mg-0ed7), the variance/covariance route (mg-dcae), and the spectral-implications route (mg-8f56) all land there. `(B) ⟺ ρ_s ≤ ρ < 1` (L1b core lemma, an iff) — cannot be sidestepped.
+- **Standard dominance is CONDITIONAL on all-pairs-frozen, not universal or false** (mg-4a86, audit-corrected from an overstated "FALSE" headline). The BK gap `λ₂^BK` (dynamical) and `λ_std` (static) are not equal in general; the real control conjecture survives + is supported in-regime.
+- **Mixing ⊥ balance, now theorem-backed.** LLO 2025 (arXiv:2503.01005) proves spectral independence / poly mixing for linear extensions of every poset — so fast mixing is universal and blind to δ; the δ obstruction lives purely in the stationary marginal.
+- **Corrected record:** mg-0ed7 Finding 7.5 (the `Φ→Var` reduction) is **REFUTED** (inequality-direction error, caught by mg-8f56); a prior pm-onethird audit had missed it.
 
-Two human-action items pending on Daniel (mg-344a, mg-b8f9). No URGENT signals. No CI failures (one_third's April red is stale, superseded; one_third_width_three main green 05-21). No releases (research repos).
+Two human-action items pending on Daniel (mg-344a, mg-b8f9). No URGENT signals.
 
 ---
 
-## Now — Daniel attempting the crux, now fully characterized
-- **Ball with Daniel, sharper target than before.** The L1b core lemma (mg-69be, handed off 07-15) is unchanged as Daniel's to prove, but the overnight session located it precisely: it IS the poset-LE displacement anti-concentration (no heavy tail / linear inversions), and the productive attack is real-poset **convexity / order-polytope** structure forcing the decay — the same statement in every dialect we tried (convexity, entropy-discontinuity, Brightwell). No polecat dispatched; Daniel's no-new-computation directive stands.
-- **State doc maintained on every verdict** (STATE.md). This morning's regen folds in the elementary anchor + Sah width-2 gap + novelty.
+## Now — fleet idle by directive; two Daniel calls open
+- **Ball with Daniel.** The L1b crux is Daniel's to attempt; the productive target is now sharply located (break the wrong-signed `(B-cov)` covariance / equivalently prove `ρ_s < 1` under freezing). No-new-computation directive stands.
+- **Two pending Daniel research calls** (offered, awaiting his word):
+  1. **n=7 overlap test** — the one decisive check of the conditional-standard-dominance picture (overlap `c` at 3 known n=7 off-regime posets). Blocked by the no-computation directive; would need a narrow exception. Dataset-revert of the mg-4a86 over-run is held pending this call.
+  2. **`O(1)` locality probe** — prove `Σ_{y∥x} Pr[{x,y} inverts] = O(1)` under freezing (mg-0ed7's residual; the `(B-bias)` lemma). Natural next swing at the crux.
+- **STATE.md maintained on every verdict** (canonical; through @e1b8fb2, incl. Appendix A audit-stage process).
 
-## Next (queued, contingent on Daniel)
-- **Config add:** Daniel adds `onethird_program` to pm-onethird `repos` so I maintain STATE.md in sweeps automatically (offered in this morning's update mail).
-- **Daniel's call on the convergent theorem:** attempt the convexity/AF anti-concentration himself, or signal a polecat arc (would lift the no-computation hold). Reserve routes unchanged: BK-transport L1; dedicated anti-concentration arc.
+## Process (now live)
+- **Independent pre-PM-review audit stage — LIVE** (mg-3a3a; template in STATE.md Appendix A). Every research deliverable with a math/[PROVEN] claim gets an independent audit polecat (mayor-dispatched) before pm-onethird's second-line review. Formalized after a pm-onethird audit missed an in-prose [PROVEN] reduction (mg-0ed7 7.5); mg-8f56 was this stage run manually and caught it.
+
+## Next (contingent on Daniel)
+- Either of the two calls above lifts the hold and dispatches a polecat.
+- Reserve routes unchanged: the `(B-bias)` locality lemma (elementary, no Stanley/AF); Residual (R) frozen-density ceiling (mg-210d); the (B-cov) covariance break (the sharp edge).
 
 ## Later (contingent)
-- **If the anti-concentration theorem closes:** L1b closes at any width -> M1 close-out audit + Lean follow-on (two-milestones plan).
-- **Entropy-discontinuity as a Brightwell attack:** if the coherence-forces-discontinuity mechanism can be made precise (the open step: coherence + realizability => the gap), it is a novel angle on a named open problem — potentially bigger than L1b alone.
-- **Frankl, pending mg-38ba fork:** RELAXED -> file (O3)+(O4); STRICT -> pivot proposal. Both pre-scoped, unfiled until Daniel unshelves.
+- **If the `(B-cov)`/`ρ_s < 1` crux closes:** L1b closes at any width → M1 close-out audit + Lean follow-on.
+- **Frankl, pending mg-38ba fork:** pre-scoped, unfiled until Daniel unshelves.
 
 ## Backlog / pending on Daniel (human-action)
-- **Frankl track SHELVED** (Daniel directive 2026-07-15). mg-38ba shelved; mg-1131 shelved (resolved).
-- **mg-344a** — Daniel-only conceptual scratch-space (Option-alpha bridge theorem). Awaits Daniel.
+- **Frankl track SHELVED** (Daniel directive 2026-07-15).
+- **mg-344a** — Daniel-only obstruction review (bespoke finite/rigid combinatorics on the quotient-to-chain frame). Awaits Daniel.
 - **mg-b8f9** — Hopkins (#2) outreach email; drafted. Send = Daniel's call.
 
-## Recently shipped
-- **State of the Wall doc + `onethird_program` repo** — 2026-07-19, committed public (2 commits: initial + elementary-anchor update). The canonical program map.
-- (No mg tickets merged since 07-15; overnight work was research/conceptual, captured in STATE.md + PM memory.)
+## Recently shipped (2026-07-19, all audited)
+- **mg-210d** — best constant `λ_std` bound = 0 (route collapses onto incomparability density); Residual (R) = frozen density ceiling; frozen ⟹ majority relation is a linear extension.
+- **mg-0ed7** — Ma-Shenfeld frozen-conditional Stanley-stability; durable win = geometric explanation of why unconditional stability is refuted (deficit = hazard increment); Finding 7.5 later refuted.
+- **mg-4a86** — standard-dominance comparison route; headline corrected to conditional-on-frozen; deformation route proven dead; Cayley-vs-BK evidence catch.
+- **mg-8f56** — spectral implications of the stability theorems (vacuous reach); refuted mg-0ed7 7.5; re-diagnosed §6.5 (relocation, not reopening).
+- **mg-3a3a** — durable audit-stage process + reusable audit template (STATE.md Appendix A).
+- Earlier 07-19: entropy-discontinuity arcs (mg-a1ec/48ab/dcae) + 4 entropy probes (A-D) + State-of-the-Wall doc & repo.
 
-## Hygiene / gaps I'm watching
-- **Two roadmap/state artifacts now:** STATE.md (onethird_program, canonical, maintained) supersedes both this union_closed roadmap.md (operational sweep artifact) and the stale one_third_width_three/docs/roadmap.md (~64 days old). Once `onethird_program` is in config, consolidate: STATE.md canonical, retire the width-3 one, keep a thin roadmap for Now/Next.
-- **one_third_width_three local checkout still off-main/dirty** (branch mayor-a5-g2-status, behind origin/main). origin/main healthy, refinery green — a stale worktree, not a content problem. Not touched.
-- **Lean residuals steady** — the load-bearing sorries are the expected M2-formalization gaps, gated behind the open L1b math. No new sorry; no CI regression.
-
-## Trajectory
-- **One-third:** a big conceptual night. The wall went from "one named residual" to a fully-mapped single open theorem with three convergent windows (convexity, entropy-discontinuity, Brightwell), an elementary proven anchor for why 1/3, a named untried tool (AF/combinatorial atlas), and a canonical doc in a repo. No tokens spent on polecats (Daniel-driven + no-compute posture) — pure characterization progress.
-- **Frankl:** unchanged, shelved at its reserved canonicity fork.
-- **Health:** no CI failures on any repo; sorry/admit steady; no releases (research repos). Fleet idle by directive.
+## Trajectory / gaps I'm watching
+- **Converging, not stalling.** Zero forward progress on the crux this cycle, but the wall is now a single named object reached from three sides, and several overstated/erroneous claims were caught and corrected — the map is honest and sharp. The bottleneck is the `(B-cov)` covariance sign, unchanged.
+- **Consolidation pending:** STATE.md (onethird_program) is canonical; this roadmap + the stale one_third_width_three/docs/roadmap.md (~65d old) are redundant. Consolidate to STATE.md + a thin roadmap.
+- **No-computation directive vs the decisive test:** the n=7 overlap test that would settle conditional standard dominance is the one thing the directive blocks — flagged to Daniel, his call.
