@@ -1,6 +1,6 @@
 # pm-onethird product roadmap (1/3-2/3 + Union-Closed compatibility-geometry program)
 
-*Updated by pm-onethird 2026-07-21 09:05 BST — morning sweep (silent; no digest by design). Overnight the full mg-0eac arc landed and was independently audited. The 07-20 evening sweep ran ~7h late as a sleep catch-up (host slept 13:50→00:14; pogod replayed on wake, replay=once, so exactly one catch-up sweep). **Canonical current doc = STATE.md in github.com/drellem2/onethird_program (onethird_program repo, in scope).** This roadmap is the thin operational summary; STATE.md holds the full attempt index + proofs. CI clean (one_third's April red is stale/superseded — latest main run is green). Frankl shelved. Manual edits overwritten next sweep.*
+*Updated by pm-onethird 2026-07-21 17:05 BST — evening sweep. The mg-0eac arc shipped, was independently audited, and its follow-on scoping arc (mg-c47a) was audited OVERSTATED and repaired. Width >= 4 residual DROPPED on tractability. **Canonical current doc = STATE.md in github.com/drellem2/onethird_program (onethird_program repo, in scope).** This roadmap is the thin operational summary; STATE.md holds the full attempt index + proofs. CI clean (one_third's April red is stale/superseded — latest main run is green). Frankl shelved. Manual edits overwritten next sweep.*
 
 **Scope.** Repos: onethird_program (canonical), union_closed, one_third_width_three, one_third. Tags: onethird, one-third, lean, audit, union-closed, frankl.
 
@@ -47,14 +47,30 @@ doc is right. Ledger records *narrow*.
   (`scripts/onethird_mg8489_fastq_gate_control.py`): **6/6**, exit 0 — corrupting `fast_Q` three
   ways now RAISES (including the overstate direction), corrupting `Q_primary` still RAISES (not
   shadowed), gate green on restore. A gate demonstrated able to fail on the case it was blind to.
-- **Residual gap, stated honestly:** width ≥ 4 at n ≥ 10 is uncovered — precisely where a wide
-  low-δ poset would have to hide. **mg-c47a filed this sweep** to scope it, deliberately as a
-  *scoping pass, not a search*: Q1 (preferred) asks whether there is a structural reason low δ
-  forces small width — every known near-extremal family is narrow, and a mechanism would close
-  the gap far more cheaply than any enumeration; Q2 asks whether a width-4 search is tractable
-  at all, in concrete arena sizes. Hard stop against launching an enumeration, because the
-  width-3 beam missed the true optimum at 1 of 3 tested sizes, so a width-4 beam finding nothing
-  would be very weak evidence.
+- **Residual gap (width ≥ 4 at n ≥ 10) — scoped, audited, and now DROPPED.** Full arc closed today:
+  mg-c47a (scoping) → mg-7d24 (independent audit, **OVERSTATED** — 10 CONFIRMED, 2 OVERSTATED,
+  **1 BROKEN** of 13 [PROVEN] tags) → mg-8ff1 (repairs). All merged and archived.
+  - **DROP stands, but NOT on the reasoning the deliverable led with.** The equivalence is real and
+    audit-CONFIRMED: Q1's strongest form, "low δ forces width ≤ 2", is *logically equivalent to the
+    1/3-2/3 conjecture itself* modulo Sah. But the inference drawn from it — "so a programme
+    pursuing it goes in a circle" — is **REJECTED**: equivalence of statements says nothing about
+    difficulty of proofs. DROP therefore rests on **tractability alone**: thinner than claimed,
+    still sufficient. Recorded in STATE.md's attempt index so neither the confirmed result nor the
+    rejected inference is re-walked.
+  - **A supporting pillar was circular.** The "shrinking trend" evidence leaned on an all-width
+    min-δ cell at n=10 whose true value requires *exactly the width ≥ 4 search being dropped*.
+    Withdrawn as evidence for DROP.
+  - **F1 [BROKEN], repaired:** Lemma 3.2b's boxed hypothesis said an automorphism *maps* x to y;
+    the proof needs it to *swap* them. Counterexample at n=9 (`Aut(P) = Z/3`, δ = 79/159 < 1/2) —
+    pm-onethird ran the committed witness, reproduces exactly.
+  - **F3 was a defect in ALREADY-MERGED work** that the earlier mg-0eac audit missed — fixed at
+    source, not just in the copy. Second time an audit has caught a prior audit's miss.
+- **mg-4ad1 filed this sweep — the control scripts have ZERO CI coverage.** `lean.yml` filters on
+  `paths: lean/**`, so there has been no CI run since 2026-05-21 despite a dozen commits; every
+  Python artifact this week is uncovered, *including the mg-8489 gate control that proves the δ
+  engine's gate can fail*. A control nothing invokes is indistinguishable from one that doesn't
+  exist, and it fails reassuringly — the file is present and looks like coverage. Scoped to the
+  fast self-checking controls only, with a requirement to prove the workflow can go red.
 
 ## Standing context — the computation lift, and what it does NOT cover
 - **Origin of mg-0eac:** Daniel filed it 2026-07-20 12:04Z and **lifted the no-computation hold for the counterexample search specifically**. Deliverable was always the **min-δ-per-size profile**, not a counterexample — a counterexample was judged unlikely and success was never indexed to it. Novel path = the proven "`δ<1/3` ⟹ coherent distinguished `e`" structure, which Peczarski did not use; exhaustive search ≤ n=11 is literature and was explicitly out of scope. *(Completed and audited — see Now, above.)*
@@ -63,7 +79,7 @@ doc is right. Ledger records *narrow*.
 - **Two pending Daniel research calls** (offered, awaiting his word):
   1. **n=7 overlap test** — the one decisive check of the conditional-standard-dominance picture (overlap `c` at 3 known n=7 off-regime posets). **Still blocked**; needs its own narrow exception. Dataset-revert of the mg-4a86 over-run is held pending this call.
   2. **`O(1)` locality probe** — prove `Σ_{y∥x} Pr[{x,y} inverts] = O(1)` under freezing (mg-0ed7's residual; the `(B-bias)` lemma). Natural next swing at the crux.
-- **STATE.md maintained on every verdict** (canonical; through **@b4da72d**, incl. Appendix A audit-stage process).
+- **STATE.md maintained on every verdict** (canonical; through **@400f474**, incl. Appendix A audit-stage process).
 
 ## Process (now live)
 - **Independent pre-PM-review audit stage — LIVE** (mg-3a3a; template in STATE.md Appendix A). Every research deliverable with a math/[PROVEN] claim gets an independent audit polecat (mayor-dispatched) before pm-onethird's second-line review. Formalized after a pm-onethird audit missed an in-prose [PROVEN] reduction (mg-0ed7 7.5); mg-8f56 was this stage run manually and caught it. **Proved its worth on mg-0eac:** the audit rebuilt the instrument rather than reading the work, and caught that the commit subject overstated the result.
