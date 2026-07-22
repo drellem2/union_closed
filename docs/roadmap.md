@@ -1,6 +1,6 @@
 # pm-onethird product roadmap (1/3-2/3 + Union-Closed compatibility-geometry program)
 
-*Updated by pm-onethird 2026-07-21 17:05 BST — evening sweep. The mg-0eac arc shipped, was independently audited, and its follow-on scoping arc (mg-c47a) was audited OVERSTATED and repaired. Width >= 4 residual DROPPED on tractability. **Canonical current doc = STATE.md in github.com/drellem2/onethird_program (onethird_program repo, in scope).** This roadmap is the thin operational summary; STATE.md holds the full attempt index + proofs. CI clean (one_third's April red is stale/superseded — latest main run is green). Frankl shelved. Manual edits overwritten next sweep.*
+*Updated by pm-onethird 2026-07-22 23:50 BST — **catch-up sweep after a 23h40m PM outage** (last heartbeat 07-22T00:00:31, recovered 23:41; scheduler fired on time throughout, prompts were not consumed; `replay=once` so the two missed sweeps collapse into this one). **The product was quiet through the entire window** — zero commits, CI runs, merges, issues, PRs or mail across all four repos, so nothing was lost or missed. Product state below is unchanged from the 07-21 evening sweep. Previous entry: 2026-07-21 17:05 BST — evening sweep. The mg-0eac arc shipped, was independently audited, and its follow-on scoping arc (mg-c47a) was audited OVERSTATED and repaired. Width >= 4 residual DROPPED on tractability. **Canonical current doc = STATE.md in github.com/drellem2/onethird_program (onethird_program repo, in scope).** This roadmap is the thin operational summary; STATE.md holds the full attempt index + proofs. CI clean (one_third's April red is stale/superseded — latest main run is green). Frankl shelved. Manual edits overwritten next sweep.*
 
 **Scope.** Repos: onethird_program (canonical), union_closed, one_third_width_three, one_third. Tags: onethird, one-third, lean, audit, union-closed, frankl.
 
@@ -71,6 +71,13 @@ doc is right. Ledger records *narrow*.
   engine's gate can fail*. A control nothing invokes is indistinguishable from one that doesn't
   exist, and it fails reassuringly — the file is present and looks like coverage. Scoped to the
   fast self-checking controls only, with a requirement to prove the workflow can go red.
+  **STATUS 2026-07-22: still `available`, correctly held.** Mayor's hold reads "until after the
+  redeploy (2026-07-21 17:15 BST)" — the *clock* has passed but the *condition* has not: installed
+  pogod is still `vcs.revision=249f349`, built 2026-07-17, so the redeploy has not happened. The
+  hold stands and I am not pushing to release it. The gap it describes is independently confirmed
+  still live: `one_third_width_three` has now gone **62 days without a CI run** while shipping the
+  load-bearing δ engine and gate control. The redeploy itself is pm-pogo's ask, not mine to
+  re-raise; noted here only because it now has a second-order cost inside this product.
 
 ## Standing context — the computation lift, and what it does NOT cover
 - **Origin of mg-0eac:** Daniel filed it 2026-07-20 12:04Z and **lifted the no-computation hold for the counterexample search specifically**. Deliverable was always the **min-δ-per-size profile**, not a counterexample — a counterexample was judged unlikely and success was never indexed to it. Novel path = the proven "`δ<1/3` ⟹ coherent distinguished `e`" structure, which Peczarski did not use; exhaustive search ≤ n=11 is literature and was explicitly out of scope. *(Completed and audited — see Now, above.)*
